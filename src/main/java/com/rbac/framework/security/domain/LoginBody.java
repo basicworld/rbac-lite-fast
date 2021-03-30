@@ -11,6 +11,31 @@ public class LoginBody {
 	private String username;
 	// 密码
 	private String password;
+	/**
+	 * 验证码
+	 */
+	private String code;
+
+	/**
+	 * 唯一标识
+	 */
+	private String uuid = "";
+
+	public String getCode() {
+		return code;
+	}
+
+	public String getUuid() {
+		return uuid;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
+	}
+
+	public void setUuid(String uuid) {
+		this.uuid = uuid;
+	}
 
 	public String getUsername() {
 		return username;

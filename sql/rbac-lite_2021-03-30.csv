@@ -1,0 +1,52 @@
+主机: 127.0.0.1   数据库: rbac-lite    生成时间: 2021-03-30 02:18:32 +0000
+
+表 sys_menu
+
+"id","parent_id","menu_name","path","component","sort","is_frame","visible","status","perms","icon","create_by","create_time","update_by","update_time","deleted","note"
+1,0,"系统管理","/system","layout",0,0,1,0,"system","system",NULL,NULL,NULL,NULL,0,NULL
+2,1,"用户管理","user","system/user/index",0,0,1,0,"system:user",NULL,NULL,NULL,NULL,NULL,0,NULL
+3,1,"角色管理","role","system/role/index",0,0,1,0,"system:role",NULL,NULL,NULL,NULL,NULL,0,NULL
+
+
+表 sys_role
+
+"id","role_name","role_key","status","sort","data_scope","create_by","create_time","update_by","update_time","deleted","note"
+1,"超级管理员","admin",0,0,NULL,NULL,"2021-03-27 22:54:00",NULL,"2021-03-29 16:15:21",0,NULL
+2,"角色管理员","roleAdmin",0,3,NULL,NULL,"2021-03-27 22:54:45",NULL,"2021-03-29 21:17:21",0,NULL
+3,"用户管理员","userAdmin",0,12,NULL,NULL,"2021-03-29 16:15:37",NULL,"2021-03-29 21:24:01",0,NULL
+4,"点点滴滴","dddd_",0,14,NULL,NULL,"2021-03-29 23:06:35",NULL,"2021-03-29 23:07:15",0,NULL
+
+
+表 sys_role_menu
+
+"id","role_id","menu_id"
+5,1,1
+6,1,2
+7,1,3
+12,2,1
+13,2,3
+14,3,1
+15,3,2
+
+
+表 sys_user
+
+"id","user_name","password","status","nick_name","phone","email","pwd_update_time","dept_name","create_by","create_time","update_by","update_time","deleted","note"
+1,"admin","$2a$10$ceAT6b6zXRlpjCx8WAfdteI/.krXzeh15E0kQJubQ7CwuJHsSkAke",0,"超级管理员","","","2021-03-29 17:05:02",NULL,NULL,"2021-03-27 18:34:41",NULL,"2021-03-29 17:05:02",0,NULL
+2,"useradmin","$2a$10$jV.Ho/KD.KA3KGrceqJSsu8qP8g2PcnLMfF70F1zJ2LAzflBEhNq.",1,"用户管理","18922223333","","2021-03-29 17:01:29","天堂",NULL,"2021-03-29 16:42:19",NULL,"2021-03-29 22:19:25",0,NULL
+5,"user1","$2a$10$8dK47UaSJj3ZipaLR6bf6e8LdRwAHQes9bgwLSto8BZQnKX524.bW",0,"user1",NULL,NULL,NULL,"地域",NULL,"2021-03-29 17:27:24",NULL,"2021-03-29 21:40:44",0,NULL
+6,"user2","$2a$10$.o6QW4C0TTmZMH63l48qKOT..DoA2rm.lJwIPIR0OcpCkkFiYkaTO",0,"user2",NULL,NULL,NULL,NULL,NULL,"2021-03-29 19:31:27",NULL,"2021-03-29 20:04:46",0,NULL
+7,"user3","$2a$10$3hYL2Q.b4fJ0uYhJO8bEPO5y99gAKs7YMC1..Q7EU.q6E1gAP/M/S",0,"user3",NULL,NULL,NULL,NULL,NULL,"2021-03-29 20:32:35",NULL,"2021-03-29 23:12:24",0,NULL
+8,"user5","$2a$10$xHU7ON0uHe1n.ztfl8M0HeCz4DqCJKA/tWUBgffxGQiWpcOGIMzSm",1,"user5",NULL,NULL,NULL,NULL,NULL,"2021-03-29 22:06:04",NULL,NULL,0,NULL
+
+
+表 sys_user_role
+
+"id","user_id","role_id"
+5,1,1
+24,2,3
+16,5,2
+17,5,3
+13,6,2
+25,7,1
+22,8,2

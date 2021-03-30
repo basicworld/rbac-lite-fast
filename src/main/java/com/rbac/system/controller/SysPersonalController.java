@@ -28,8 +28,10 @@ import com.rbac.framework.security.domain.LoginUser;
 import com.rbac.framework.security.service.SysLoginService;
 import com.rbac.framework.security.service.TokenService;
 import com.rbac.framework.web.domain.AjaxResult;
+import com.rbac.system.domain.Captcha;
 import com.rbac.system.domain.SysUser;
 import com.rbac.system.domain.dto.UserPwdDTO;
+import com.rbac.system.service.ICaptchaService;
 import com.rbac.system.service.ISysRoleService;
 import com.rbac.system.service.ISysUserRoleService;
 import com.rbac.system.service.ISysUserService;
@@ -64,6 +66,9 @@ public class SysPersonalController {
 	@Autowired
 	ISysUserRoleService userRoleService;
 
+	@Autowired
+	ICaptchaService captchaService;
+
 	/**
 	 * user login
 	 * 
@@ -73,6 +78,15 @@ public class SysPersonalController {
 	@PostMapping("/login")
 	public AjaxResult login(@RequestBody LoginBody loginBody) {
 		logger.debug("user login...");
+
+		// 验证码处置
+		Captcha cap = new Captcha();
+		cap.setCode(loginBody.getCode());
+		cap.setUuid(loginBody.getUuid());
+		if (!captchaService.validate(cap)) {
+			return AjaxResult.error("invalid captcha!");
+		}
+
 		// get rawPassword using RSA
 		String password = RSAUtils.decrypt(rsaPrivateKey, loginBody.getPassword());
 		loginBody.setPassword(password);

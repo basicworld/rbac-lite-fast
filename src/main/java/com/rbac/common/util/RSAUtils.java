@@ -29,7 +29,6 @@ import sun.misc.BASE64Encoder;
 /**
  * RSA 对称加密算法工具类
  */
-@SuppressWarnings("restriction")
 public class RSAUtils {
 	private static Cipher cipher;
 
