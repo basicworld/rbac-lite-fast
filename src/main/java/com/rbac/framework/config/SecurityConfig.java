@@ -98,7 +98,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				// 过滤请求
 				.authorizeRequests()
 				// 对于登录login 验证码captcha 注册register 允许匿名访问
-				.antMatchers("/personal/login", "/captcha").anonymous()
+				.antMatchers("/personal/login", "/captcha", "/ping").anonymous()
 				.antMatchers(HttpMethod.GET, "/*.html", "/**/*.html", "/**/*.css", "/**/*.js").permitAll()
 				.antMatchers("/profile/**").anonymous().antMatchers("/common/download**").anonymous()
 				.antMatchers("/common/download/resource**").anonymous().antMatchers("/swagger-ui.html").anonymous()
