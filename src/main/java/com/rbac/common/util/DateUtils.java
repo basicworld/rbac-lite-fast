@@ -37,7 +37,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 	}
 
 	/**
-	 * 获取当前日期, 默认格式为yyyy-MM-dd
+	 * 获取当前日期字符串, 格式为yyyy-MM-dd
 	 * 
 	 * @return String
 	 */
@@ -45,32 +45,78 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 		return dateTimeNow(YYYY_MM_DD);
 	}
 
+	/**
+	 * 获取当前日期+时间字符串, 格式为yyyy-MM-dd HH:mm:ss
+	 * 
+	 * @return String
+	 */
 	public static final String getTime() {
 		return dateTimeNow(YYYY_MM_DD_HH_MM_SS);
 	}
 
+	/**
+	 * 获取当前日期+时间字符串, 格式为yyyyMMddHHmmss
+	 * 
+	 * @return String
+	 */
 	public static final String dateTimeNow() {
 		return dateTimeNow(YYYYMMDDHHMMSS);
 	}
 
+	/**
+	 * 将当前日期转为要求的格式的字符串返回
+	 * 
+	 * @param format 要求的日期格式
+	 * @return String
+	 */
 	public static final String dateTimeNow(final String format) {
 		return parseDateToStr(format, new Date());
 	}
 
+	/**
+	 * 获取 yyyyMMdd 格式的当前日期字符串，返回如：20180808
+	 * 
+	 * @return String
+	 */
+	public static final String dateTime() {
+		Date now = new Date();
+		return DateFormatUtils.format(now, "yyyyMMdd");
+	}
+
+	/**
+	 * 获取 yyyy-MM-dd 格式的指定日期字符串，返回如：20180808
+	 * 
+	 * @param date 指定日期
+	 * @return
+	 */
 	public static final String dateTime(final Date date) {
 		return parseDateToStr(YYYY_MM_DD, date);
 	}
 
-	public static final String parseDateToStr(final String format, final Date date) {
-		return new SimpleDateFormat(format).format(date);
-	}
-
+	/**
+	 * 根据format解析输入的ts日期字符串
+	 * 
+	 * @param format 日期格式
+	 * @param ts     日期字符串
+	 * @return Date()
+	 */
 	public static final Date dateTime(final String format, final String ts) {
 		try {
 			return new SimpleDateFormat(format).parse(ts);
 		} catch (ParseException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	/**
+	 * 根据format格式化输入的date日期，输出格式化的日期字符串
+	 * 
+	 * @param format 日期格式
+	 * @param date   日期
+	 * @return String
+	 */
+	public static final String parseDateToStr(final String format, final Date date) {
+		return new SimpleDateFormat(format).format(date);
 	}
 
 	/**
@@ -82,15 +128,10 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 	}
 
 	/**
-	 * 日期路径 即年/月/日 如20180808
-	 */
-	public static final String dateTime() {
-		Date now = new Date();
-		return DateFormatUtils.format(now, "yyyyMMdd");
-	}
-
-	/**
-	 * 日期型字符串转化为日期 格式
+	 * 日期型字符串转化为日期 格式<br>
+	 * 
+	 * @param str 日期字符串
+	 * @return Date() 或 null--转换失败时
 	 */
 	public static Date parseDate(Object str) {
 		if (str == null) {
@@ -105,6 +146,8 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 
 	/**
 	 * 获取服务器启动时间
+	 * 
+	 * @return Date()
 	 */
 	public static Date getServerStartDate() {
 		long time = ManagementFactory.getRuntimeMXBean().getStartTime();
@@ -113,6 +156,10 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 
 	/**
 	 * 计算两个时间差
+	 * 
+	 * @param endDate 结束时间（大）
+	 * @param nowDate 当前时间（小）
+	 * @return String：X天X小时X分钟
 	 */
 	public static String getDatePoor(Date endDate, Date nowDate) {
 		long nd = 1000 * 24 * 60 * 60;

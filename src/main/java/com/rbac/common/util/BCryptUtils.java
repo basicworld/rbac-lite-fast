@@ -3,7 +3,8 @@ package com.rbac.common.util;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 /**
- * BCrypt 非对称加密工具类
+ * BCrypt 非对称加密工具类<br>
+ * 提供静态方法：加密字符串，判断明文、密文是否一致
  * 
  * @author wlfei
  *

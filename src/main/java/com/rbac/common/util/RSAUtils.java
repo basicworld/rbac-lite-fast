@@ -130,61 +130,6 @@ public class RSAUtils {
 	}
 
 	/**
-	 * 使用公钥对明文进行加密，返回BASE64编码的字符串
-	 * 
-	 * @param publicKey
-	 * @param plainText
-	 * @return
-	 */
-	public static String encrypt(PublicKey publicKey, String plainText) {
-		try {
-			cipher.init(Cipher.ENCRYPT_MODE, publicKey);
-			byte[] enBytes = cipher.doFinal(plainText.getBytes());
-			return (new BASE64Encoder()).encode(enBytes);
-		} catch (InvalidKeyException e) {
-			e.printStackTrace();
-		} catch (IllegalBlockSizeException e) {
-			e.printStackTrace();
-		} catch (BadPaddingException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-
-	/**
-	 * 使用keystore对明文进行加密
-	 * 
-	 * @param publicKeystore 公钥文件路径
-	 * @param plainText      明文
-	 * @return
-	 */
-	public static String fileEncrypt(String publicKeystore, String plainText) {
-		try {
-			FileReader fr = new FileReader(publicKeystore);
-			BufferedReader br = new BufferedReader(fr);
-			String publicKeyString = "";
-			String str;
-			while ((str = br.readLine()) != null) {
-				publicKeyString += str;
-			}
-			br.close();
-			fr.close();
-			cipher.init(Cipher.ENCRYPT_MODE, getPublicKey(publicKeyString));
-			byte[] enBytes = cipher.doFinal(plainText.getBytes());
-			return (new BASE64Encoder()).encode(enBytes);
-		} catch (InvalidKeyException e) {
-			e.printStackTrace();
-		} catch (IllegalBlockSizeException e) {
-			e.printStackTrace();
-		} catch (BadPaddingException e) {
-			e.printStackTrace();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-
-	/**
 	 * 使用公钥对明文进行加密
 	 * 
 	 * @param publicKey 公钥
@@ -203,6 +148,28 @@ public class RSAUtils {
 		} catch (BadPaddingException e) {
 			e.printStackTrace();
 		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	/**
+	 * 使用公钥对明文进行加密，返回BASE64编码的字符串
+	 * 
+	 * @param publicKey
+	 * @param plainText
+	 * @return
+	 */
+	public static String encrypt(PublicKey publicKey, String plainText) {
+		try {
+			cipher.init(Cipher.ENCRYPT_MODE, publicKey);
+			byte[] enBytes = cipher.doFinal(plainText.getBytes());
+			return (new BASE64Encoder()).encode(enBytes);
+		} catch (InvalidKeyException e) {
+			e.printStackTrace();
+		} catch (IllegalBlockSizeException e) {
+			e.printStackTrace();
+		} catch (BadPaddingException e) {
 			e.printStackTrace();
 		}
 		return null;
@@ -251,6 +218,39 @@ public class RSAUtils {
 		} catch (BadPaddingException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	/**
+	 * 使用keystore对明文进行加密
+	 * 
+	 * @param publicKeystore 公钥文件路径
+	 * @param plainText      明文
+	 * @return
+	 */
+	public static String fileEncrypt(String publicKeystore, String plainText) {
+		try {
+			FileReader fr = new FileReader(publicKeystore);
+			BufferedReader br = new BufferedReader(fr);
+			String publicKeyString = "";
+			String str;
+			while ((str = br.readLine()) != null) {
+				publicKeyString += str;
+			}
+			br.close();
+			fr.close();
+			cipher.init(Cipher.ENCRYPT_MODE, getPublicKey(publicKeyString));
+			byte[] enBytes = cipher.doFinal(plainText.getBytes());
+			return (new BASE64Encoder()).encode(enBytes);
+		} catch (InvalidKeyException e) {
+			e.printStackTrace();
+		} catch (IllegalBlockSizeException e) {
+			e.printStackTrace();
+		} catch (BadPaddingException e) {
 			e.printStackTrace();
 		} catch (Exception e) {
 			e.printStackTrace();

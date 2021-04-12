@@ -182,14 +182,14 @@ public class SysUserController extends BaseController {
 				return AjaxResult.error("invalid userId included!");
 			}
 			// check: you cannot delete yourself!
-			if (userId == loginUser.getUser().getId()) {
+			if (userId.equals(loginUser.getUser().getId())) {
 				return AjaxResult.error("you cannot delete yourself!");
 			}
 		}
 		// check: normal_user cannot delete admin_user
 		if (userService.isNotAdmin(loginUser.getUser().getId())) {
 			for (Long userId : userIds) {
-				if (userId == loginUser.getUser().getId()) {
+				if (userId.equals(loginUser.getUser().getId())) {
 					return AjaxResult.error("you cannot delete yourself!");
 				}
 				if (userService.isAdmin(userId)) {
@@ -226,7 +226,7 @@ public class SysUserController extends BaseController {
 		}
 		// check: cannot update self
 		LoginUser loginUser = tokenService.getLoginUser(ServletUtils.getRequest());
-		if (loginUser.getUser().getId() == user.getId()) {
+		if (user.getId().equals(loginUser.getUser().getId())) {
 			return AjaxResult.error("you cannot update yourself!");
 		}
 		// check: normal_user cannot delete admin_user

@@ -31,12 +31,32 @@ public class SqlUtil {
 	}
 
 	/**
-	 * 获取模糊查询所用参数
+	 * 获取全模糊查询所用的参数 不建议用，sql性能不好
 	 * 
 	 * @param param
 	 * @return %param%
 	 */
 	public static String getFuzzQueryParam(String param) {
+		return "%" + param + "%";
+	}
+
+	/**
+	 * 获取左模糊查询所用的参数 不建议用，sql性能不好
+	 * 
+	 * @param param
+	 * @return
+	 */
+	public static String getLeftFuzzQueryParam(String param) {
+		return "%" + param + "%";
+	}
+
+	/**
+	 * 获取右模糊查询所用的参数
+	 * 
+	 * @param param
+	 * @return
+	 */
+	public static String getRightFuzzQueryParam(String param) {
 		return "%" + param + "%";
 	}
 }

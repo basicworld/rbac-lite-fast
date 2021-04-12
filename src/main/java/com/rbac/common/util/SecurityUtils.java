@@ -19,9 +19,9 @@ public class SecurityUtils {
 	}
 
 	/**
-	 * 生成盐
+	 * 生成盐（6位随机乱码）
 	 * 
-	 * @return
+	 * @return String
 	 */
 	public static String genSalt() {
 		final String model = "abcdefghijklmnopqrstuvwxyz1234567890";

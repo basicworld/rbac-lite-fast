@@ -10,7 +10,8 @@ import java.util.List;
  */
 public class BaseUtils {
 	/**
-	 * 获取list中的第一个元素
+	 * 获取list中的第一个元素<br>
+	 * 如果入参为null或入参list的长度为0，则返回null
 	 * 
 	 * @param <T>  返回值类型
 	 * @param list

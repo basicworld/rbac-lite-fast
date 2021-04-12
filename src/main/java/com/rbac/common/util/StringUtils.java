@@ -15,6 +15,7 @@ import com.rbac.common.core.text.StrFormatter;
  * @author ruoyi
  */
 public class StringUtils extends org.apache.commons.lang3.StringUtils {
+
 	/** 空字符串 */
 	private static final String NULLSTR = "";
 
@@ -22,13 +23,14 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
 	private static final char SEPARATOR = '_';
 
 	/**
-	 * 获取参数不为空值
+	 * * 判断一个字符串是否为空串<br>
 	 * 
-	 * @param value defaultValue 要判断的value
-	 * @return value 返回值
+	 * 
+	 * @param str String
+	 * @return true--str为null或长度为0的字符串 false--其他情况
 	 */
-	public static <T> T nvl(T value, T defaultValue) {
-		return value != null ? value : defaultValue;
+	public static boolean isEmpty(String str) {
+		return isNull(str) || NULLSTR.equals(str.trim());
 	}
 
 	/**
@@ -42,16 +44,6 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
 	}
 
 	/**
-	 * * 判断一个Collection是否非空，包含List，Set，Queue
-	 * 
-	 * @param coll 要判断的Collection
-	 * @return true：非空 false：空
-	 */
-	public static boolean isNotEmpty(Collection<?> coll) {
-		return !isEmpty(coll);
-	}
-
-	/**
 	 * * 判断一个对象数组是否为空
 	 * 
 	 * @param objects 要判断的对象数组
@@ -59,6 +51,26 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
 	 */
 	public static boolean isEmpty(Object[] objects) {
 		return isNull(objects) || (objects.length == 0);
+	}
+
+	/**
+	 * * 判断一个Map是否为空
+	 * 
+	 * @param map 要判断的Map
+	 * @return true：为空 false：非空
+	 */
+	public static boolean isEmpty(Map<?, ?> map) {
+		return isNull(map) || map.isEmpty();
+	}
+
+	/**
+	 * * 判断一个Collection是否非空，包含List，Set，Queue
+	 * 
+	 * @param coll 要判断的Collection
+	 * @return true：非空 false：空
+	 */
+	public static boolean isNotEmpty(Collection<?> coll) {
+		return !isEmpty(coll);
 	}
 
 	/**
@@ -75,30 +87,10 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
 	 * * 判断一个Map是否为空
 	 * 
 	 * @param map 要判断的Map
-	 * @return true：为空 false：非空
-	 */
-	public static boolean isEmpty(Map<?, ?> map) {
-		return isNull(map) || map.isEmpty();
-	}
-
-	/**
-	 * * 判断一个Map是否为空
-	 * 
-	 * @param map 要判断的Map
 	 * @return true：非空 false：空
 	 */
 	public static boolean isNotEmpty(Map<?, ?> map) {
 		return !isEmpty(map);
-	}
-
-	/**
-	 * * 判断一个字符串是否为空串
-	 * 
-	 * @param str String
-	 * @return true：为空 false：非空
-	 */
-	public static boolean isEmpty(String str) {
-		return isNull(str) || NULLSTR.equals(str.trim());
 	}
 
 	/**
@@ -142,7 +134,11 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
 	}
 
 	/**
-	 * 去空格
+	 * 去空格<br>
+	 * null转换为长度为0的字符串
+	 * 
+	 * @param str
+	 * @return 去除前后空格，或长度为0的字符串
 	 */
 	public static String trim(String str) {
 		return (str == null ? "" : str.trim());
@@ -316,6 +312,31 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
 	}
 
 	/**
+	 * 驼峰式命名法 例如：user_name->userName
+	 */
+	public static String toCamelCase(String s) {
+		if (s == null) {
+			return null;
+		}
+		s = s.toLowerCase();
+		StringBuilder sb = new StringBuilder(s.length());
+		boolean upperCase = false;
+		for (int i = 0; i < s.length(); i++) {
+			char c = s.charAt(i);
+
+			if (c == SEPARATOR) {
+				upperCase = true;
+			} else if (upperCase) {
+				sb.append(Character.toUpperCase(c));
+				upperCase = false;
+			} else {
+				sb.append(c);
+			}
+		}
+		return sb.toString();
+	}
+
+	/**
 	 * 是否包含字符串
 	 * 
 	 * @param str  验证字符串
@@ -365,32 +386,24 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
 	}
 
 	/**
-	 * 驼峰式命名法 例如：user_name->userName
+	 * 强制类型转换
+	 * 
+	 * @param <T> 目标类型
+	 * @param obj 待转换对象
+	 * @return 目标类型T的对象
 	 */
-	public static String toCamelCase(String s) {
-		if (s == null) {
-			return null;
-		}
-		s = s.toLowerCase();
-		StringBuilder sb = new StringBuilder(s.length());
-		boolean upperCase = false;
-		for (int i = 0; i < s.length(); i++) {
-			char c = s.charAt(i);
-
-			if (c == SEPARATOR) {
-				upperCase = true;
-			} else if (upperCase) {
-				sb.append(Character.toUpperCase(c));
-				upperCase = false;
-			} else {
-				sb.append(c);
-			}
-		}
-		return sb.toString();
-	}
-
 	@SuppressWarnings("unchecked")
 	public static <T> T cast(Object obj) {
 		return (T) obj;
+	}
+
+	/**
+	 * 获取参数不为空值，value非null时返回value，value为null时返回defaultValue
+	 * 
+	 * @param value defaultValue 要判断的value
+	 * @return value 返回值
+	 */
+	public static <T> T nvl(T value, T defaultValue) {
+		return value != null ? value : defaultValue;
 	}
 }

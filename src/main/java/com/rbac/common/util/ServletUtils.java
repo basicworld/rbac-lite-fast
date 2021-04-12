@@ -26,7 +26,7 @@ public class ServletUtils {
 	}
 
 	/**
-	 * 获取String参数
+	 * 获取String参数，不存在则返回defaultValue默认值
 	 */
 	public static String getParameter(String name, String defaultValue) {
 		return Convert.toStr(getRequest().getParameter(name), defaultValue);
@@ -40,7 +40,7 @@ public class ServletUtils {
 	}
 
 	/**
-	 * 获取Integer参数
+	 * 获取Integer参数，不存在则返回defaultValue默认值
 	 */
 	public static Integer getParameterToInt(String name, Integer defaultValue) {
 		return Convert.toInt(getRequest().getParameter(name), defaultValue);
@@ -67,6 +67,11 @@ public class ServletUtils {
 		return getRequest().getSession();
 	}
 
+	/**
+	 * 获取请求参数
+	 * 
+	 * @return
+	 */
 	public static ServletRequestAttributes getRequestAttributes() {
 		RequestAttributes attributes = RequestContextHolder.getRequestAttributes();
 		return (ServletRequestAttributes) attributes;
