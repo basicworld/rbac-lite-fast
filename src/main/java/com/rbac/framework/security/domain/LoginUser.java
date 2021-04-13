@@ -1,12 +1,18 @@
 package com.rbac.framework.security.domain;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.rbac.common.util.StringUtils;
 import com.rbac.system.constant.UserConstants;
 import com.rbac.system.domain.SysUser;
 
@@ -18,6 +24,7 @@ import com.rbac.system.domain.SysUser;
  *
  */
 public class LoginUser implements UserDetails {
+	public static final Logger logger = LoggerFactory.getLogger(LoginUser.class);
 
 	/**
 	 * 
@@ -52,7 +59,9 @@ public class LoginUser implements UserDetails {
 	private SysUser user;
 
 	/**
-	 * @return set of roleKey
+	 * 获取roleKey的集合
+	 * 
+	 * @return Set
 	 */
 	public Set<String> getRoles() {
 		return roles;
@@ -69,8 +78,18 @@ public class LoginUser implements UserDetails {
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
+		// 该方法用来获取当前用户所具有的角色
+		// 参考 https://blog.csdn.net/u012702547/article/details/79019510
+		List<GrantedAuthority> authorities = new ArrayList<>();
+		if (StringUtils.isEmpty(this.roles)) {
+			return authorities;
+		}
+		for (String role : this.roles) {
+			authorities.add(new SimpleGrantedAuthority(role));
+		}
 
-		return null;
+		return authorities;
+
 	}
 
 	@JsonIgnore

@@ -82,6 +82,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 		loginUser.setUser(user);
 		loginUser.setRoles(roleKeys);
 		loginUser.setPermissions(menuPerms);
+
+		String log = StringUtils.format("用户 {} 的所有角色: {}", user.getUserName(), roleKeys);
+		logger.debug(log);
+
 		return loginUser;
 	}
 

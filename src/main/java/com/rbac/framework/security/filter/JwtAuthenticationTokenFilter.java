@@ -7,6 +7,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -26,17 +28,25 @@ import com.rbac.framework.security.service.TokenService;
  */
 @Component
 public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
+	public static Log logger = LogFactory.getLog(JwtAuthenticationTokenFilter.class);
+
 	@Autowired
 	private TokenService tokenService;
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
 			throws ServletException, IOException {
+		logger.debug("JWT doFilterInternal...");
 		LoginUser loginUser = tokenService.getLoginUser(request);
 		if (StringUtils.isNotNull(loginUser) && StringUtils.isNull(SecurityUtils.getAuthentication())) {
+			logger.debug("JWT doFilterInternal verifyToken...");
+
 			tokenService.verifyToken(loginUser);
+			/// https://www.cnblogs.com/softidea/p/6716807.html
 			UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginUser,
-					null, loginUser.getAuthorities());
+					loginUser.getPassword(), loginUser.getAuthorities());
+//			UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginUser,
+//					null, loginUser.getAuthorities());
 			authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 			SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 		}

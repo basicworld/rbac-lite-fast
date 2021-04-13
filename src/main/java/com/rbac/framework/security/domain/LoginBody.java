@@ -7,9 +7,9 @@ package com.rbac.framework.security.domain;
  *
  */
 public class LoginBody {
-	// 登录用户名
+	/** 登录用户名 */
 	private String username;
-	// 密码
+	/** 密码 */
 	private String password;
 	/**
 	 * 验证码
@@ -17,7 +17,7 @@ public class LoginBody {
 	private String code;
 
 	/**
-	 * 唯一标识
+	 * 验证码唯一标识
 	 */
 	private String uuid = "";
 
@@ -55,7 +55,7 @@ public class LoginBody {
 
 	@Override
 	public String toString() {
-		return "LoginBody [username=" + username + ", password=" + password + "]";
+		return "LoginBody [username=" + username + ", password=" + password + ", code=" + code + ", uuid=" + uuid + "]";
 	}
 
 }
