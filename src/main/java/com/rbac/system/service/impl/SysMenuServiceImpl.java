@@ -63,6 +63,20 @@ public class SysMenuServiceImpl implements ISysMenuService {
 	}
 
 	@Override
+	public List<SysMenu> listByRoleId(Long roleId) {
+		// 使用 distinct()去重
+		return roleMenuService.listByRoleId(roleId).stream().map(v -> selectByPrimaryKey(v.getMenuId())).distinct()
+				.collect(Collectors.toList());
+	}
+
+	@Override
+	public List<SysMenu> listByRoleId(List<Long> roleIds) {
+		// 使用 distinct()去重
+		return roleMenuService.listByRoleId(roleIds).stream().map(v -> selectByPrimaryKey(v.getMenuId())).distinct()
+				.collect(Collectors.toList());
+	}
+
+	@Override
 	public List<SysMenu> buildMenuTree(List<SysMenu> menuList) {
 		Map<Long, List<SysMenu>> menuByParentIdMap = menuList.stream()
 				.collect(Collectors.groupingBy(SysMenu::getParentId));
@@ -75,20 +89,6 @@ public class SysMenuServiceImpl implements ISysMenuService {
 	public List<TreeSelect> buildMenuTreeSelect(List<SysMenu> menuList) {
 		List<SysMenu> menuTrees = buildMenuTree(menuList);
 		return menuTrees.stream().map(TreeSelect::new).collect(Collectors.toList());
-	}
-
-	@Override
-	public List<SysMenu> listByRoleId(Long roleId) {
-		// add distinct() func, solve the duplicate menu bug
-		return roleMenuService.listByRoleId(roleId).stream().map(v -> selectByPrimaryKey(v.getMenuId())).distinct()
-				.collect(Collectors.toList());
-	}
-
-	@Override
-	public List<SysMenu> listByRoleId(List<Long> roleIds) {
-		// add distinct() func, solve the duplicate menu bug
-		return roleMenuService.listByRoleId(roleIds).stream().map(v -> selectByPrimaryKey(v.getMenuId())).distinct()
-				.collect(Collectors.toList());
 	}
 
 	@Override

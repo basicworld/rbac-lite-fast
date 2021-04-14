@@ -51,7 +51,7 @@ public class SysUserRoleServiceImpl implements ISysUserRoleService {
 	public Integer deleteByRoleId(Long roleId) {
 		SysUserRoleExample example = new SysUserRoleExample();
 		example.createCriteria().andRoleIdEqualTo(roleId);
-		Integer count = 0;
+		int count = 0;
 		for (SysUserRole item : userRoleMapper.selectByExample(example)) {
 			count += deleteByPrimaryKey(item.getId());
 		}

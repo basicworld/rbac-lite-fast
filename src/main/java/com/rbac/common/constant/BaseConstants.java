@@ -51,7 +51,7 @@ public class BaseConstants {
 	/**
 	 * 验证码有效期（分钟）
 	 */
-	public static final Integer CAPTCHA_EXPIRATION = 5;
+	public static final int CAPTCHA_EXPIRATION = 5;
 
 	/**
 	 * 资源映射路径 前缀

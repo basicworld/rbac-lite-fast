@@ -5,9 +5,16 @@ import java.util.List;
 import com.rbac.system.base.BaseService;
 import com.rbac.system.domain.SysRoleMenu;
 
+/**
+ * 角色--菜单 关联关系service
+ * 
+ * @author wlfei
+ *
+ */
 public interface ISysRoleMenuService extends BaseService<SysRoleMenu> {
 	/**
-	 * delete role_menu_relation by roleId equals to
+	 * 删除角色ID关联的 角色--菜单 关系<br>
+	 * 只删除关联关系，不删除角色或菜单
 	 * 
 	 * @param roleId
 	 * @return
@@ -15,15 +22,17 @@ public interface ISysRoleMenuService extends BaseService<SysRoleMenu> {
 	Integer deleteByRoleId(Long roleId);
 
 	/**
-	 * delete role_menu_relation by menuId equals to
+	 * 删除菜单ID关联的 角色--菜单 关系<br>
+	 * 只删除关联关系，不删除角色或菜单
 	 * 
-	 * @param menuId
+	 * @param roleId
 	 * @return
 	 */
 	Integer deleteByMenuId(Long menuId);
 
 	/**
-	 * list role_menu_relation by roleId equals to
+	 * 根据角色ID获取 角色--菜单 关联关系<br>
+	 * 关联关系已去重
 	 * 
 	 * @param roleId
 	 * @return
@@ -31,7 +40,8 @@ public interface ISysRoleMenuService extends BaseService<SysRoleMenu> {
 	List<SysRoleMenu> listByRoleId(Long roleId);
 
 	/**
-	 * list role_menu_relation by roleIds equals to
+	 * 根据角色ID获取 角色--菜单 关联关系<br>
+	 * 关联关系已去重
 	 * 
 	 * @param roleIds
 	 * @return

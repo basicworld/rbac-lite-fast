@@ -22,122 +22,123 @@ import com.rbac.system.service.ISysUserRoleService;
 
 @Service
 public class SysRoleServiceImpl implements ISysRoleService {
-    @Autowired
-    SysRoleMapper roleMapper;
-    @Autowired
-    ISysRoleMenuService roleMenuService;
-    @Autowired
-    ISysUserRoleService userRoleService;
+	@Autowired
+	SysRoleMapper roleMapper;
+	@Autowired
+	ISysRoleMenuService roleMenuService;
+	@Autowired
+	ISysUserRoleService userRoleService;
 
-    @Override
-    @Transactional
-    public Integer insertSelective(SysRole role) {
-        role.setCreateTime(DateUtils.getNowDate());
-        role.setDeleted(BaseConstants.NOT_DELETED);
+	@Override
+	@Transactional
+	public Integer insertSelective(SysRole role) {
+		role.setCreateTime(DateUtils.getNowDate());
+		role.setDeleted(BaseConstants.NOT_DELETED);
 
-        Integer result = roleMapper.insertSelective(role);
+		Integer result = roleMapper.insertSelective(role);
 
-        updateMenuRelationOfRole(role);
+		updateMenuRelationOfRole(role);
 
-        return result;
-    }
+		return result;
+	}
 
-    @Override
-    @Transactional
-    public Integer deleteByPrimaryKey(Long roleId) {
-        userRoleService.deleteByRoleId(roleId);
-        roleMenuService.deleteByRoleId(roleId);
-        return roleMapper.deleteByPrimaryKey(roleId);
-    }
+	@Override
+	@Transactional
+	public Integer deleteByPrimaryKey(Long roleId) {
+		userRoleService.deleteByRoleId(roleId);
+		roleMenuService.deleteByRoleId(roleId);
+		return roleMapper.deleteByPrimaryKey(roleId);
+	}
 
-    @Override
-    @Transactional
-    public Integer deleteByPrimaryKey(List<Long> roleIds) {
-        if (StringUtils.isEmpty(roleIds)) {
-            return 0;
-        }
-        int deleteCount = 0;
-        for (Long roleId : roleIds) {
-            deleteCount += deleteByPrimaryKey(roleId);
-        }
-        return deleteCount;
-    }
+	@Override
+	@Transactional
+	public Integer deleteByPrimaryKey(List<Long> roleIds) {
+		if (StringUtils.isEmpty(roleIds)) {
+			return 0;
+		}
+		int deleteCount = 0;
+		for (Long roleId : roleIds) {
+			deleteCount += deleteByPrimaryKey(roleId);
+		}
+		return deleteCount;
+	}
 
-    @Override
-    @Transactional
-    public Integer updateSelective(SysRole role) {
-        role.setUpdateTime(DateUtils.getNowDate());
+	@Override
+	@Transactional
+	public Integer updateSelective(SysRole role) {
+		role.setUpdateTime(DateUtils.getNowDate());
 
-        updateMenuRelationOfRole(role);
+		updateMenuRelationOfRole(role);
 
-        return roleMapper.updateByPrimaryKeySelective(role);
-    }
+		return roleMapper.updateByPrimaryKeySelective(role);
+	}
 
-    @Override
-    public SysRole selectByPrimaryKey(Long roleId) {
+	@Override
+	public SysRole selectByPrimaryKey(Long roleId) {
 
-        return roleMapper.selectByPrimaryKey(roleId);
-    }
+		return roleMapper.selectByPrimaryKey(roleId);
+	}
 
-    @Override
-    public List<SysRole> listByRoleKeyEqualsTo(String roleKey) {
-        SysRoleExample example = new SysRoleExample();
-        SysRoleExample.Criteria c1 = example.createCriteria();
-        c1.andRoleKeyEqualTo(roleKey);
-        return roleMapper.selectByExample(example);
-    }
+	@Override
+	public List<SysRole> listByRoleKeyEqualsTo(String roleKey) {
+		SysRoleExample example = new SysRoleExample();
+		SysRoleExample.Criteria c1 = example.createCriteria();
+		c1.andRoleKeyEqualTo(roleKey);
+		return roleMapper.selectByExample(example);
+	}
 
-    @Override
-    public List<SysRole> listByRole(SysRole role) {
-        SysRoleExample example = new SysRoleExample();
-        SysRoleExample.Criteria c1 = example.createCriteria();
-        if (StringUtils.isNotNull(role)) {
+	@Override
+	public List<SysRole> listByRole(SysRole role) {
+		SysRoleExample example = new SysRoleExample();
+		SysRoleExample.Criteria c1 = example.createCriteria();
+		if (StringUtils.isNotNull(role)) {
 
-            if (StringUtils.isNotNull(role.getRoleKey())) {
-                c1.andRoleKeyLike(SqlUtil.getFuzzQueryParam(role.getRoleKey()));
-            }
-            if (StringUtils.isNotNull(role.getRoleName())) {
-                c1.andRoleNameLike(SqlUtil.getFuzzQueryParam(role.getRoleName()));
-            }
-        }
+			if (StringUtils.isNotNull(role.getRoleKey())) {
+				c1.andRoleKeyLike(SqlUtil.getFuzzQueryParam(role.getRoleKey()));
+			}
+			if (StringUtils.isNotNull(role.getRoleName())) {
+				c1.andRoleNameLike(SqlUtil.getFuzzQueryParam(role.getRoleName()));
+			}
+		}
 
-        return roleMapper.selectByExample(example);
-    }
+		return roleMapper.selectByExample(example);
+	}
 
-    @Override
-    public List<SysRole> listByRoleId(List<Long> roleIds) {
-        List<SysRole> roleList = new ArrayList<SysRole>();
-        for (Long roleId : new HashSet<Long>(roleIds)) {
-            SysRole role = selectByPrimaryKey(roleId);
-            if (StringUtils.isNotNull(role)) {
+	@Override
+	public List<SysRole> listByRoleId(List<Long> roleIds) {
+		List<SysRole> roleList = new ArrayList<SysRole>();
+		for (Long roleId : new HashSet<Long>(roleIds)) {
+			SysRole role = selectByPrimaryKey(roleId);
+			if (StringUtils.isNotNull(role)) {
 
-                roleList.add(role);
-            }
-        }
-        return roleList;
-    }
+				roleList.add(role);
+			}
+		}
+		return roleList;
+	}
 
-    /**
-     * delete old role_menu_relation, create new role_menu_relation for role
-     * 
-     * @param role
-     * @return
-     */
-    private Integer updateMenuRelationOfRole(SysRole role) {
-        if (StringUtils.isNull(role) || StringUtils.isNull(role.getId())) {
-            return 0;
-        }
+	/**
+	 * 删除旧的 角色--菜单关系，创建新的 角色--菜单关系
+	 * 
+	 * @param role
+	 * @return
+	 */
+	private Integer updateMenuRelationOfRole(SysRole role) {
+		if (StringUtils.isNull(role) || StringUtils.isNull(role.getId())) {
+			return 0;
+		}
+		// 根据角色ID删除 关联关系
+		roleMenuService.deleteByRoleId(role.getId());
 
-        roleMenuService.deleteByRoleId(role.getId());
-
-        int count = 0;
-        for (Long menuId : role.getMenuIds()) {
-            SysRoleMenu rm = new SysRoleMenu();
-            rm.setRoleId(role.getId());
-            rm.setMenuId(menuId);
-            count += roleMenuService.insertSelective(rm);
-        }
-        return count;
-    }
+		// 创建新的关联关系
+		int count = 0;
+		for (Long menuId : role.getMenuIds()) {
+			SysRoleMenu rm = new SysRoleMenu();
+			rm.setRoleId(role.getId());
+			rm.setMenuId(menuId);
+			count += roleMenuService.insertSelective(rm);
+		}
+		return count;
+	}
 
 }

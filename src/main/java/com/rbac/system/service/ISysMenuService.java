@@ -7,17 +7,23 @@ import com.rbac.system.base.BaseService;
 import com.rbac.system.domain.SysMenu;
 import com.rbac.system.domain.dto.SysRouter;
 
+/**
+ * 菜单service
+ * 
+ * @author wlfei
+ *
+ */
 public interface ISysMenuService extends BaseService<SysMenu> {
 	/**
-	 * get menu list
+	 * 获取菜单列表
 	 * 
-	 * @param menu, unnecessary params
+	 * @param menu 查询参数支持：{menuName,}
 	 * @return
 	 */
 	List<SysMenu> listByMenu(SysMenu menu);
 
 	/**
-	 * get menu list which relate with target roleId
+	 * 查询角色ID关联的菜单列表
 	 * 
 	 * @param roleId
 	 * @return
@@ -25,7 +31,7 @@ public interface ISysMenuService extends BaseService<SysMenu> {
 	List<SysMenu> listByRoleId(Long roleId);
 
 	/**
-	 * get menu list which relate with target roleIds
+	 * 查询角色ID关联的菜单列表
 	 * 
 	 * @param roleIds
 	 * @return
@@ -33,7 +39,7 @@ public interface ISysMenuService extends BaseService<SysMenu> {
 	List<SysMenu> listByRoleId(List<Long> roleIds);
 
 	/**
-	 * change menu_list to menu_tree
+	 * 用菜单列表构造菜单树
 	 * 
 	 * @param menuList
 	 * @return
@@ -41,7 +47,7 @@ public interface ISysMenuService extends BaseService<SysMenu> {
 	List<SysMenu> buildMenuTree(List<SysMenu> menuList);
 
 	/**
-	 * change menu_list to menu_select_tree
+	 * 用菜单列表构造菜单下拉选择树
 	 * 
 	 * @param menuList
 	 * @return
@@ -49,7 +55,7 @@ public interface ISysMenuService extends BaseService<SysMenu> {
 	List<TreeSelect> buildMenuTreeSelect(List<SysMenu> menuList);
 
 	/**
-	 * change menu to router
+	 * 菜单转为路由
 	 * 
 	 * @param menu
 	 * @return
@@ -57,7 +63,7 @@ public interface ISysMenuService extends BaseService<SysMenu> {
 	SysRouter menu2Router(SysMenu menu);
 
 	/**
-	 * change menu_list to router_list
+	 * 菜单列表转为路由列表
 	 * 
 	 * @param menuList
 	 * @return

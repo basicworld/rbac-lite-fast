@@ -5,27 +5,32 @@ import java.util.List;
 import com.rbac.system.base.BaseService;
 import com.rbac.system.domain.SysUserRole;
 
+/**
+ * @Description 用户--角色 关联关系service
+ * @author wlfei
+ * @date 2021-04-14
+ */
 public interface ISysUserRoleService extends BaseService<SysUserRole> {
 	/**
-	 * delete user_role_relation by userId equals to
+	 * 根据用户ID删除 用户--角色 关联关系
 	 * 
-	 * @param userId
+	 * @param userId 用户ID
 	 * @return
 	 */
 	Integer deleteByUserId(Long userId);
 
 	/**
-	 * delete user_role_relation by roleId equals to
+	 * 根据角色ID删除 用户--角色 关联关系
 	 * 
-	 * @param roleId
+	 * @param roleId 角色ID
 	 * @return
 	 */
 	Integer deleteByRoleId(Long roleId);
 
 	/**
-	 * list user_role_relation by userId equals to
+	 * 根据用户ID获取 用户--角色 关联关系
 	 * 
-	 * @param userId
+	 * @param userId 用户ID
 	 * @return
 	 */
 	List<SysUserRole> listByUserId(Long userId);

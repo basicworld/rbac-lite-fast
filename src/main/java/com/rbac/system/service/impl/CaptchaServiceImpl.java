@@ -22,6 +22,12 @@ import com.rbac.framework.redis.RedisCache;
 import com.rbac.system.domain.Captcha;
 import com.rbac.system.service.ICaptchaService;
 
+/**
+ * TODO
+ * 
+ * @author wlfei
+ * @date 2021-04-14
+ */
 @Service
 public class CaptchaServiceImpl implements ICaptchaService {
 	public static Log logger = LogFactory.getLog(CaptchaServiceImpl.class);
@@ -35,6 +41,7 @@ public class CaptchaServiceImpl implements ICaptchaService {
 
 	@Override
 	public Captcha create() throws IOException {
+		// 生成验证码唯一ID
 		String uuid = UUID.randomUUID().toString().replace("-", "");
 
 		String capStr = null, code = null;
@@ -59,9 +66,10 @@ public class CaptchaServiceImpl implements ICaptchaService {
 		cap.setCode(code);
 		cap.setUuid(uuid);
 
+		// 验证码写入redis缓存
 		String redisKey = genCaptchaRedisKey(uuid);
-
 		redisCache.setCacheObject(redisKey, code, BaseConstants.CAPTCHA_EXPIRATION, TimeUnit.MINUTES);
+
 		return cap;
 	}
 
@@ -72,13 +80,27 @@ public class CaptchaServiceImpl implements ICaptchaService {
 		}
 		String redisKey = genCaptchaRedisKey(item);
 		String code = redisCache.getCacheObject(redisKey);
-		return (StringUtils.isNotNull(code) && code.equals(item.getCode()));
+
+		boolean isSame = StringUtils.isNotNull(code) && code.equals(item.getCode());
+		return isSame;
 	}
 
+	/**
+	 * 生成验证码的redis key
+	 * 
+	 * @param uuid
+	 * @return
+	 */
 	private String genCaptchaRedisKey(String uuid) {
 		return "cap-" + uuid;
 	}
 
+	/**
+	 * 生成验证码的redis key
+	 * 
+	 * @param captcha
+	 * @return
+	 */
 	private String genCaptchaRedisKey(Captcha captcha) {
 		return genCaptchaRedisKey(captcha.getUuid());
 	}
