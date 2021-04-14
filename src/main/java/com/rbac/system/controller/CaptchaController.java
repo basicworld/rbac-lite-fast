@@ -21,28 +21,30 @@ import com.rbac.system.service.ICaptchaService;
  */
 @RestController
 public class CaptchaController {
-	private static final Logger logger = LoggerFactory.getLogger(CaptchaController.class);
+    private static final Logger logger = LoggerFactory.getLogger(CaptchaController.class);
 
-	@Autowired
-	ICaptchaService captchaService;
+    @Autowired
+    ICaptchaService captchaService;
 
-	/**
-	 * 获取验证码
-	 * 
-	 * @return
-	 */
-	@GetMapping("/captcha")
-	public AjaxResult getCaptcha() {
-		try {
-			Captcha cap = captchaService.create();
-			logger.debug(StringUtils.format("captcha uuid={}, code={}", cap.getUuid(), cap.getCode()));
-			cap.setCode("");
-			return AjaxResult.success(cap);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return AjaxResult.error("生成验证码异常");
-		}
+    /**
+     * 获取验证码
+     * 
+     * @return
+     */
+    @GetMapping("/captcha")
+    public AjaxResult getCaptcha() {
+        try {
+            Captcha cap = captchaService.create();
+            logger.debug(StringUtils.format("新生成验证码uuid={}, code={}", cap.getUuid(), cap.getCode()));
 
-	}
+            // 掩藏验证码答案，不向前台展示
+            cap.setCode("");
+
+            return AjaxResult.success(cap);
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+            return AjaxResult.error("生成验证码异常");
+        }
+
+    }
 }

@@ -15,9 +15,9 @@ import com.rbac.system.domain.SysMenu;
 import com.rbac.system.service.ISysMenuService;
 
 /**
- * menu api<br>
+ * 菜单 api<br>
  * 
- * only provides query api<br>
+ * 仅提供查询功能，不提供增删改<br>
  * 
  * @author wlfei
  *
@@ -25,53 +25,53 @@ import com.rbac.system.service.ISysMenuService;
 @RestController
 @RequestMapping("/system/menu")
 public class SysMenuController {
-	private static final Logger logger = LoggerFactory.getLogger(SysMenuController.class);
-	@Autowired
-	ISysMenuService menuService;
+    private static final Logger logger = LoggerFactory.getLogger(SysMenuController.class);
+    @Autowired
+    ISysMenuService menuService;
 
-	/**
-	 * get menu list
-	 * 
-	 * @param menu
-	 * @return
-	 */
-	@GetMapping("/list")
-	public AjaxResult list(SysMenu menu) {
-		logger.debug("get menu list...");
-		List<SysMenu> menuList = menuService.listByMenu(menu);
-		return AjaxResult.success(menuList);
-	}
+    /**
+     * 获取菜单列表
+     * 
+     * @param menu 筛选条件
+     * @return
+     */
+    @GetMapping("/list")
+    public AjaxResult list(SysMenu menu) {
+        logger.debug("get menu list...");
+        List<SysMenu> menuList = menuService.listByMenu(menu);
+        return AjaxResult.success(menuList);
+    }
 
-	/**
-	 * get menu tree
-	 * 
-	 * @param menu
-	 * @return
-	 */
-	@GetMapping("/tree")
-	public AjaxResult treeList(SysMenu menu) {
-		logger.debug("get menu tree...");
-		// menu list
-		List<SysMenu> menuList = menuService.listByMenu(menu);
-		// menu list to menu tree
-		List<SysMenu> treeList = menuService.buildMenuTree(menuList);
-		return AjaxResult.success(treeList);
-	}
+    /**
+     * 获取菜单树
+     * 
+     * @param menu 筛选条件
+     * @return
+     */
+    @GetMapping("/tree")
+    public AjaxResult treeList(SysMenu menu) {
+        logger.debug("get menu tree...");
+        // menu list
+        List<SysMenu> menuList = menuService.listByMenu(menu);
+        // menu list to menu tree
+        List<SysMenu> treeList = menuService.buildMenuTree(menuList);
+        return AjaxResult.success(treeList);
+    }
 
-	/**
-	 * get menu_select_tree
-	 * 
-	 * @param menu
-	 * @return
-	 */
-	@GetMapping("/treeselect")
-	public AjaxResult treeSelect(SysMenu menu) {
-		logger.debug("get menu_select_tree...");
-		// menu list
-		List<SysMenu> menuList = menuService.listByMenu(menu);
-		// menu select tree
-		List<TreeSelect> treeSelect = menuService.buildMenuTreeSelect(menuList);
-		return AjaxResult.success(treeSelect);
-	}
+    /**
+     * 获取菜单下拉选择数
+     * 
+     * @param menu 筛选条件
+     * @return
+     */
+    @GetMapping("/treeselect")
+    public AjaxResult treeSelect(SysMenu menu) {
+        logger.debug("get menu_select_tree...");
+        // menu list
+        List<SysMenu> menuList = menuService.listByMenu(menu);
+        // menu select tree
+        List<TreeSelect> treeSelect = menuService.buildMenuTreeSelect(menuList);
+        return AjaxResult.success(treeSelect);
+    }
 
 }

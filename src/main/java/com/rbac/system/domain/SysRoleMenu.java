@@ -1,5 +1,12 @@
 package com.rbac.system.domain;
 
+/**
+ * 角色--菜单 关联bean
+ * 
+ * @author: wlfei
+ * @description: com.rbac.system.domain
+ * @date:2021年4月14日
+ */
 public class SysRoleMenu {
     private Long id;
 
@@ -30,4 +37,10 @@ public class SysRoleMenu {
     public void setMenuId(Long menuId) {
         this.menuId = menuId;
     }
+
+    @Override
+    public String toString() {
+        return "SysRoleMenu [id=" + id + ", roleId=" + roleId + ", menuId=" + menuId + "]";
+    }
+
 }

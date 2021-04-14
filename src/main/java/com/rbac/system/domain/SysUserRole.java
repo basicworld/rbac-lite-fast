@@ -1,5 +1,12 @@
 package com.rbac.system.domain;
 
+/**
+ * 用户--角色 关联bean
+ * 
+ * @author: wlfei
+ * @description: com.rbac.system.domain
+ * @date:2021年4月14日
+ */
 public class SysUserRole {
     private Long id;
 
@@ -30,4 +37,10 @@ public class SysUserRole {
     public void setRoleId(Long roleId) {
         this.roleId = roleId;
     }
+
+    @Override
+    public String toString() {
+        return "SysUserRole [id=" + id + ", userId=" + userId + ", roleId=" + roleId + "]";
+    }
+
 }

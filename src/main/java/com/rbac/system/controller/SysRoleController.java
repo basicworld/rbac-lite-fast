@@ -33,9 +33,9 @@ import com.rbac.system.service.ISysRoleMenuService;
 import com.rbac.system.service.ISysRoleService;
 
 /**
- * role api<br>
+ * 角色API<br>
  * 
- * only available for admin_user<br>
+ * 仅超级管理员有权限修改<br>
  * 
  * @author wlfei
  *
@@ -43,143 +43,153 @@ import com.rbac.system.service.ISysRoleService;
 @RestController
 @RequestMapping("/system/role")
 public class SysRoleController extends BaseController {
-	private static final Logger logger = LoggerFactory.getLogger(SysRoleController.class);
+    private static final Logger logger = LoggerFactory.getLogger(SysRoleController.class);
 
-	@Autowired
-	ISysRoleService roleService;
+    @Autowired
+    ISysRoleService roleService;
 
-	@Autowired
-	ISysRoleMenuService roleMenuService;
+    @Autowired
+    ISysRoleMenuService roleMenuService;
 
-	@Autowired
-	ISysMenuService menuService;
+    @Autowired
+    ISysMenuService menuService;
 
-	@GetMapping("/list")
-	public TableDataInfo list(SysRole role) {
-		logger.debug("list role...");
-		startPage();
-		List<SysRole> roleList = roleService.listByRole(role);
-		return getDataTable(roleList);
-	}
+    /**
+     * 获取角色列表
+     * 
+     * @param role
+     * @return
+     */
+    @GetMapping("/list")
+    public TableDataInfo list(SysRole role) {
+        logger.debug("获取角色列表...");
+        startPage();
+        List<SysRole> roleList = roleService.listByRole(role);
+        return getDataTable(roleList);
+    }
 
-	/**
-	 * add role
-	 * 
-	 * @param role{roleKey, roleName}
-	 * @return
-	 */
-	@PreAuthorize("@ss.hasPermi('system:role')")
-	@PostMapping
-	public AjaxResult add(@Validated @RequestBody SysRole role) {
-		logger.debug("add role...");
-		// check null
-		if (StringUtils.isEmpty(role.getRoleName()) || StringUtils.isEmpty(role.getRoleKey())) {
-			return AjaxResult.error("roleName and roleKey cannot be null!");
-		}
-		// duplicate roleKey check
-		List<SysRole> roleListWithSameKey = roleService.listByRoleKeyEqualsTo(role.getRoleKey());
-		if (StringUtils.isNotEmpty(roleListWithSameKey)) {
-			return AjaxResult.error(StringUtils.format("duplicate roleKey({})!", role.getRoleKey()));
-		}
+    /**
+     * 新增角色
+     * 
+     * @param role {roleKey, roleName}
+     * @return
+     */
+    @PreAuthorize("@ss.hasPermi('system:role')")
+    @PostMapping
+    public AjaxResult add(@Validated @RequestBody SysRole role) {
+        logger.debug("新增角色...");
+        // 空值检查
+        if (StringUtils.isEmpty(role.getRoleName()) || StringUtils.isEmpty(role.getRoleKey())) {
+            return AjaxResult.error("角色名称、角色代码不能为空!");
+        }
+        // 角色代码重复检查
+        List<SysRole> roleListWithSameKey = roleService.listByRoleKeyEqualsTo(role.getRoleKey());
+        if (StringUtils.isNotEmpty(roleListWithSameKey)) {
+            return AjaxResult.error(StringUtils.format("角色代码重复：{}!", role.getRoleKey()));
+        }
 
-		// set necessary value
-		role.setDeleted(BaseConstants.NOT_DELETED);
-		role.setStatus(RoleConstants.STATUS_ENABLE);
+        // 设置删除标记：未删除
+        role.setDeleted(BaseConstants.NOT_DELETED);
+        // 设置启用标记：已启用
+        role.setStatus(RoleConstants.STATUS_ENABLE);
 
-		roleService.insertSelective(role);
-		return AjaxResult.success();
-	}
+        roleService.insertSelective(role);
+        return AjaxResult.success();
+    }
 
-	/**
-	 * delete role by role.id
-	 * 
-	 * @param roleIds[roleId1, roleId2...]
-	 * @return
-	 */
-	@PreAuthorize("@ss.hasPermi('system:role')")
-	@DeleteMapping("/{roleIds}")
-	public AjaxResult delete(@PathVariable Long[] roleIds) {
-		if (StringUtils.isEmpty(roleIds)) {
-			return AjaxResult.error("zero roleId selected!");
-		}
+    /**
+     * 根据角色主键ID删除角色
+     * 
+     * @param roleIds 角色ID列表[roleId1, roleId2...]
+     * @return
+     */
+    @PreAuthorize("@ss.hasPermi('system:role')")
+    @DeleteMapping("/{roleIds}")
+    public AjaxResult delete(@PathVariable List<Long> roleIds) {
+        if (StringUtils.isEmpty(roleIds)) {
+            return AjaxResult.error("输入角色主键为空，无需删除!");
+        }
 
-		// check: cannot delete admin_role
-		for (Long roleId : roleIds) {
-			SysRole role = roleService.selectByPrimaryKey(roleId);
-			if (StringUtils.isNotNull(role) && role.getRoleKey().contentEquals(RoleConstants.ADMIN_ROLE_KEY)) {
-				return AjaxResult.error("cannot delete admin_role!");
-			}
-		}
+        // 检查：不能删除超级管理员角色，该角色有且仅有一个，系统自带，不能删除
+        for (Long roleId : roleIds) {
+            SysRole role = roleService.selectByPrimaryKey(roleId);
+            if (StringUtils.isNotNull(role) && role.getRoleKey().contentEquals(RoleConstants.ADMIN_ROLE_KEY)) {
+                return AjaxResult.error("不能删除超级管理员角色!");
+            }
+        }
 
-		//
-		int deleteCount = 0;
-		for (Long roleId : roleIds) {
-			deleteCount += roleService.deleteByPrimaryKey(roleId);
-		}
-		return AjaxResult.success(StringUtils.format("{} role(s) deleted successfully!", deleteCount));
-	}
+        // 删除计数
+        int deleteCount = roleService.deleteByPrimaryKey(roleIds);
 
-	/**
-	 * get detail info of role
-	 * 
-	 * @param roleId
-	 * @return
-	 */
-	@PreAuthorize("@ss.hasPermi('system:role')")
-	@GetMapping("/{roleId}")
-	public AjaxResult getDetail(@PathVariable Long roleId) {
-		// value check
-		if (StringUtils.isNull(roleId)) {
-			return AjaxResult.error(StringUtils.format("role id cannot be null!", roleId));
-		}
+        return AjaxResult.success(StringUtils.format("成功删除{}个角色!", deleteCount));
+    }
 
-		SysRole role = roleService.selectByPrimaryKey(roleId);
-		if (StringUtils.isNull(role)) {
-			return AjaxResult.error(StringUtils.format("role(id={}) does not exist!", roleId));
-		}
-		// get menuIds of this role
-		Long[] menuIds = roleMenuService.listByRoleId(roleId).stream().map(v -> v.getMenuId()).toArray(Long[]::new);
-		// filter leaf node menu_id of this role
-		List<SysMenu> allMenus = menuService.listByMenu(new SysMenu());
-		Set<Long> allMenuParentIds = allMenus.stream().map(v -> v.getParentId()).collect(Collectors.toSet());
-		Long[] menuLeafNodeIds = Stream.of(menuIds).filter(v -> !allMenuParentIds.contains(v)).toArray(Long[]::new);
+    /**
+     * 根据角色主键获取角色详情
+     * 
+     * @param roleId
+     * @return
+     */
+    @PreAuthorize("@ss.hasPermi('system:role')")
+    @GetMapping("/{roleId}")
+    public AjaxResult getDetail(@PathVariable Long roleId) {
+        // 非空检查
+        if (StringUtils.isNull(roleId)) {
+            return AjaxResult.error(StringUtils.format("角色主键不能为空!", roleId));
+        }
+        // 检查：角色不存在
+        SysRole role = roleService.selectByPrimaryKey(roleId);
+        if (StringUtils.isNull(role)) {
+            return AjaxResult.error(StringUtils.format("角色(id={})不存在!", roleId));
+        }
+        // 获取角色的关联菜单列表
+        Long[] menuIds = roleMenuService.listByRoleId(roleId).stream().map(v -> v.getMenuId()).toArray(Long[]::new);
+        /*
+         * 筛选所有叶子节点的菜单 用于前端展示
+         * 
+         * 前端实现的展示效果：所有叶子节点为选中状态，所有叶子节点的父级节点为半选中状态
+         */
+        List<SysMenu> allMenus = menuService.listByMenu(new SysMenu());
+        Set<Long> allMenuParentIds = allMenus.stream().map(v -> v.getParentId()).collect(Collectors.toSet());
+        Long[] menuLeafNodeIds = Stream.of(menuIds).filter(v -> !allMenuParentIds.contains(v)).toArray(Long[]::new);
 
-		role.setMenuIds(Arrays.asList(menuLeafNodeIds));
+        role.setMenuIds(Arrays.asList(menuLeafNodeIds));
 
-		return AjaxResult.success(role);
-	}
+        return AjaxResult.success(role);
+    }
 
-	/**
-	 * update role by role_id
-	 * 
-	 * @param role{id, ...}
-	 * @return
-	 */
-	@PreAuthorize("@ss.hasPermi('system:role')")
-	@PutMapping
-	public AjaxResult update(@Validated @RequestBody SysRole role) {
-		logger.debug("update role...");
-		if (StringUtils.isNull(role.getId())) {
-			return AjaxResult.error("role id cannot be null!");
-		}
+    /**
+     * 根据主键更新角色
+     * 
+     * @param role {id, ...}
+     * @return
+     */
+    @PreAuthorize("@ss.hasPermi('system:role')")
+    @PutMapping
+    public AjaxResult update(@Validated @RequestBody SysRole role) {
+        logger.debug("更新角色...");
+        // 非空检查
+        if (StringUtils.isNull(role.getId())) {
+            return AjaxResult.error("角色主键不能为空!");
+        }
 
-		// cannot update admin role
-		SysRole existRole = roleService.selectByPrimaryKey(role.getId());
-		if (StringUtils.isNotNull(existRole) && existRole.getRoleKey().contentEquals(RoleConstants.ADMIN_ROLE_KEY)) {
-			return AjaxResult.error("cannot update admin_role!");
-		}
-		// prepare update value
-		SysRole updateRole = new SysRole();
-		updateRole.setId(role.getId());
-		updateRole.setRoleName(role.getRoleName());
-		updateRole.setRoleKey(role.getRoleKey());
-		updateRole.setSort(role.getSort());
-		updateRole.setDataScope(role.getDataScope());
-		updateRole.setNote(role.getNote());
-		updateRole.setMenuIds(role.getMenuIds());
+        // 检查：不能更新超级管理员角色
+        SysRole existRole = roleService.selectByPrimaryKey(role.getId());
+        if (StringUtils.isNotNull(existRole) && existRole.getRoleKey().contentEquals(RoleConstants.ADMIN_ROLE_KEY)) {
+            return AjaxResult.error("不能更新超级管理员角色!");
+        }
+        // 准备角色更新信息
+        SysRole updateRole = new SysRole();
+        updateRole.setId(role.getId());
+        updateRole.setRoleName(role.getRoleName());
+        updateRole.setRoleKey(role.getRoleKey());
+        updateRole.setSort(role.getSort());
+        updateRole.setDataScope(role.getDataScope());
+        updateRole.setNote(role.getNote());
+        updateRole.setMenuIds(role.getMenuIds()); // 关联菜单
 
-		roleService.updateSelective(updateRole);
+        roleService.updateSelective(updateRole);
 
-		return AjaxResult.success();
-	}
+        return AjaxResult.success();
+    }
 }

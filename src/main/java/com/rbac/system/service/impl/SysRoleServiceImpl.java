@@ -22,109 +22,122 @@ import com.rbac.system.service.ISysUserRoleService;
 
 @Service
 public class SysRoleServiceImpl implements ISysRoleService {
-	@Autowired
-	SysRoleMapper roleMapper;
-	@Autowired
-	ISysRoleMenuService roleMenuService;
-	@Autowired
-	ISysUserRoleService userRoleService;
+    @Autowired
+    SysRoleMapper roleMapper;
+    @Autowired
+    ISysRoleMenuService roleMenuService;
+    @Autowired
+    ISysUserRoleService userRoleService;
 
-	@Override
-	@Transactional
-	public Integer insertSelective(SysRole role) {
-		role.setCreateTime(DateUtils.getNowDate());
-		role.setDeleted(BaseConstants.NOT_DELETED);
+    @Override
+    @Transactional
+    public Integer insertSelective(SysRole role) {
+        role.setCreateTime(DateUtils.getNowDate());
+        role.setDeleted(BaseConstants.NOT_DELETED);
 
-		Integer result = roleMapper.insertSelective(role);
+        Integer result = roleMapper.insertSelective(role);
 
-		updateMenuRelationOfRole(role);
+        updateMenuRelationOfRole(role);
 
-		return result;
-	}
+        return result;
+    }
 
-	@Override
-	@Transactional
-	public Integer deleteByPrimaryKey(Long roleId) {
-		userRoleService.deleteByRoleId(roleId);
-		roleMenuService.deleteByRoleId(roleId);
-		return roleMapper.deleteByPrimaryKey(roleId);
-	}
+    @Override
+    @Transactional
+    public Integer deleteByPrimaryKey(Long roleId) {
+        userRoleService.deleteByRoleId(roleId);
+        roleMenuService.deleteByRoleId(roleId);
+        return roleMapper.deleteByPrimaryKey(roleId);
+    }
 
-	@Override
-	@Transactional
-	public Integer updateSelective(SysRole role) {
-		role.setUpdateTime(DateUtils.getNowDate());
+    @Override
+    @Transactional
+    public Integer deleteByPrimaryKey(List<Long> roleIds) {
+        if (StringUtils.isEmpty(roleIds)) {
+            return 0;
+        }
+        int deleteCount = 0;
+        for (Long roleId : roleIds) {
+            deleteCount += deleteByPrimaryKey(roleId);
+        }
+        return deleteCount;
+    }
 
-		updateMenuRelationOfRole(role);
+    @Override
+    @Transactional
+    public Integer updateSelective(SysRole role) {
+        role.setUpdateTime(DateUtils.getNowDate());
 
-		return roleMapper.updateByPrimaryKeySelective(role);
-	}
+        updateMenuRelationOfRole(role);
 
-	@Override
-	public SysRole selectByPrimaryKey(Long roleId) {
+        return roleMapper.updateByPrimaryKeySelective(role);
+    }
 
-		return roleMapper.selectByPrimaryKey(roleId);
-	}
+    @Override
+    public SysRole selectByPrimaryKey(Long roleId) {
 
-	@Override
-	public List<SysRole> listByRoleKeyEqualsTo(String roleKey) {
-		SysRoleExample example = new SysRoleExample();
-		SysRoleExample.Criteria c1 = example.createCriteria();
-		c1.andRoleKeyEqualTo(roleKey);
-		return roleMapper.selectByExample(example);
-	}
+        return roleMapper.selectByPrimaryKey(roleId);
+    }
 
-	@Override
-	public List<SysRole> listByRole(SysRole role) {
-		SysRoleExample example = new SysRoleExample();
-		SysRoleExample.Criteria c1 = example.createCriteria();
-		if (StringUtils.isNotNull(role)) {
+    @Override
+    public List<SysRole> listByRoleKeyEqualsTo(String roleKey) {
+        SysRoleExample example = new SysRoleExample();
+        SysRoleExample.Criteria c1 = example.createCriteria();
+        c1.andRoleKeyEqualTo(roleKey);
+        return roleMapper.selectByExample(example);
+    }
 
-			if (StringUtils.isNotNull(role.getRoleKey())) {
-				c1.andRoleKeyLike(SqlUtil.getFuzzQueryParam(role.getRoleKey()));
-			}
-			if (StringUtils.isNotNull(role.getRoleName())) {
-				c1.andRoleNameLike(SqlUtil.getFuzzQueryParam(role.getRoleName()));
-			}
-		}
+    @Override
+    public List<SysRole> listByRole(SysRole role) {
+        SysRoleExample example = new SysRoleExample();
+        SysRoleExample.Criteria c1 = example.createCriteria();
+        if (StringUtils.isNotNull(role)) {
 
-		return roleMapper.selectByExample(example);
-	}
+            if (StringUtils.isNotNull(role.getRoleKey())) {
+                c1.andRoleKeyLike(SqlUtil.getFuzzQueryParam(role.getRoleKey()));
+            }
+            if (StringUtils.isNotNull(role.getRoleName())) {
+                c1.andRoleNameLike(SqlUtil.getFuzzQueryParam(role.getRoleName()));
+            }
+        }
 
-	@Override
-	public List<SysRole> listByRoleId(List<Long> roleIds) {
-		List<SysRole> roleList = new ArrayList<SysRole>();
-		for (Long roleId : new HashSet<Long>(roleIds)) {
-			SysRole role = selectByPrimaryKey(roleId);
-			if (StringUtils.isNotNull(role)) {
+        return roleMapper.selectByExample(example);
+    }
 
-				roleList.add(role);
-			}
-		}
-		return roleList;
-	}
+    @Override
+    public List<SysRole> listByRoleId(List<Long> roleIds) {
+        List<SysRole> roleList = new ArrayList<SysRole>();
+        for (Long roleId : new HashSet<Long>(roleIds)) {
+            SysRole role = selectByPrimaryKey(roleId);
+            if (StringUtils.isNotNull(role)) {
 
-	/**
-	 * delete old role_menu_relation, create new role_menu_relation for role
-	 * 
-	 * @param role
-	 * @return
-	 */
-	private Integer updateMenuRelationOfRole(SysRole role) {
-		if (StringUtils.isNull(role) || StringUtils.isNull(role.getId())) {
-			return 0;
-		}
+                roleList.add(role);
+            }
+        }
+        return roleList;
+    }
 
-		roleMenuService.deleteByRoleId(role.getId());
+    /**
+     * delete old role_menu_relation, create new role_menu_relation for role
+     * 
+     * @param role
+     * @return
+     */
+    private Integer updateMenuRelationOfRole(SysRole role) {
+        if (StringUtils.isNull(role) || StringUtils.isNull(role.getId())) {
+            return 0;
+        }
 
-		int count = 0;
-		for (Long menuId : role.getMenuIds()) {
-			SysRoleMenu rm = new SysRoleMenu();
-			rm.setRoleId(role.getId());
-			rm.setMenuId(menuId);
-			count += roleMenuService.insertSelective(rm);
-		}
-		return count;
-	}
+        roleMenuService.deleteByRoleId(role.getId());
+
+        int count = 0;
+        for (Long menuId : role.getMenuIds()) {
+            SysRoleMenu rm = new SysRoleMenu();
+            rm.setRoleId(role.getId());
+            rm.setMenuId(menuId);
+            count += roleMenuService.insertSelective(rm);
+        }
+        return count;
+    }
 
 }

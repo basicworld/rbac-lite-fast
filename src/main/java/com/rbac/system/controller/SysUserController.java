@@ -38,9 +38,9 @@ import com.rbac.system.service.ISysUserRoleService;
 import com.rbac.system.service.ISysUserService;
 
 /**
- * user api<br>
+ * 用户API<br>
  * 
- * api available only for admin_users<br>
+ * 开放给具有超级管理员权限的用户<br>
  * 
  * @author wlfei
  *
@@ -48,245 +48,246 @@ import com.rbac.system.service.ISysUserService;
 @RestController
 @RequestMapping("/system/user")
 public class SysUserController extends BaseController {
-	private static final Logger logger = LoggerFactory.getLogger(SysUserController.class);
-	@Autowired
-	ISysUserService userService;
+    private static final Logger logger = LoggerFactory.getLogger(SysUserController.class);
+    @Autowired
+    ISysUserService userService;
 
-	@Autowired
-	ISysRoleService roleService;
+    @Autowired
+    ISysRoleService roleService;
 
-	@Autowired
-	ISysUserRoleService userRoleService;
+    @Autowired
+    ISysUserRoleService userRoleService;
 
-	@Autowired
-	TokenService tokenService;
+    @Autowired
+    TokenService tokenService;
 
-	@Value("${rsa.privateKey}")
-	private String rsaPrivateKey;
+    @Value("${rsa.privateKey}")
+    private String rsaPrivateKey;
 
-	/**
-	 * get user list by page
-	 * 
-	 * @param userDTO
-	 * @return
-	 */
-	@PreAuthorize("@ss.hasPermi('system:user')")
-	@GetMapping("/list")
-	public TableDataInfo list(SysUser user) {
-		logger.debug("get user list...");
-		startPage();
-		List<SysUser> userList = userService.listByUser(user);
-		if (StringUtils.isNotEmpty(userList)) {
-			for (SysUser u : userList) {
-				u.setPassword("******");
-			}
-		}
-		return getDataTable(userList);
+    /**
+     * 获取用户列表
+     * 
+     * @param userDTO
+     * @return
+     */
+    @PreAuthorize("@ss.hasPermi('system:user')")
+    @GetMapping("/list")
+    public TableDataInfo list(SysUser user) {
+        logger.debug("获取用户列表...");
+        startPage();
+        List<SysUser> userList = userService.listByUser(user);
+        if (StringUtils.isNotEmpty(userList)) {
+            for (SysUser u : userList) {
+                // 隐藏密码
+                u.setPassword("******");
+            }
+        }
+        return getDataTable(userList);
 
-	}
+    }
 
-	/**
-	 * add user
-	 * 
-	 * @param userDTO
-	 * @return
-	 */
-	@PreAuthorize("@ss.hasPermi('system:user')")
-	@PostMapping
-	public AjaxResult add(@Validated @RequestBody SysUser user) {
-		logger.debug("add user...");
+    /**
+     * 新增用户
+     * 
+     * @param userDTO
+     * @return
+     */
+    @PreAuthorize("@ss.hasPermi('system:user')")
+    @PostMapping
+    public AjaxResult add(@Validated @RequestBody SysUser user) {
+        logger.debug("新增用户...");
 
-		// check null: userName and password
-		if (StringUtils.isEmpty(user.getUserName()) || StringUtils.isEmpty(user.getPassword())) {
-			return AjaxResult.error("userName and password cannot be null!");
-		}
-		// check value: duplicate userName
-		List<SysUser> usersWithSameUserName = userService.listbyUserNameEqualsTo(user.getUserName());
-		if (StringUtils.isNotEmpty(usersWithSameUserName)) {
-			return AjaxResult.error(StringUtils.format("duplicate userName({})!", user.getUserName()));
-		}
-		// check: roleIds cannot be empty or null
-		if (StringUtils.isEmpty(user.getRoleIds())) {
-			return AjaxResult.error("roleIds cannot be null or empty!");
+        // 空值检查
+        if (StringUtils.isEmpty(user.getUserName()) || StringUtils.isEmpty(user.getPassword())) {
+            return AjaxResult.error("用户名或密码不能为空!");
+        }
+        // 用户名重复检查
+        List<SysUser> usersWithSameUserName = userService.listbyUserNameEqualsTo(user.getUserName());
+        if (StringUtils.isNotEmpty(usersWithSameUserName)) {
+            return AjaxResult.error(StringUtils.format("用户名重复：{}!", user.getUserName()));
+        }
+        // 关联角色ID不能为空
+        if (StringUtils.isEmpty(user.getRoleIds())) {
+            return AjaxResult.error("用户关联角色不能为空!");
 
-		}
-		// check: invalid roleId
-		List<SysRole> selectedRoles = new ArrayList<SysRole>();
-		for (Long roleId : user.getRoleIds()) {
-			SysRole role = roleService.selectByPrimaryKey(roleId);
-			if (StringUtils.isNull(role)) {
-				return AjaxResult.error("invalid roleId!");
-			}
-			selectedRoles.add(role);
-		}
-		// check: normal_user cannot create admin_user
-		LoginUser loginUser = tokenService.getLoginUser(ServletUtils.getRequest());
-		if (userService.isNotAdmin(loginUser.getUser().getId())) {
-			for (SysRole role : selectedRoles) {
-				if (RoleConstants.ADMIN_ROLE_KEY.contentEquals(role.getRoleKey())) {
-					return AjaxResult.error("non_admin_user cannot create user with admin_role!");
-				}
-			}
-		}
+        }
+        // 角色ID异常检查
+        List<SysRole> selectedRoles = new ArrayList<SysRole>();
+        for (Long roleId : user.getRoleIds()) {
+            SysRole role = roleService.selectByPrimaryKey(roleId);
+            if (StringUtils.isNull(role)) {
+                return AjaxResult.error("非法角色关联!");
+            }
+            selectedRoles.add(role);
+        }
+        // 检查：非管理员用户不能创建管理员用户
+        LoginUser loginUser = tokenService.getLoginUser(ServletUtils.getRequest());
+        if (userService.isNotAdmin(loginUser.getUser().getId())) {
+            for (SysRole role : selectedRoles) {
+                if (RoleConstants.ADMIN_ROLE_KEY.contentEquals(role.getRoleKey())) {
+                    return AjaxResult.error("非管理员用户不能创建管理员用户!");
+                }
+            }
+        }
 
-		// decode password using rsa
-		String rawPassword = RSAUtils.decrypt(rsaPrivateKey, user.getPassword());
-		// password encode using Bcrypt
-		String encodePassword = BCryptUtils.encode(rawPassword);
-		user.setPassword(encodePassword);
+        // RSA密码解密
+        String rawPassword = RSAUtils.decrypt(rsaPrivateKey, user.getPassword());
+        // 密码加密 Bcrypt
+        String encodePassword = BCryptUtils.encode(rawPassword);
+        user.setPassword(encodePassword);
 
-		// set necessary user value
-		user.setDeleted(BaseConstants.NOT_DELETED);
+        // 设置删除标记：未删除
+        user.setDeleted(BaseConstants.NOT_DELETED);
 
-		userService.insertSelective(user);
+        userService.insertSelective(user);
 
-		return AjaxResult.success(StringUtils.format("user(userName={}) created successfully", user.getUserName()));
-	}
+        return AjaxResult.success(StringUtils.format("用户{}创建成功", user.getUserName()));
+    }
 
-	/**
-	 * get user detail info
-	 * 
-	 * @param userId
-	 * @return
-	 */
-	@PreAuthorize("@ss.hasPermi('system:user')")
-	@GetMapping("/{userId}")
-	public AjaxResult getDetail(@PathVariable Long userId) {
-		logger.debug("get user detail info...");
-		SysUser user = userService.selectByPrimaryKey(userId);
+    /**
+     * 获取用户信息详情
+     * 
+     * @param userId 用户主键
+     * @return
+     */
+    @PreAuthorize("@ss.hasPermi('system:user')")
+    @GetMapping("/{userId}")
+    public AjaxResult getDetail(@PathVariable Long userId) {
+        logger.debug("获取用户详情...");
+        SysUser user = userService.selectByPrimaryKey(userId);
 
-		if (StringUtils.isNotNull(user)) {
-			user.setPassword("******");
-			// get roleIds of this user
-			List<Long> roleIds = userRoleService.listByUserId(userId).stream().map(v -> v.getRoleId())
-					.collect(Collectors.toList());
-			user.setRoleIds(roleIds);
-		}
-		return AjaxResult.success(user);
-	}
+        if (StringUtils.isNotNull(user)) {
+            // 隐藏密码
+            user.setPassword("******");
+            // 获取用户关联角色ID
+            List<Long> roleIds = userRoleService.listByUserId(userId).stream().map(v -> v.getRoleId())
+                    .collect(Collectors.toList());
+            user.setRoleIds(roleIds);
+        }
+        return AjaxResult.success(user);
+    }
 
-	/**
-	 * delete user by user_id
-	 * 
-	 * @param userIds[userId1, userId2...]
-	 * @return
-	 */
-	@PreAuthorize("@ss.hasPermi('system:user')")
-	@DeleteMapping("/{userIds}")
-	public AjaxResult delete(@PathVariable Long[] userIds) {
-		logger.debug("delete user by id...");
+    /**
+     * 删除用户
+     * 
+     * @param userIds 角色ID列表[userId1, userId2...]
+     * @return
+     */
+    @PreAuthorize("@ss.hasPermi('system:user')")
+    @DeleteMapping("/{userIds}")
+    public AjaxResult delete(@PathVariable List<Long> userIds) {
+        logger.debug("删除用户...");
 
-		LoginUser loginUser = tokenService.getLoginUser(ServletUtils.getRequest());
-		for (Long userId : userIds) {
-			if (StringUtils.isNull(userId)) {
-				return AjaxResult.error("invalid userId included!");
-			}
-			// check: you cannot delete yourself!
-			if (userId.equals(loginUser.getUser().getId())) {
-				return AjaxResult.error("you cannot delete yourself!");
-			}
-		}
-		// check: normal_user cannot delete admin_user
-		if (userService.isNotAdmin(loginUser.getUser().getId())) {
-			for (Long userId : userIds) {
-				if (userId.equals(loginUser.getUser().getId())) {
-					return AjaxResult.error("you cannot delete yourself!");
-				}
-				if (userService.isAdmin(userId)) {
-					return AjaxResult.error("non_admin_user cannot delete user with admin role!");
-				}
+        if (StringUtils.isEmpty(userIds)) {
+            return AjaxResult.error("用户主键列表为空，无需删除!");
+        }
 
-			}
-		}
-		int deleteCount = 0;
-		for (Long userId : userIds) {
-			deleteCount += userService.deleteByPrimaryKey(userId);
-		}
-		return AjaxResult.success(StringUtils.format("{} user(s) deleted successfully", deleteCount));
-	}
+        LoginUser loginUser = tokenService.getLoginUser(ServletUtils.getRequest());
+        for (Long userId : userIds) {
+            if (StringUtils.isNull(userId)) {
+                return AjaxResult.error("用户主键为空，无需删除!");
+            }
+            // 检查：用户不能删除自己
+            if (userId.equals(loginUser.getUser().getId())) {
+                return AjaxResult.error("无法删除用户自己的账号!");
+            }
+        }
+        // 检查：非管理员用户不能删除超级管理员权限的用户
+        if (userService.isNotAdmin(loginUser.getUser().getId())) {
+            for (Long userId : userIds) {
+                if (userService.isAdmin(userId)) {
+                    return AjaxResult.error("非管理员用户不能删除超级管理员权限的用户!");
+                }
+            }
+        }
+        // 执行删除
+        int deleteCount = userService.deleteByPrimaryKey(userIds);
 
-	/**
-	 * update user
-	 * 
-	 * @param user
-	 * @return
-	 */
-	@PreAuthorize("@ss.hasPermi('system:user')")
-	@PutMapping
-	public AjaxResult update(@Validated @RequestBody SysUser user) {
-		logger.debug("update user...");
-		// null check
-		if (StringUtils.isNull(user.getId())) {
-			return AjaxResult.error("user id cannot be null!");
-		}
-		// not exsit check
-		SysUser existUser = userService.selectByPrimaryKey(user.getId());
-		if (StringUtils.isNull(existUser)) {
-			return AjaxResult.error(StringUtils.format("user(id={}) not exist!", user.getId()));
-		}
-		// check: cannot update self
-		LoginUser loginUser = tokenService.getLoginUser(ServletUtils.getRequest());
-		if (user.getId().equals(loginUser.getUser().getId())) {
-			return AjaxResult.error("you cannot update yourself!");
-		}
-		// check: normal_user cannot delete admin_user
-		if (userService.isNotAdmin(loginUser.getUser().getId()) && userService.isAdmin(user.getId())) {
-			return AjaxResult.error("non_admin_user cannot update user with admin role!");
-		}
-		// prepare update value
-		SysUser updateUser = new SysUser();
-		updateUser.setId(user.getId());
-		updateUser.setUserName(user.getUserName());
-		updateUser.setNickName(user.getNickName());
-		updateUser.setDeptName(user.getDeptName());
-		updateUser.setPhone(user.getPhone());
-		updateUser.setEmail(user.getEmail());
-		updateUser.setRoleIds(user.getRoleIds());
-		updateUser.setStatus(user.getStatus());
+        return AjaxResult.success(StringUtils.format("成功删除{}个账号", deleteCount));
+    }
 
-		userService.updateSelective(updateUser);
+    /**
+     * 更新用户
+     * 
+     * @param user
+     * @return
+     */
+    @PreAuthorize("@ss.hasPermi('system:user')")
+    @PutMapping
+    public AjaxResult update(@Validated @RequestBody SysUser user) {
+        logger.debug("更新用户...");
+        // 非空检查
+        if (StringUtils.isNull(user.getId())) {
+            return AjaxResult.error("用户主键不能为空!");
+        }
+        // 检查：用户不存在
+        SysUser existUser = userService.selectByPrimaryKey(user.getId());
+        if (StringUtils.isNull(existUser)) {
+            return AjaxResult.error(StringUtils.format("待更新用户(id={})不存在!", user.getId()));
+        }
+        // 检查：不能更新用户自己的账号
+        LoginUser loginUser = tokenService.getLoginUser(ServletUtils.getRequest());
+        if (user.getId().equals(loginUser.getUser().getId())) {
+            return AjaxResult.error("不能更新自己的账号!");
+        }
+        // 检查：非管理员用户不能更新管理员用户
+        if (userService.isNotAdmin(loginUser.getUser().getId()) && userService.isAdmin(user.getId())) {
+            return AjaxResult.error("非管理员用户不能更新管理员用户!");
+        }
+        // 字段准备
+        SysUser updateUser = new SysUser();
+        updateUser.setId(user.getId());
+        updateUser.setUserName(user.getUserName());
+        updateUser.setNickName(user.getNickName());
+        updateUser.setDeptName(user.getDeptName());
+        updateUser.setPhone(user.getPhone());
+        updateUser.setEmail(user.getEmail());
+        updateUser.setRoleIds(user.getRoleIds());
+        updateUser.setStatus(user.getStatus());
 
-		return AjaxResult.success();
-	}
+        userService.updateSelective(updateUser);
 
-	/**
-	 * change user password
-	 * 
-	 * @param user{id, password}
-	 * @return
-	 */
-	@PreAuthorize("@ss.hasPermi('system:user')")
-	@PutMapping("/resetPassword")
-	public AjaxResult resetPassword(@RequestBody SysUser user) {
-		logger.debug("admin change user password...");
-		// null check
-		if (StringUtils.isNull(user.getId()) || StringUtils.isEmpty(user.getPassword())) {
-			return AjaxResult.error("id and password cannot be null!");
-		}
-		// user exist check
-		SysUser existUser = userService.selectByPrimaryKey(user.getId());
-		if (StringUtils.isNull(existUser)) {
-			return AjaxResult.error(StringUtils.format("user(id={}) not exist!", user.getId()));
-		}
-		// check: normal_user cannot reset password for admin_user
-		LoginUser loginUser = tokenService.getLoginUser(ServletUtils.getRequest());
-		if (userService.isNotAdmin(loginUser.getUser().getId()) && userService.isAdmin(user.getId())) {
-			return AjaxResult.error("non_admin_user cannot reset password for user with admin role!");
-		}
-		// decode password using rsa
-		String rawPassword = RSAUtils.decrypt(rsaPrivateKey, user.getPassword());
-		// password encode using Bcrypt
-		String encodePassword = BCryptUtils.encode(rawPassword);
+        return AjaxResult.success();
+    }
 
-		// prepare value
-		SysUser updateUser = new SysUser();
-		updateUser.setId(user.getId());
-		updateUser.setPassword(encodePassword);
-		updateUser.setPwdUpdateTime(DateUtils.getNowDate());
+    /**
+     * 修改用户密码
+     * 
+     * @param user 用户信息{id, password}
+     * @return
+     */
+    @PreAuthorize("@ss.hasPermi('system:user')")
+    @PutMapping("/resetPassword")
+    public AjaxResult resetPassword(@RequestBody SysUser user) {
+        logger.debug("修改用户密码...");
+        // 非空检查
+        if (StringUtils.isNull(user.getId()) || StringUtils.isEmpty(user.getPassword())) {
+            return AjaxResult.error("用户主键和密码不能为空!");
+        }
+        // 检查：用户不存在
+        SysUser existUser = userService.selectByPrimaryKey(user.getId());
+        if (StringUtils.isNull(existUser)) {
+            return AjaxResult.error(StringUtils.format("待修改密码用户(id={})不存在!", user.getId()));
+        }
+        // 检查：非管理员用户不能修改超级管理员密码
+        LoginUser loginUser = tokenService.getLoginUser(ServletUtils.getRequest());
+        if (userService.isNotAdmin(loginUser.getUser().getId()) && userService.isAdmin(user.getId())) {
+            return AjaxResult.error("非管理员用户不能修改超级管理员密码!");
+        }
+        // RSA密码解密
+        String rawPassword = RSAUtils.decrypt(rsaPrivateKey, user.getPassword());
+        // 密码加密 Bcrypt
+        String encodePassword = BCryptUtils.encode(rawPassword);
 
-		userService.updatePasswordByPrimaryKey(updateUser);
+        // 准备更新内容
+        SysUser updateUser = new SysUser();
+        updateUser.setId(user.getId());
+        updateUser.setPassword(encodePassword);
+        updateUser.setPwdUpdateTime(DateUtils.getNowDate());
 
-		return AjaxResult.success();
-	}
+        userService.updatePasswordByPrimaryKey(updateUser);
+
+        return AjaxResult.success();
+    }
 
 }

@@ -37,7 +37,8 @@ import com.rbac.system.service.ISysUserRoleService;
 import com.rbac.system.service.ISysUserService;
 
 /**
- * personal api: login, logout, changePwd, update info
+ * 用户个人API<br>
+ * 登录、退出、修改密码、更新个人信息
  * 
  * @author wlfei
  *
@@ -45,151 +46,152 @@ import com.rbac.system.service.ISysUserService;
 @RestController
 @RequestMapping("/personal")
 public class SysPersonalController {
-	private static final Logger logger = LoggerFactory.getLogger(SysPersonalController.class);
-	// 全局rsa公钥
-	@Value("${rsa.publicKey}")
-	private String rsaPublicKey;
-	// 全局rsa私钥
-	@Value("${rsa.privateKey}")
-	private String rsaPrivateKey;
+    private static final Logger logger = LoggerFactory.getLogger(SysPersonalController.class);
+    // 全局rsa公钥
+    @Value("${rsa.publicKey}")
+    private String rsaPublicKey;
+    // 全局rsa私钥
+    @Value("${rsa.privateKey}")
+    private String rsaPrivateKey;
 
-	@Autowired
-	private TokenService tokenService;
-	@Autowired
-	private SysLoginService loginService;
-	@Autowired
-	ISysRoleService roleService;
+    @Autowired
+    private TokenService tokenService;
+    @Autowired
+    private SysLoginService loginService;
+    @Autowired
+    ISysRoleService roleService;
 
-	@Autowired
-	ISysUserService userService;
+    @Autowired
+    ISysUserService userService;
 
-	@Autowired
-	ISysUserRoleService userRoleService;
+    @Autowired
+    ISysUserRoleService userRoleService;
 
-	@Autowired
-	ICaptchaService captchaService;
+    @Autowired
+    ICaptchaService captchaService;
 
-	/**
-	 * user login
-	 * 
-	 * @param loginBody 登录信息
-	 * @return 结果
-	 */
-	@PostMapping("/login")
-	public AjaxResult login(@RequestBody LoginBody loginBody) {
-		logger.debug("user login...");
+    /**
+     * 用户登录
+     * 
+     * @param loginBody 登录信息
+     * @return
+     */
+    @PostMapping("/login")
+    public AjaxResult login(@RequestBody LoginBody loginBody) {
+        logger.debug("用户登录...");
 
-		// 验证码处置
-		Captcha cap = new Captcha();
-		cap.setCode(loginBody.getCode());
-		cap.setUuid(loginBody.getUuid());
-		if (!captchaService.validate(cap)) {
-			return AjaxResult.error("invalid captcha!");
-		}
+        // 验证码处置
+        Captcha cap = new Captcha();
+        cap.setCode(loginBody.getCode());
+        cap.setUuid(loginBody.getUuid());
+        if (!captchaService.validate(cap)) {
+            return AjaxResult.error("无效验证码!");
+        }
 
-		// get rawPassword using RSA
-		String password = RSAUtils.decrypt(rsaPrivateKey, loginBody.getPassword());
-		loginBody.setPassword(password);
+        // 解密前台传入的RSA加密密码，转换为密码明文
+        String password = RSAUtils.decrypt(rsaPrivateKey, loginBody.getPassword());
+        loginBody.setPassword(password);
 
-		logger.debug("user login with params: " + loginBody);
-		// check username and password, generate token
-		String token = loginService.login(loginBody.getUsername(), loginBody.getPassword());
+        logger.debug("用户登录参数: {}", loginBody);
 
-		return AjaxResult.success(ResultConstants.MESSAGE_SUCCESS, token);
-	}
+        // 验证用户名和密码，并生成token
+        String token = loginService.login(loginBody.getUsername(), loginBody.getPassword());
 
-	/**
-	 * user change password
-	 * 
-	 * @param UserPwdDTO{password, newPassword}
-	 * @return
-	 */
-	@PutMapping("/password")
-	public AjaxResult updatePassword(@RequestBody UserPwdDTO userDTO) {
-		logger.debug("user change password...");
-		if (StringUtils.isNull(userDTO.getNewPassword()) || StringUtils.isNull(userDTO.getPassword())) {
-			return AjaxResult.error("password and newPassword cannot be null!");
-		}
-		// get raw_old_password
-		String oldPassword = RSAUtils.decrypt(rsaPrivateKey, userDTO.getPassword());
-		// get raw_new_password
-		String newPassword = RSAUtils.decrypt(rsaPrivateKey, userDTO.getNewPassword());
+        return AjaxResult.success(ResultConstants.MESSAGE_SUCCESS, token);
+    }
 
-		LoginUser loginUser = tokenService.getLoginUser(ServletUtils.getRequest());
-		// get user info from db
-		SysUser userInDB = userService.selectByPrimaryKey(loginUser.getUser().getId());
-		// check if old_password valid
-		boolean isOldPasswordOk = BCryptUtils.isSamePassword(oldPassword, userInDB.getPassword());
-		if (!isOldPasswordOk) {
-			return AjaxResult.error("wrong password!");
-		}
-		// encode new password
-		String encodeNewPassword = BCryptUtils.encode(newPassword);
-		// update password by user_id
-		SysUser user = new SysUser();
-		user.setId(loginUser.getUser().getId());
-		user.setPassword(encodeNewPassword);
-		user.setPwdUpdateTime(DateUtils.getNowDate());
+    /**
+     * 用户修改密码
+     * 
+     * @param userDTO {password, newPassword}
+     * @return
+     */
+    @PutMapping("/password")
+    public AjaxResult updatePassword(@RequestBody UserPwdDTO userDTO) {
+        logger.debug("用户重置密码...");
+        if (StringUtils.isNull(userDTO.getNewPassword()) || StringUtils.isNull(userDTO.getPassword())) {
+            return AjaxResult.error("原密码和新密码不能为空!");
+        }
+        // 解密前台传入的RSA加密 原始密码
+        String oldPassword = RSAUtils.decrypt(rsaPrivateKey, userDTO.getPassword());
+        // 解密前台传入的RSA加密 新密码
+        String newPassword = RSAUtils.decrypt(rsaPrivateKey, userDTO.getNewPassword());
 
-		userService.updateSelective(user);
+        LoginUser loginUser = tokenService.getLoginUser(ServletUtils.getRequest());
+        // 从数据库获取用户信息
+        SysUser userInDB = userService.selectByPrimaryKey(loginUser.getUser().getId());
+        // 检查原始密码是否正确
+        boolean isOldPasswordOk = BCryptUtils.isSamePassword(oldPassword, userInDB.getPassword());
+        if (!isOldPasswordOk) {
+            return AjaxResult.error("原密码错误!");
+        }
+        // 新密码加密存储
+        String encodeNewPassword = BCryptUtils.encode(newPassword);
 
-		return AjaxResult.success();
-	}
+        // 根据用户ID更新密码
+        SysUser user = new SysUser();
+        user.setId(loginUser.getUser().getId());
+        user.setPassword(encodeNewPassword);
+        user.setPwdUpdateTime(DateUtils.getNowDate());
+        userService.updatePasswordByPrimaryKey(user);
 
-	/**
-	 * update user info
-	 * 
-	 * @param user{nickname, email, phone}
-	 * @return
-	 */
-	@PutMapping("/info")
-	public AjaxResult updateInfo(@RequestBody SysUser user) {
-		LoginUser loginUser = tokenService.getLoginUser(ServletUtils.getRequest());
-		logger.debug(StringUtils.format("user(id={}) change userinfo...", loginUser.getUser().getId()));
+        return AjaxResult.success();
+    }
 
-		// user can change following variables: nickname, email, phone
-		SysUser updateUser = new SysUser();
-		updateUser.setId(loginUser.getUser().getId());
-		updateUser.setNickName(StringUtils.nvl(user.getNickName(), ""));
-		updateUser.setEmail(StringUtils.nvl(user.getEmail(), ""));
-		updateUser.setPhone(StringUtils.nvl(user.getPhone(), ""));
+    /**
+     * 用户更新个人信息
+     * 
+     * @param user{nickname, email, phone}
+     * @return
+     */
+    @PutMapping("/info")
+    public AjaxResult updateInfo(@RequestBody SysUser user) {
+        LoginUser loginUser = tokenService.getLoginUser(ServletUtils.getRequest());
+        logger.debug(StringUtils.format("用户(id={}) 更新个人信息...", loginUser.getUser().getId()));
 
-		userService.updateSelective(updateUser);
+        // 用户可更新的字段：昵称、邮箱、手机号
+        SysUser updateUser = new SysUser();
+        updateUser.setId(loginUser.getUser().getId());
+        updateUser.setNickName(StringUtils.nvl(user.getNickName(), ""));
+        updateUser.setEmail(StringUtils.nvl(user.getEmail(), ""));
+        updateUser.setPhone(StringUtils.nvl(user.getPhone(), ""));
 
-		return AjaxResult.success();
-	}
+        userService.updateSelective(updateUser);
 
-	/**
-	 * get user info
-	 * 
-	 * @return {username, roles[], nickname, phone, email, deptname}
-	 */
-	@GetMapping("/info")
-	public AjaxResult getInfo() {
-		logger.debug("普通用户获取用户详情...");
-		LoginUser loginUser = tokenService.getLoginUser(ServletUtils.getRequest());
-		SysUser user = loginUser.getUser();
-		// get all roleKey of user
-		List<String> roles = userRoleService.listByUserId(user.getId()).stream()
-				.map(v -> roleService.selectByPrimaryKey(v.getRoleId()).getRoleKey()).collect(Collectors.toList());
+        return AjaxResult.success();
+    }
 
-		if (StringUtils.isEmpty(roles)) {
-			logger.warn(StrFormatter.format("user(id={}) has no any roles", user.getId()));
-			// and an empty role tag, solving vue login problem
-			roles.add("__empty__");
-		}
-		// return data
-		Map<String, Object> data = new HashMap<String, Object>();
-		data.put("roles", roles);
-		// get user info from db
-		SysUser userInDB = userService.selectByPrimaryKey(user.getId());
-		data.put("nickname", userInDB.getNickName());
-		data.put("phone", userInDB.getPhone());
-		data.put("email", userInDB.getEmail());
-		data.put("username", userInDB.getUserName());
-		data.put("deptname", userInDB.getDeptName());
+    /**
+     * 用户获取个人信息详情
+     * 
+     * @return {username, roles[], nickname, phone, email, deptname}
+     */
+    @GetMapping("/info")
+    public AjaxResult getInfo() {
+        logger.debug("用户获取个人信息详情...");
+        LoginUser loginUser = tokenService.getLoginUser(ServletUtils.getRequest());
+        SysUser user = loginUser.getUser();
+        // 获取用户的所有角色代码
+        List<String> roles = userRoleService.listByUserId(user.getId()).stream()
+                .map(v -> roleService.selectByPrimaryKey(v.getRoleId()).getRoleKey()).collect(Collectors.toList());
 
-		return AjaxResult.success(data);
-	}
+        if (StringUtils.isEmpty(roles)) {
+            logger.warn(StrFormatter.format("用户(id={}) 不具备任何角色", user.getId()));
+            // 为用户添加一个空角色代码标识，解决前端框架的异常
+            roles.add("__empty__");
+        }
+        // 构造返回值
+        Map<String, Object> data = new HashMap<String, Object>();
+        data.put("roles", roles);
+        // 从数据库获取用户信息反馈
+        SysUser userInDB = userService.selectByPrimaryKey(user.getId());
+        data.put("nickname", userInDB.getNickName());
+        data.put("phone", userInDB.getPhone());
+        data.put("email", userInDB.getEmail());
+        data.put("username", userInDB.getUserName());
+        data.put("deptname", userInDB.getDeptName());
+
+        return AjaxResult.success(data);
+    }
 
 }
