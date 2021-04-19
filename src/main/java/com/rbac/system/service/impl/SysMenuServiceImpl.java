@@ -5,12 +5,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.rbac.common.constant.BaseConstants;
 import com.rbac.common.util.DateUtils;
-import com.rbac.common.util.StringUtils;
 import com.rbac.common.util.sql.SqlUtil;
 import com.rbac.framework.web.page.TreeSelect;
 import com.rbac.system.constant.MenuConstants;
@@ -56,7 +57,7 @@ public class SysMenuServiceImpl implements ISysMenuService {
 	public List<SysMenu> listByMenu(SysMenu menu) {
 		SysMenuExample example = new SysMenuExample();
 		SysMenuExample.Criteria c1 = example.createCriteria();
-		if (StringUtils.isNotNull(menu) && StringUtils.isNotEmpty(menu.getMenuName())) {
+		if (null != menu && StringUtils.isNotEmpty(menu.getMenuName())) {
 			c1.andMenuNameLike(SqlUtil.getFuzzQueryParam(menu.getMenuName()));
 		}
 		return menuMapper.selectByExample(example);
@@ -100,7 +101,7 @@ public class SysMenuServiceImpl implements ISysMenuService {
 		router.setName(menu.getMenuName());
 		router.setPath(menu.getPath());
 
-		if (StringUtils.isNotEmpty(menu.getChildren())) {
+		if (CollectionUtils.isNotEmpty(menu.getChildren())) {
 			router.setRedirect("noRedirect");
 			router.setAlwaysShow(true);
 			List<SysRouter> children = menu2Router(menu.getChildren());

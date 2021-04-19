@@ -1,6 +1,6 @@
 package com.rbac.common.util.sql;
 
-import com.rbac.common.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * sql操作工具类

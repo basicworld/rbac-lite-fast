@@ -3,12 +3,13 @@ package com.rbac.system.service.impl;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.rbac.common.util.DateUtils;
-import com.rbac.common.util.StringUtils;
 import com.rbac.common.util.sql.SqlUtil;
 import com.rbac.system.constant.RoleConstants;
 import com.rbac.system.domain.SysUser;
@@ -48,7 +49,7 @@ public class SysUserServiceImpl implements ISysUserService {
 	@Override
 	@Transactional
 	public Integer deleteByPrimaryKey(List<Long> userIds) {
-		if (StringUtils.isEmpty(userIds)) {
+		if (CollectionUtils.isEmpty(userIds)) {
 			return 0;
 		}
 
@@ -87,17 +88,17 @@ public class SysUserServiceImpl implements ISysUserService {
 		SysUserExample example = new SysUserExample();
 		SysUserExample.Criteria c1 = example.createCriteria();
 
-		if (StringUtils.isNotNull(user)) {
-			if (StringUtils.isNotEmpty(user.getUserName())) {
+		if (null != user) {
+			if (StringUtils.isNotBlank(user.getUserName())) {
 				c1.andUserNameLike(SqlUtil.getFuzzQueryParam(user.getUserName()));
 			}
-			if (StringUtils.isNotEmpty(user.getNickName())) {
+			if (StringUtils.isNotBlank(user.getNickName())) {
 				c1.andNickNameLike(SqlUtil.getFuzzQueryParam(user.getNickName()));
 			}
-			if (StringUtils.isNotEmpty(user.getEmail())) {
+			if (StringUtils.isNotBlank(user.getEmail())) {
 				c1.andEmailLike(SqlUtil.getFuzzQueryParam(user.getEmail()));
 			}
-			if (StringUtils.isNotEmpty(user.getPhone())) {
+			if (StringUtils.isNotBlank(user.getPhone())) {
 				c1.andPhoneLike(SqlUtil.getFuzzQueryParam(user.getPhone()));
 			}
 		}
@@ -134,7 +135,7 @@ public class SysUserServiceImpl implements ISysUserService {
 	 * @return
 	 */
 	private Integer updateRoleRelationForUser(SysUser user) {
-		if (StringUtils.isNull(user) || StringUtils.isNull(user.getId())) {
+		if (null == user || null == user.getId()) {
 			return 0;
 		}
 		// 根据用户ID删除关系
@@ -142,7 +143,7 @@ public class SysUserServiceImpl implements ISysUserService {
 
 		// 创建新的关系
 		int count = 0;
-		if (StringUtils.isNotEmpty(user.getRoleIds())) {
+		if (CollectionUtils.isNotEmpty(user.getRoleIds())) {
 			for (Long roleId : user.getRoleIds()) {
 				SysUserRole ur = new SysUserRole();
 				ur.setUserId(user.getId());

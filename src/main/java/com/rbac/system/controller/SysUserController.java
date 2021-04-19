@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +24,6 @@ import com.rbac.common.util.BCryptUtils;
 import com.rbac.common.util.DateUtils;
 import com.rbac.common.util.RSAUtils;
 import com.rbac.common.util.ServletUtils;
-import com.rbac.common.util.StringUtils;
 import com.rbac.framework.security.domain.LoginUser;
 import com.rbac.framework.security.service.TokenService;
 import com.rbac.framework.web.domain.AjaxResult;
@@ -71,10 +72,12 @@ public class SysUserController extends BaseController {
 	@PreAuthorize("@ss.hasPermi('system:user')")
 	@GetMapping("/list")
 	public TableDataInfo list(SysUser user) {
-		logger.debug("获取用户列表...");
+		if (logger.isDebugEnabled()) {
+			logger.debug("获取用户列表...");
+		}
 		startPage();
 		List<SysUser> userList = userService.listByUser(user);
-		if (StringUtils.isNotEmpty(userList)) {
+		if (CollectionUtils.isNotEmpty(userList)) {
 			for (SysUser u : userList) {
 				// 隐藏密码
 				u.setPassword("******");
@@ -93,7 +96,9 @@ public class SysUserController extends BaseController {
 	@PreAuthorize("@ss.hasPermi('system:user')")
 	@PostMapping("/create")
 	public AjaxResult add(@Validated @RequestBody SysUser user) {
-		logger.debug("新增用户...");
+		if (logger.isDebugEnabled()) {
+			logger.debug("新增用户:{}", user);
+		}
 
 		// 空值检查
 		if (StringUtils.isEmpty(user.getUserName()) || StringUtils.isEmpty(user.getPassword())) {
@@ -101,11 +106,11 @@ public class SysUserController extends BaseController {
 		}
 		// 用户名重复检查
 		List<SysUser> usersWithSameUserName = userService.listbyUserNameEqualsTo(user.getUserName());
-		if (StringUtils.isNotEmpty(usersWithSameUserName)) {
-			return AjaxResult.error(StringUtils.format("用户名重复：{}!", user.getUserName()));
+		if (CollectionUtils.isNotEmpty(usersWithSameUserName)) {
+			return AjaxResult.error("用户名重复：{}!", user.getUserName());
 		}
 		// 关联角色ID不能为空
-		if (StringUtils.isEmpty(user.getRoleIds())) {
+		if (CollectionUtils.isEmpty(user.getRoleIds())) {
 			return AjaxResult.error("用户关联角色不能为空!");
 
 		}
@@ -113,7 +118,7 @@ public class SysUserController extends BaseController {
 		List<SysRole> selectedRoles = new ArrayList<SysRole>();
 		for (Long roleId : user.getRoleIds()) {
 			SysRole role = roleService.selectByPrimaryKey(roleId);
-			if (StringUtils.isNull(role)) {
+			if (null == role) {
 				return AjaxResult.error("非法角色关联!");
 			}
 			selectedRoles.add(role);
@@ -139,7 +144,7 @@ public class SysUserController extends BaseController {
 
 		userService.insertSelective(user);
 
-		return AjaxResult.success(StringUtils.format("用户{}创建成功", user.getUserName()));
+		return AjaxResult.success("用户{}创建成功", user.getUserName());
 	}
 
 	/**
@@ -151,10 +156,12 @@ public class SysUserController extends BaseController {
 	@PreAuthorize("@ss.hasPermi('system:user')")
 	@GetMapping("/detail/{userId}")
 	public AjaxResult getDetail(@PathVariable Long userId) {
-		logger.debug("获取用户详情...");
+		if (logger.isDebugEnabled()) {
+			logger.debug("获取用户详情:{}", userId);
+		}
 		SysUser user = userService.selectByPrimaryKey(userId);
 
-		if (StringUtils.isNotNull(user)) {
+		if (null != user) {
 			// 隐藏密码
 			user.setPassword("******");
 			// 获取用户关联角色ID
@@ -174,15 +181,17 @@ public class SysUserController extends BaseController {
 	@PreAuthorize("@ss.hasPermi('system:user')")
 	@PostMapping("/delete/{userIds}")
 	public AjaxResult delete(@PathVariable List<Long> userIds) {
-		logger.debug("删除用户...");
+		if (logger.isDebugEnabled()) {
+			logger.debug("删除用户:{}", userIds);
+		}
 
-		if (StringUtils.isEmpty(userIds)) {
+		if (CollectionUtils.isEmpty(userIds)) {
 			return AjaxResult.error("用户主键列表为空，无需删除!");
 		}
 
 		LoginUser loginUser = tokenService.getLoginUser(ServletUtils.getRequest());
 		for (Long userId : userIds) {
-			if (StringUtils.isNull(userId)) {
+			if (null == userId) {
 				return AjaxResult.error("用户主键为空，无需删除!");
 			}
 			// 检查：用户不能删除自己
@@ -201,7 +210,7 @@ public class SysUserController extends BaseController {
 		// 执行删除
 		int deleteCount = userService.deleteByPrimaryKey(userIds);
 
-		return AjaxResult.success(StringUtils.format("成功删除{}个账号", deleteCount));
+		return AjaxResult.success("成功删除{}个账号", deleteCount);
 	}
 
 	/**
@@ -213,15 +222,17 @@ public class SysUserController extends BaseController {
 	@PreAuthorize("@ss.hasPermi('system:user')")
 	@PostMapping("/update")
 	public AjaxResult update(@Validated @RequestBody SysUser user) {
-		logger.debug("更新用户...");
+		if (logger.isDebugEnabled()) {
+			logger.debug("更新用户:{}", user);
+		}
 		// 非空检查
-		if (StringUtils.isNull(user.getId())) {
+		if (null == user.getId()) {
 			return AjaxResult.error("用户主键不能为空!");
 		}
 		// 检查：用户不存在
 		SysUser existUser = userService.selectByPrimaryKey(user.getId());
-		if (StringUtils.isNull(existUser)) {
-			return AjaxResult.error(StringUtils.format("待更新用户(id={})不存在!", user.getId()));
+		if (null == existUser) {
+			return AjaxResult.error("待更新用户(id={})不存在!", user.getId());
 		}
 		// 检查：不能更新用户自己的账号
 		LoginUser loginUser = tokenService.getLoginUser(ServletUtils.getRequest());
@@ -257,15 +268,17 @@ public class SysUserController extends BaseController {
 	@PreAuthorize("@ss.hasPermi('system:user')")
 	@PostMapping("/password/reset")
 	public AjaxResult resetPassword(@RequestBody SysUser user) {
-		logger.debug("修改用户密码...");
+		if (logger.isDebugEnabled()) {
+			logger.debug("修改用户密码:{}", user);
+		}
 		// 非空检查
-		if (StringUtils.isNull(user.getId()) || StringUtils.isEmpty(user.getPassword())) {
+		if (null == user.getId() || StringUtils.isEmpty(user.getPassword())) {
 			return AjaxResult.error("用户主键和密码不能为空!");
 		}
 		// 检查：用户不存在
 		SysUser existUser = userService.selectByPrimaryKey(user.getId());
-		if (StringUtils.isNull(existUser)) {
-			return AjaxResult.error(StringUtils.format("待修改密码用户(id={})不存在!", user.getId()));
+		if (null == existUser) {
+			return AjaxResult.error("待修改密码用户主键不存在:", user.getId());
 		}
 		// 检查：非管理员用户不能修改超级管理员密码
 		LoginUser loginUser = tokenService.getLoginUser(ServletUtils.getRequest());

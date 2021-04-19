@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -29,7 +30,7 @@ public class ServletUtils {
 	 * 获取String参数，不存在则返回defaultValue默认值
 	 */
 	public static String getParameter(String name, String defaultValue) {
-		return Convert.toStr(getRequest().getParameter(name), defaultValue);
+		return StringUtils.defaultString(getRequest().getParameter(name), defaultValue);
 	}
 
 	/**

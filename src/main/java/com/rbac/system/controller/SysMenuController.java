@@ -37,7 +37,9 @@ public class SysMenuController {
 	 */
 	@GetMapping("/list")
 	public AjaxResult list(SysMenu menu) {
-		logger.debug("获取菜单列表...");
+		if (logger.isDebugEnabled()) {
+			logger.debug("获取菜单列表...");
+		}
 		List<SysMenu> menuList = menuService.listByMenu(menu);
 		return AjaxResult.success(menuList);
 	}
@@ -50,7 +52,9 @@ public class SysMenuController {
 	 */
 	@GetMapping("/tree")
 	public AjaxResult treeList(SysMenu menu) {
-		logger.debug("获取菜单树...");
+		if (logger.isDebugEnabled()) {
+			logger.debug("获取菜单树...");
+		}
 		// menu list
 		List<SysMenu> menuList = menuService.listByMenu(menu);
 		// menu list to menu tree
@@ -66,7 +70,9 @@ public class SysMenuController {
 	 */
 	@GetMapping("/treeselect")
 	public AjaxResult treeSelect(SysMenu menu) {
-		logger.debug("获取菜单下拉选择树...");
+		if (logger.isDebugEnabled()) {
+			logger.debug("获取菜单下拉选择树...");
+		}
 		// menu list
 		List<SysMenu> menuList = menuService.listByMenu(menu);
 		// menu select tree

@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,12 +18,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.rbac.common.constant.ResultConstants;
-import com.rbac.common.core.text.StrFormatter;
 import com.rbac.common.util.BCryptUtils;
 import com.rbac.common.util.DateUtils;
 import com.rbac.common.util.RSAUtils;
 import com.rbac.common.util.ServletUtils;
-import com.rbac.common.util.StringUtils;
 import com.rbac.framework.security.domain.LoginBody;
 import com.rbac.framework.security.domain.LoginUser;
 import com.rbac.framework.security.service.SysLoginService;
@@ -108,7 +108,7 @@ public class SysPersonalController {
 	@PostMapping("/password/update")
 	public AjaxResult updatePassword(@RequestBody UserPwdDTO userDTO) {
 		logger.debug("用户重置密码...");
-		if (StringUtils.isNull(userDTO.getNewPassword()) || StringUtils.isNull(userDTO.getPassword())) {
+		if (StringUtils.isEmpty(userDTO.getNewPassword()) || StringUtils.isEmpty(userDTO.getPassword())) {
 			return AjaxResult.error("原密码和新密码不能为空!");
 		}
 		// 解密前台传入的RSA加密 原始密码
@@ -146,14 +146,14 @@ public class SysPersonalController {
 	@PostMapping("/info/update")
 	public AjaxResult updateInfo(@RequestBody SysUser user) {
 		LoginUser loginUser = tokenService.getLoginUser(ServletUtils.getRequest());
-		logger.debug(StringUtils.format("用户(id={}) 更新个人信息...", loginUser.getUser().getId()));
+		logger.debug("用户(id={}) 更新个人信息...", loginUser.getUser().getId());
 
 		// 用户可更新的字段：昵称、邮箱、手机号
 		SysUser updateUser = new SysUser();
 		updateUser.setId(loginUser.getUser().getId());
-		updateUser.setNickName(StringUtils.nvl(user.getNickName(), ""));
-		updateUser.setEmail(StringUtils.nvl(user.getEmail(), ""));
-		updateUser.setPhone(StringUtils.nvl(user.getPhone(), ""));
+		updateUser.setNickName(StringUtils.defaultString(user.getNickName(), ""));
+		updateUser.setEmail(StringUtils.defaultString(user.getEmail(), ""));
+		updateUser.setPhone(StringUtils.defaultString(user.getPhone(), ""));
 
 		userService.updateSelective(updateUser);
 
@@ -174,8 +174,8 @@ public class SysPersonalController {
 		List<String> roles = userRoleService.listByUserId(user.getId()).stream()
 				.map(v -> roleService.selectByPrimaryKey(v.getRoleId()).getRoleKey()).collect(Collectors.toList());
 
-		if (StringUtils.isEmpty(roles)) {
-			logger.warn(StrFormatter.format("用户(id={}) 不具备任何角色", user.getId()));
+		if (CollectionUtils.isEmpty(roles)) {
+			logger.warn("用户(id={}) 不具备任何角色", user.getId());
 			// 为用户添加一个空角色代码标识，解决前端框架的异常
 			roles.add("__empty__");
 		}

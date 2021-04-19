@@ -13,7 +13,6 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.rbac.common.constant.ResultConstants;
 import com.rbac.common.util.DateUtils;
-import com.rbac.common.util.StringUtils;
 import com.rbac.common.util.sql.SqlUtil;
 import com.rbac.framework.web.domain.AjaxResult;
 import com.rbac.framework.web.page.PageDomain;
@@ -50,7 +49,7 @@ public class BaseController {
 		PageDomain pageDomain = TableSupport.buildPageRequest();
 		Integer pageNum = pageDomain.getPageNum();
 		Integer pageSize = pageDomain.getPageSize();
-		if (StringUtils.isNotNull(pageNum) && StringUtils.isNotNull(pageSize)) {
+		if ((null != pageNum) && (null != pageSize)) {
 			String orderBy = SqlUtil.escapeOrderBySql(pageDomain.getOrderBy());
 			PageHelper.startPage(pageNum, pageSize, orderBy);
 		}

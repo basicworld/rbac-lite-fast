@@ -6,6 +6,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.rbac.common.constant.BaseConstants;
-import com.rbac.common.util.StringUtils;
 import com.rbac.framework.web.domain.AjaxResult;
 import com.rbac.framework.web.page.TableDataInfo;
 import com.rbac.system.base.BaseController;
@@ -60,7 +61,9 @@ public class SysRoleController extends BaseController {
 	 */
 	@GetMapping("/list")
 	public TableDataInfo list(SysRole role) {
-		logger.debug("获取角色列表...");
+		if (logger.isDebugEnabled()) {
+			logger.debug("获取角色列表...");
+		}
 		startPage();
 		List<SysRole> roleList = roleService.listByRole(role);
 		return getDataTable(roleList);
@@ -75,15 +78,17 @@ public class SysRoleController extends BaseController {
 	@PreAuthorize("@ss.hasPermi('system:role')")
 	@PostMapping("/create")
 	public AjaxResult add(@Validated @RequestBody SysRole role) {
-		logger.debug("新增角色...");
+		if (logger.isDebugEnabled()) {
+			logger.debug("新增角色...");
+		}
 		// 空值检查
 		if (StringUtils.isEmpty(role.getRoleName()) || StringUtils.isEmpty(role.getRoleKey())) {
 			return AjaxResult.error("角色名称、角色代码不能为空!");
 		}
 		// 角色代码重复检查
 		List<SysRole> roleListWithSameKey = roleService.listByRoleKeyEqualsTo(role.getRoleKey());
-		if (StringUtils.isNotEmpty(roleListWithSameKey)) {
-			return AjaxResult.error(StringUtils.format("角色代码重复：{}!", role.getRoleKey()));
+		if (CollectionUtils.isNotEmpty(roleListWithSameKey)) {
+			return AjaxResult.error("角色代码重复：{}!", role.getRoleKey());
 		}
 
 		// 设置删除标记：未删除
@@ -104,14 +109,17 @@ public class SysRoleController extends BaseController {
 	@PreAuthorize("@ss.hasPermi('system:role')")
 	@PostMapping("/delete/{roleIds}")
 	public AjaxResult delete(@PathVariable List<Long> roleIds) {
-		if (StringUtils.isEmpty(roleIds)) {
+		if (logger.isDebugEnabled()) {
+			logger.debug("删除角色：{}", roleIds);
+		}
+		if (CollectionUtils.isEmpty(roleIds)) {
 			return AjaxResult.error("输入角色主键为空，无需删除!");
 		}
 
 		// 检查：不能删除超级管理员角色，该角色有且仅有一个，系统自带，不能删除
 		for (Long roleId : roleIds) {
 			SysRole role = roleService.selectByPrimaryKey(roleId);
-			if (StringUtils.isNotNull(role) && role.getRoleKey().contentEquals(RoleConstants.ADMIN_ROLE_KEY)) {
+			if (null != role && role.getRoleKey().contentEquals(RoleConstants.ADMIN_ROLE_KEY)) {
 				return AjaxResult.error("不能删除超级管理员角色!");
 			}
 		}
@@ -119,7 +127,7 @@ public class SysRoleController extends BaseController {
 		// 删除计数
 		int deleteCount = roleService.deleteByPrimaryKey(roleIds);
 
-		return AjaxResult.success(StringUtils.format("成功删除{}个角色!", deleteCount));
+		return AjaxResult.success("成功删除{}个角色!", deleteCount);
 	}
 
 	/**
@@ -132,13 +140,13 @@ public class SysRoleController extends BaseController {
 	@GetMapping("/detail/{roleId}")
 	public AjaxResult getDetail(@PathVariable Long roleId) {
 		// 非空检查
-		if (StringUtils.isNull(roleId)) {
-			return AjaxResult.error(StringUtils.format("角色主键不能为空!", roleId));
+		if (null == roleId) {
+			return AjaxResult.error("角色主键不能为空!", roleId);
 		}
 		// 检查：角色不存在
 		SysRole role = roleService.selectByPrimaryKey(roleId);
-		if (StringUtils.isNull(role)) {
-			return AjaxResult.error(StringUtils.format("角色(id={})不存在!", roleId));
+		if (null == role) {
+			return AjaxResult.error("角色(id={})不存在!", roleId);
 		}
 		// 获取角色的关联菜单列表
 		Long[] menuIds = roleMenuService.listByRoleId(roleId).stream().map(v -> v.getMenuId()).toArray(Long[]::new);
@@ -165,15 +173,17 @@ public class SysRoleController extends BaseController {
 	@PreAuthorize("@ss.hasPermi('system:role')")
 	@PostMapping("/update")
 	public AjaxResult update(@Validated @RequestBody SysRole role) {
-		logger.debug("更新角色...");
+		if (logger.isDebugEnabled()) {
+			logger.debug("更新角色...");
+		}
 		// 非空检查
-		if (StringUtils.isNull(role.getId())) {
+		if (null == role.getId()) {
 			return AjaxResult.error("角色主键不能为空!");
 		}
 
 		// 检查：不能更新超级管理员角色
 		SysRole existRole = roleService.selectByPrimaryKey(role.getId());
-		if (StringUtils.isNotNull(existRole) && existRole.getRoleKey().contentEquals(RoleConstants.ADMIN_ROLE_KEY)) {
+		if (null != existRole && existRole.getRoleKey().contentEquals(RoleConstants.ADMIN_ROLE_KEY)) {
 			return AjaxResult.error("不能更新超级管理员角色!");
 		}
 		// 准备角色更新信息

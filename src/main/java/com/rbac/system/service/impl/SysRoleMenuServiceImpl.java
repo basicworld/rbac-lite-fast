@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.rbac.common.util.StringUtils;
 import com.rbac.system.domain.SysRoleMenu;
 import com.rbac.system.domain.SysRoleMenuExample;
 import com.rbac.system.mapper.SysRoleMenuMapper;
@@ -75,7 +74,7 @@ public class SysRoleMenuServiceImpl implements ISysRoleMenuService {
 			List<SysRoleMenu> subList = listByRoleId(roleId);
 			roleMenuList.addAll(subList);
 		}
-		return roleMenuList.stream().filter(v -> StringUtils.isNotNull(v)).collect(Collectors.toList());
+		return roleMenuList.stream().filter(v -> (null != v)).collect(Collectors.toList());
 	}
 
 }

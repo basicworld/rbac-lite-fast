@@ -4,13 +4,14 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.rbac.common.constant.BaseConstants;
 import com.rbac.common.util.DateUtils;
-import com.rbac.common.util.StringUtils;
 import com.rbac.common.util.sql.SqlUtil;
 import com.rbac.system.domain.SysRole;
 import com.rbac.system.domain.SysRoleExample;
@@ -53,7 +54,7 @@ public class SysRoleServiceImpl implements ISysRoleService {
 	@Override
 	@Transactional
 	public Integer deleteByPrimaryKey(List<Long> roleIds) {
-		if (StringUtils.isEmpty(roleIds)) {
+		if (CollectionUtils.isEmpty(roleIds)) {
 			return 0;
 		}
 		int deleteCount = 0;
@@ -91,12 +92,12 @@ public class SysRoleServiceImpl implements ISysRoleService {
 	public List<SysRole> listByRole(SysRole role) {
 		SysRoleExample example = new SysRoleExample();
 		SysRoleExample.Criteria c1 = example.createCriteria();
-		if (StringUtils.isNotNull(role)) {
+		if (null != role) {
 
-			if (StringUtils.isNotNull(role.getRoleKey())) {
+			if (StringUtils.isNotBlank(role.getRoleKey())) {
 				c1.andRoleKeyLike(SqlUtil.getFuzzQueryParam(role.getRoleKey()));
 			}
-			if (StringUtils.isNotNull(role.getRoleName())) {
+			if (StringUtils.isNotBlank(role.getRoleName())) {
 				c1.andRoleNameLike(SqlUtil.getFuzzQueryParam(role.getRoleName()));
 			}
 		}
@@ -109,7 +110,7 @@ public class SysRoleServiceImpl implements ISysRoleService {
 		List<SysRole> roleList = new ArrayList<SysRole>();
 		for (Long roleId : new HashSet<Long>(roleIds)) {
 			SysRole role = selectByPrimaryKey(roleId);
-			if (StringUtils.isNotNull(role)) {
+			if (null != role) {
 
 				roleList.add(role);
 			}
@@ -124,7 +125,7 @@ public class SysRoleServiceImpl implements ISysRoleService {
 	 * @return
 	 */
 	private Integer updateMenuRelationOfRole(SysRole role) {
-		if (StringUtils.isNull(role) || StringUtils.isNull(role.getId())) {
+		if (null == role || null == role.getId()) {
 			return 0;
 		}
 		// 根据角色ID删除 关联关系

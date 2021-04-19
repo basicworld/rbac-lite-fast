@@ -1,6 +1,8 @@
 package com.rbac.framework.web.page;
 
-import com.rbac.common.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
+
+import com.rbac.common.util.StringTools;
 
 /**
  * 分页数据
@@ -18,10 +20,10 @@ public class PageDomain {
 	private String isAsc;
 
 	public String getOrderBy() {
-		if (StringUtils.isEmpty(orderByColumn)) {
+		if (StringUtils.isBlank(orderByColumn)) {
 			return "";
 		}
-		return StringUtils.toUnderScoreCase(orderByColumn) + " " + StringUtils.nvl(isAsc, "asc");
+		return StringTools.toUnderScoreCase(orderByColumn) + " " + StringUtils.defaultString(isAsc, "asc");
 	}
 
 	public Integer getPageNum() {

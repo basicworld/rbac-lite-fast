@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.GrantedAuthority;
@@ -12,7 +13,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.rbac.common.util.StringUtils;
 import com.rbac.system.constant.UserConstants;
 import com.rbac.system.domain.SysUser;
 
@@ -81,7 +81,7 @@ public class LoginUser implements UserDetails {
 		// 该方法用来获取当前用户所具有的角色
 		// 参考 https://blog.csdn.net/u012702547/article/details/79019510
 		List<GrantedAuthority> authorities = new ArrayList<>();
-		if (StringUtils.isEmpty(this.roles)) {
+		if (CollectionUtils.isEmpty(this.roles)) {
 			return authorities;
 		}
 		for (String role : this.roles) {

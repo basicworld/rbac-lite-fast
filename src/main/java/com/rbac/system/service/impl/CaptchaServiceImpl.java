@@ -8,6 +8,7 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.Resource;
 import javax.imageio.ImageIO;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.tomcat.util.codec.binary.Base64;
@@ -17,7 +18,6 @@ import org.springframework.util.FastByteArrayOutputStream;
 
 import com.google.code.kaptcha.Producer;
 import com.rbac.common.constant.BaseConstants;
-import com.rbac.common.util.StringUtils;
 import com.rbac.framework.redis.RedisCache;
 import com.rbac.system.domain.Captcha;
 import com.rbac.system.service.ICaptchaService;
@@ -75,13 +75,13 @@ public class CaptchaServiceImpl implements ICaptchaService {
 
 	@Override
 	public Boolean validate(Captcha item) {
-		if (StringUtils.isNull(item) || StringUtils.isNull(item.getCode()) || StringUtils.isNull(item.getUuid())) {
+		if (null == item || StringUtils.isEmpty(item.getCode()) || StringUtils.isEmpty(item.getUuid())) {
 			return false;
 		}
 		String redisKey = genCaptchaRedisKey(item);
 		String code = redisCache.getCacheObject(redisKey);
 
-		boolean isSame = StringUtils.isNotNull(code) && code.equals(item.getCode());
+		boolean isSame = StringUtils.isNotEmpty(code) && code.equals(item.getCode());
 		return isSame;
 	}
 

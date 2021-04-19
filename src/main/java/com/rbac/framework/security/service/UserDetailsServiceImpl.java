@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +16,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.rbac.common.util.BaseUtils;
-import com.rbac.common.util.StringUtils;
 import com.rbac.framework.security.domain.LoginUser;
 import com.rbac.system.domain.SysMenu;
 import com.rbac.system.domain.SysRoleMenu;
@@ -61,7 +61,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 		// 所有角色id
 		List<Long> roleIds = new ArrayList<Long>();
 		List<SysUserRole> userRoles = userRoleService.listByUserId(user.getId());
-		if (StringUtils.isNotEmpty(userRoles)) {
+		if (CollectionUtils.isNotEmpty(userRoles)) {
 			roleIds = userRoles.stream().map(v -> v.getRoleId()).collect(Collectors.toList());
 		}
 		user.setRoleIds(roleIds);
@@ -73,7 +73,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 		Set<String> menuPerms = new HashSet<String>();
 		for (SysRoleMenu rm : roleMenuService.listByRoleId(roleIds)) {
 			SysMenu menu = menuService.selectByPrimaryKey(rm.getMenuId());
-			if (StringUtils.isNotNull(menu)) {
+			if (null != menu) {
 				menuPerms.add(menu.getPerms());
 			}
 		}
@@ -82,10 +82,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 		loginUser.setUser(user);
 		loginUser.setRoles(roleKeys);
 		loginUser.setPermissions(menuPerms);
-
-		String log = StringUtils.format("用户 {} 的所有角色: {}", user.getUserName(), roleKeys);
-		logger.debug(log);
-
+		if (logger.isDebugEnabled()) {
+			logger.debug("用户 {} 的所有角色: {}", user.getUserName(), roleKeys);
+		}
 		return loginUser;
 	}
 
