@@ -1,6 +1,7 @@
 package com.rbac.system.service.impl;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -11,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.rbac.common.constant.BaseConstants;
-import com.rbac.common.util.DateUtils;
 import com.rbac.common.util.sql.SqlUtil;
 import com.rbac.framework.web.page.TreeSelect;
 import com.rbac.system.constant.MenuConstants;
@@ -33,7 +33,7 @@ public class SysMenuServiceImpl implements ISysMenuService {
 
 	@Override
 	public Integer insertSelective(SysMenu menu) {
-		menu.setCreateTime(DateUtils.getNowDate());
+		menu.setCreateTime(new Date());
 		menu.setDeleted(BaseConstants.NOT_DELETED);
 		return menuMapper.insertSelective(menu);
 	}

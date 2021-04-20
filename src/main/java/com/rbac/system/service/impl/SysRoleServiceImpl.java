@@ -1,6 +1,7 @@
 package com.rbac.system.service.impl;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
@@ -11,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.rbac.common.constant.BaseConstants;
-import com.rbac.common.util.DateUtils;
 import com.rbac.common.util.sql.SqlUtil;
 import com.rbac.system.domain.SysRole;
 import com.rbac.system.domain.SysRoleExample;
@@ -33,7 +33,7 @@ public class SysRoleServiceImpl implements ISysRoleService {
 	@Override
 	@Transactional
 	public Integer insertSelective(SysRole role) {
-		role.setCreateTime(DateUtils.getNowDate());
+		role.setCreateTime(new Date());
 		role.setDeleted(BaseConstants.NOT_DELETED);
 
 		Integer result = roleMapper.insertSelective(role);
@@ -67,7 +67,7 @@ public class SysRoleServiceImpl implements ISysRoleService {
 	@Override
 	@Transactional
 	public Integer updateSelective(SysRole role) {
-		role.setUpdateTime(DateUtils.getNowDate());
+		role.setUpdateTime(new Date());
 
 		updateMenuRelationOfRole(role);
 
