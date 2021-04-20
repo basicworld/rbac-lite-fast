@@ -1,6 +1,7 @@
 package com.rbac.system.controller;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,7 +22,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.rbac.common.constant.BaseConstants;
 import com.rbac.common.util.BCryptUtils;
-import com.rbac.common.util.DateUtils;
 import com.rbac.common.util.RSAUtils;
 import com.rbac.common.util.ServletUtils;
 import com.rbac.framework.security.domain.LoginUser;
@@ -294,7 +294,7 @@ public class SysUserController extends BaseController {
 		SysUser updateUser = new SysUser();
 		updateUser.setId(user.getId());
 		updateUser.setPassword(encodePassword);
-		updateUser.setPwdUpdateTime(DateUtils.getNowDate());
+		updateUser.setPwdUpdateTime(new Date());
 
 		userService.updatePasswordByPrimaryKey(updateUser);
 

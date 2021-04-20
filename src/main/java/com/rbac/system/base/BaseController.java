@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.InitBinder;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.rbac.common.constant.ResultConstants;
-import com.rbac.common.util.DateUtils;
+import com.rbac.common.util.DateTools;
 import com.rbac.common.util.sql.SqlUtil;
 import com.rbac.framework.web.domain.AjaxResult;
 import com.rbac.framework.web.page.PageDomain;
@@ -37,7 +37,7 @@ public class BaseController {
 		binder.registerCustomEditor(Date.class, new PropertyEditorSupport() {
 			@Override
 			public void setAsText(String text) {
-				setValue(DateUtils.parseDate(text));
+				setValue(DateTools.parseDate(text));
 			}
 		});
 	}

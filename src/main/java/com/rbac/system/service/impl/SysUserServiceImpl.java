@@ -1,5 +1,6 @@
 package com.rbac.system.service.impl;
 
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -9,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.rbac.common.util.DateUtils;
 import com.rbac.common.util.sql.SqlUtil;
 import com.rbac.system.constant.RoleConstants;
 import com.rbac.system.domain.SysUser;
@@ -31,7 +31,7 @@ public class SysUserServiceImpl implements ISysUserService {
 
 	@Override
 	public Integer insertSelective(SysUser user) {
-		user.setCreateTime(DateUtils.getNowDate());
+		user.setCreateTime(new Date());
 		Integer result = userMapper.insertSelective(user);
 
 		updateRoleRelationForUser(user);
@@ -63,7 +63,7 @@ public class SysUserServiceImpl implements ISysUserService {
 	@Override
 	@Transactional
 	public Integer updateSelective(SysUser user) {
-		user.setUpdateTime(DateUtils.getNowDate());
+		user.setUpdateTime(new Date());
 
 		updateRoleRelationForUser(user);
 
@@ -72,7 +72,7 @@ public class SysUserServiceImpl implements ISysUserService {
 
 	@Override
 	public Integer updatePasswordByPrimaryKey(SysUser user) {
-		user.setUpdateTime(DateUtils.getNowDate());
+		user.setUpdateTime(new Date());
 
 		return userMapper.updateByPrimaryKeySelective(user);
 	}

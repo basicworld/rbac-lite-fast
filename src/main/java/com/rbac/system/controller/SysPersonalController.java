@@ -1,5 +1,6 @@
 package com.rbac.system.controller;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,7 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.rbac.common.constant.ResultConstants;
 import com.rbac.common.util.BCryptUtils;
-import com.rbac.common.util.DateUtils;
 import com.rbac.common.util.RSAUtils;
 import com.rbac.common.util.ServletUtils;
 import com.rbac.framework.security.domain.LoginBody;
@@ -131,7 +131,7 @@ public class SysPersonalController {
 		SysUser user = new SysUser();
 		user.setId(loginUser.getUser().getId());
 		user.setPassword(encodeNewPassword);
-		user.setPwdUpdateTime(DateUtils.getNowDate());
+		user.setPwdUpdateTime(new Date());
 		userService.updatePasswordByPrimaryKey(user);
 
 		return AjaxResult.success();
