@@ -7,6 +7,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
@@ -49,10 +51,19 @@ public class SysLoginService {
 			authentication = authenticationManager
 					.authenticate(new UsernamePasswordAuthenticationToken(username, password));
 		} catch (Exception e) {
-			if (e instanceof BadCredentialsException) {
-				logger.info("用户名或密码错误({}, {})!", username, password);
+			if (e instanceof DisabledException) {
+				// 禁用
+
+				throw new DisabledException("用户已禁用");
+			} else if (e instanceof LockedException) {
+				// 锁定
+
+				throw new LockedException("用户已锁定");
+			} else if (e instanceof BadCredentialsException) {
+				// 用户名或密码错误
 				throw new BadCredentialsException("用户名或密码错误");
 			} else {
+				// 其他错误
 				logger.error(e.getMessage());
 				throw e;
 			}

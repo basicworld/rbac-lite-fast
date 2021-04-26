@@ -12,6 +12,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -90,11 +93,27 @@ public class SysPersonalController {
 		// 解密前台传入的RSA加密密码，转换为密码明文
 		String password = RSAUtils.decrypt(rsaPrivateKey, loginBody.getPassword());
 		loginBody.setPassword(password);
-
-		logger.debug("用户登录参数: {}", loginBody);
+		if (logger.isDebugEnabled()) {
+			logger.debug("用户登录参数: {}", loginBody);
+		}
 
 		// 验证用户名和密码，并生成token
-		String token = loginService.login(loginBody.getUsername(), loginBody.getPassword());
+		String token = null;
+		try {
+			token = loginService.login(loginBody.getUsername(), loginBody.getPassword());
+		} catch (DisabledException e) {
+			logger.warn("用户{}已禁用!", loginBody.getUsername());
+			return AjaxResult.error(ResultConstants.CODE_USER_ERROR, "用户已禁用!");
+		} catch (LockedException e) {
+			logger.warn("用户{}已锁定!", loginBody.getUsername());
+			return AjaxResult.error(ResultConstants.CODE_USER_ERROR, "用户已锁定!");
+		} catch (BadCredentialsException e) {
+			logger.warn("用户名或密码错误({}, {})!", loginBody.getUsername(), loginBody.getPassword());
+			return AjaxResult.error(ResultConstants.CODE_USER_ERROR, "用户名或密码错误!");
+		} catch (Exception e) {
+			logger.warn("登录失败({}, {})! 错误信息: {}", loginBody.getUsername(), loginBody.getPassword(), e.getMessage());
+			return AjaxResult.error(ResultConstants.CODE_USER_ERROR, "服务器错误(errorcode=0115)，请联系管理员!");
+		}
 
 		return AjaxResult.success(ResultConstants.MESSAGE_SUCCESS, token);
 	}
