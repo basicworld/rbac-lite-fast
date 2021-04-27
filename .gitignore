@@ -1,4 +1,6 @@
+#
 .classpath
+
 # private config
 application-dev.properties
 

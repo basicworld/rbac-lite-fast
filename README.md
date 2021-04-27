@@ -1,6 +1,38 @@
 # rbac-lite-fast
 
-基于springboot的rbac权限系统后台
+基于springboot的rbac权限系统后台。前台页面见git项目：[rbac-lite-vue](https://github.com/basicworld/rbac-lite-vue)
+
+实现用户、角色、权限的管理控制，实现用户登录退出。
+
+## 启动方式
+
+1. 新建一个mysql库`rbac-lite`，用户名root，密码123456。将`sql/rbac-lite_*.sql`导入到库中。
+2. 启动redis，地址和端口是`localhost:6379`，无密码。
+3. 打开eclipse加载本maven项目。
+4. 将文件`resources/application-demo.properties`重命名为`resources/application-dev.properties`。
+5. 运行`Application.java`，启动成功后系统将运行在`9000`端口。
+
+默认系统登录用户是：`admin`，密码是：`Abcd1234`。
+
+用户密码采用BCrypt加密，忘记管理员密码的话，可以手动将数据库中密码字段改为`$2a$10$ceAT6b6zXRlpjCx8WAfdteI/.krXzeh15E0kQJubQ7CwuJHsSkAke`，即可使用密码`Abcd1234`登录。
+
+## 代码模块
+
+- `com.rbac` 启动器
+- `com.rbac.common` 通用工具、常量
+- `com.rbac.framework` 框架配置、认证授权
+- `com.rbac.system` 系统用户、角色、权限（菜单）管理
+
+## 系统设计
+
+- 主要技术：springboot springsecurity redis mysql
+- 认证框架：使用spring security。
+- 缓存方案：使用redis存储token。
+- 密码传递：使用RSA加密明文密码后，传输到服务器，在服务器上解密为明文。RSA密钥对在`resources/application.properties`中配置。注意这个密钥对与[rbac-lite-vue](https://github.com/basicworld/rbac-lite-vue)前端项目对应的密钥对必须一致。
+- 密码存储：使用BCrypt加密明文密码。
+- 验证码：使用算数验证码。
+- 前端路由加载：用户登录后，从后台生成用户路由信息，传递到前台。
+
 
 ## API
 
@@ -247,3 +279,5 @@
 返回: {code, msg}
 权限控制: 登录后访问，需具有system:user权限
 ```
+
+致谢：ruoyi(ruoyi-vue) panjiachen(vue-admin-element)
