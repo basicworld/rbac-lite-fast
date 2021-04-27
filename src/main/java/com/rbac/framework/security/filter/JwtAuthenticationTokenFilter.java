@@ -21,32 +21,39 @@ import com.rbac.framework.security.domain.LoginUser;
 import com.rbac.framework.security.service.TokenService;
 
 /**
- * token过滤器 验证token有效性
+ * token过滤器 验证token有效性 并延长有效token的有效期
  * 
- * @author ruoyi
+ * @author wlfei
  */
 @Component
 public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
-	public static Log logger = LogFactory.getLog(JwtAuthenticationTokenFilter.class);
+    public static Log logger = LogFactory.getLog(JwtAuthenticationTokenFilter.class);
 
-	@Autowired
-	private TokenService tokenService;
+    @Autowired
+    private TokenService tokenService;
 
-	@Override
-	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
-			throws ServletException, IOException {
-		logger.debug("JWT doFilterInternal...");
-		LoginUser loginUser = tokenService.getLoginUser(request);
-		if (null != loginUser && null == SecurityUtils.getAuthentication()) {
-			logger.debug("JWT doFilterInternal verifyToken...");
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+            throws ServletException, IOException {
+        if (logger.isDebugEnabled()) {
+            logger.debug("JWT doFilterInternal...");
+        }
+        // 从缓存获取用户信息
+        LoginUser loginUser = tokenService.getLoginUser(request);
 
-			tokenService.verifyToken(loginUser);
-			/// https://www.cnblogs.com/softidea/p/6716807.html
-			UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginUser,
-					loginUser.getPassword(), loginUser.getAuthorities());
-			authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-			SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-		}
-		chain.doFilter(request, response);
-	}
+        if (null != loginUser && null == SecurityUtils.getAuthentication()) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("JWT doFilterInternal verifyToken...");
+            }
+
+            tokenService.verifyToken(loginUser);
+
+            /// https://www.cnblogs.com/softidea/p/6716807.html
+            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginUser,
+                    loginUser.getPassword(), loginUser.getAuthorities());
+            authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+            SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+        }
+        chain.doFilter(request, response);
+    }
 }
