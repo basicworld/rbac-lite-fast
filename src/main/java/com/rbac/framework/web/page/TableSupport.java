@@ -1,5 +1,6 @@
 package com.rbac.framework.web.page;
 
+import com.rbac.common.constant.SqlConstants;
 import com.rbac.common.util.ServletUtils;
 
 /**
@@ -11,22 +12,22 @@ public class TableSupport {
 	/**
 	 * 当前记录起始索引
 	 */
-	public static final String PAGE_NUM = "pageNum";
+	public static final String PAGE_NUM = SqlConstants.PAGE_NUM;
 
 	/**
 	 * 每页显示记录数
 	 */
-	public static final String PAGE_SIZE = "pageSize";
+	public static final String PAGE_SIZE = SqlConstants.PAGE_SIZE;
 
 	/**
 	 * 排序列
 	 */
-	public static final String ORDER_BY_COLUMN = "orderByColumn";
+	public static final String ORDER_BY_COLUMN = SqlConstants.ORDER_BY_COLUMN;
 
 	/**
 	 * 排序的方向 "desc" 或者 "asc".
 	 */
-	public static final String IS_ASC = "isAsc";
+	public static final String IS_ASC = SqlConstants.IS_ASC;
 
 	/**
 	 * 封装分页对象

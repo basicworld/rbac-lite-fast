@@ -16,6 +16,7 @@ import com.rbac.system.domain.SysUser;
 import com.rbac.system.domain.SysUserExample;
 import com.rbac.system.domain.SysUserRole;
 import com.rbac.system.mapper.SysUserMapper;
+import com.rbac.system.service.ISysMessageService;
 import com.rbac.system.service.ISysRoleService;
 import com.rbac.system.service.ISysUserRoleService;
 import com.rbac.system.service.ISysUserService;
@@ -28,6 +29,8 @@ public class SysUserServiceImpl implements ISysUserService {
 	ISysUserRoleService userRoleService;
 	@Autowired
 	ISysRoleService roleService;
+	@Autowired
+	ISysMessageService messageService;
 
 	@Override
 	public Integer insertSelective(SysUser user) {
@@ -73,8 +76,13 @@ public class SysUserServiceImpl implements ISysUserService {
 	@Override
 	public Integer updatePasswordByPrimaryKey(SysUser user) {
 		user.setUpdateTime(new Date());
+		Integer updateResult = userMapper.updateByPrimaryKeySelective(user);
 
-		return userMapper.updateByPrimaryKeySelective(user);
+		// 系统通知
+		SysUser userInDB = selectByPrimaryKey(user.getId());
+		messageService.insertAdminUpdatePasswordMessage("系统管理员", null, userInDB.getNickName(), user.getId());
+
+		return updateResult;
 	}
 
 	@Override

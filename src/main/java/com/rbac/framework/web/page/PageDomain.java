@@ -2,6 +2,7 @@ package com.rbac.framework.web.page;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.rbac.common.constant.SqlConstants;
 import com.rbac.common.util.StringTools;
 
 /**
@@ -23,7 +24,7 @@ public class PageDomain {
 		if (StringUtils.isBlank(orderByColumn)) {
 			return "";
 		}
-		return StringTools.toUnderScoreCase(orderByColumn) + " " + StringUtils.defaultString(isAsc, "asc");
+		return StringTools.toUnderScoreCase(orderByColumn) + " " + StringUtils.defaultString(isAsc, SqlConstants.ASC);
 	}
 
 	public Integer getPageNum() {

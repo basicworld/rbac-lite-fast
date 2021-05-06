@@ -7,7 +7,7 @@
 #
 # 主机: 127.0.0.1 (MySQL 5.7.29)
 # 数据库: rbac-lite
-# 生成时间: 2021-04-27 14:22:50 +0000
+# 生成时间: 2021-05-06 17:03:42 +0000
 # ************************************************************
 
 
@@ -56,6 +56,78 @@ VALUES
 	(3,1,'角色管理','role','system/role/index',0,0,1,0,'system:role',NULL,NULL,NULL,NULL,NULL,0,NULL);
 
 /*!40000 ALTER TABLE `sys_menu` ENABLE KEYS */;
+UNLOCK TABLES;
+
+
+# 转储表 sys_message
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `sys_message`;
+
+CREATE TABLE `sys_message` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增主键',
+  `sender` varchar(255) NOT NULL DEFAULT '' COMMENT '发送人',
+  `sender_id` bigint(20) unsigned DEFAULT NULL COMMENT '发送人主键',
+  `receiver` varchar(255) NOT NULL DEFAULT '' COMMENT '收信人',
+  `receiver_id` bigint(20) unsigned NOT NULL COMMENT '收信人主键',
+  `title` varchar(1000) NOT NULL DEFAULT '' COMMENT '标题',
+  `content` varchar(1000) NOT NULL DEFAULT '' COMMENT '内容',
+  `visible` tinyint(3) unsigned NOT NULL COMMENT '是否可见 0-no 1-yes',
+  `has_read` tinyint(3) unsigned NOT NULL COMMENT '是否已读 0-no 1-yes',
+  `deleted` tinyint(3) unsigned NOT NULL COMMENT '是否已删除 0-no 1-yes',
+  `create_by` varchar(100) DEFAULT NULL COMMENT '创建人',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_by` varchar(100) DEFAULT NULL COMMENT '更新人',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  PRIMARY KEY (`id`),
+  KEY `idx_receiver_id` (`receiver_id`),
+  KEY `idx_has_read_create_time` (`has_read`,`create_time`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='消息表';
+
+LOCK TABLES `sys_message` WRITE;
+/*!40000 ALTER TABLE `sys_message` DISABLE KEYS */;
+
+INSERT INTO `sys_message` (`id`, `sender`, `sender_id`, `receiver`, `receiver_id`, `title`, `content`, `visible`, `has_read`, `deleted`, `create_by`, `create_time`, `update_by`, `update_time`)
+VALUES
+	(1,'admin',NULL,'user',1,'title1','content1',1,1,0,NULL,'2021-01-01 11:00:00','超级管理员','2021-05-07 01:01:22');
+
+/*!40000 ALTER TABLE `sys_message` ENABLE KEYS */;
+UNLOCK TABLES;
+
+
+# 转储表 sys_message_model
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `sys_message_model`;
+
+CREATE TABLE `sys_message_model` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增主键',
+  `model_key` varchar(255) NOT NULL COMMENT '模版唯一标识',
+  `title_model` varchar(255) NOT NULL COMMENT '标题模版',
+  `title_model_desc` varchar(1000) NOT NULL DEFAULT '' COMMENT '标题模版描述',
+  `content_model` varchar(1000) NOT NULL COMMENT '内容模版',
+  `content_model_desc` varchar(1000) NOT NULL DEFAULT '' COMMENT '内容模版描述',
+  `send_system_message` tinyint(3) unsigned NOT NULL COMMENT '是否发送站内信 0-no 1-yes',
+  `send_sms` tinyint(3) unsigned NOT NULL COMMENT '是否发送短信 0-no 1-yes',
+  `send_email` tinyint(3) unsigned NOT NULL COMMENT '是否发送邮件 0-no 1-yes',
+  `enable` tinyint(3) unsigned NOT NULL COMMENT '是否启用 0-no 1-yes',
+  `note` varchar(255) DEFAULT NULL COMMENT '备注',
+  `create_by` varchar(100) DEFAULT NULL COMMENT '创建人',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_by` varchar(100) DEFAULT NULL COMMENT '更新人',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uniq_model_key` (`model_key`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='消息模版表';
+
+LOCK TABLES `sys_message_model` WRITE;
+/*!40000 ALTER TABLE `sys_message_model` DISABLE KEYS */;
+
+INSERT INTO `sys_message_model` (`id`, `model_key`, `title_model`, `title_model_desc`, `content_model`, `content_model_desc`, `send_system_message`, `send_sms`, `send_email`, `enable`, `note`, `create_by`, `create_time`, `update_by`, `update_time`)
+VALUES
+	(1,'system:admin:changePassword','修改密码通知','','管理员 {0} 为你重置了密码。','{0}-管理员名称',1,0,0,1,NULL,'admin','2021-01-01 12:30:00',NULL,NULL);
+
+/*!40000 ALTER TABLE `sys_message_model` ENABLE KEYS */;
 UNLOCK TABLES;
 
 

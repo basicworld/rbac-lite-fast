@@ -1,0 +1,364 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rbac.system.mapper.SysMessageModelMapper">
+  <resultMap id="BaseResultMap" type="com.rbac.system.domain.SysMessageModel">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="model_key" jdbcType="VARCHAR" property="modelKey" />
+    <result column="title_model" jdbcType="VARCHAR" property="titleModel" />
+    <result column="title_model_desc" jdbcType="VARCHAR" property="titleModelDesc" />
+    <result column="content_model" jdbcType="VARCHAR" property="contentModel" />
+    <result column="content_model_desc" jdbcType="VARCHAR" property="contentModelDesc" />
+    <result column="send_system_message" jdbcType="TINYINT" property="sendSystemMessage" />
+    <result column="send_sms" jdbcType="TINYINT" property="sendSms" />
+    <result column="send_email" jdbcType="TINYINT" property="sendEmail" />
+    <result column="enable" jdbcType="TINYINT" property="enable" />
+    <result column="note" jdbcType="VARCHAR" property="note" />
+    <result column="create_by" jdbcType="VARCHAR" property="createBy" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_by" jdbcType="VARCHAR" property="updateBy" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, model_key, title_model, title_model_desc, content_model, content_model_desc, 
+    send_system_message, send_sms, send_email, enable, note, create_by, create_time, 
+    update_by, update_time
+  </sql>
+  <select id="selectByExample" parameterType="com.rbac.system.domain.SysMessageModelExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    'false' as QUERYID,
+    <include refid="Base_Column_List" />
+    from sys_message_model
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from sys_message_model
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from sys_message_model
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.rbac.system.domain.SysMessageModelExample">
+    delete from sys_message_model
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.rbac.system.domain.SysMessageModel" useGeneratedKeys="true">
+    insert into sys_message_model (model_key, title_model, title_model_desc, 
+      content_model, content_model_desc, send_system_message, 
+      send_sms, send_email, enable, 
+      note, create_by, create_time, 
+      update_by, update_time)
+    values (#{modelKey,jdbcType=VARCHAR}, #{titleModel,jdbcType=VARCHAR}, #{titleModelDesc,jdbcType=VARCHAR}, 
+      #{contentModel,jdbcType=VARCHAR}, #{contentModelDesc,jdbcType=VARCHAR}, #{sendSystemMessage,jdbcType=TINYINT}, 
+      #{sendSms,jdbcType=TINYINT}, #{sendEmail,jdbcType=TINYINT}, #{enable,jdbcType=TINYINT}, 
+      #{note,jdbcType=VARCHAR}, #{createBy,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{updateBy,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.rbac.system.domain.SysMessageModel" useGeneratedKeys="true">
+    insert into sys_message_model
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="modelKey != null">
+        model_key,
+      </if>
+      <if test="titleModel != null">
+        title_model,
+      </if>
+      <if test="titleModelDesc != null">
+        title_model_desc,
+      </if>
+      <if test="contentModel != null">
+        content_model,
+      </if>
+      <if test="contentModelDesc != null">
+        content_model_desc,
+      </if>
+      <if test="sendSystemMessage != null">
+        send_system_message,
+      </if>
+      <if test="sendSms != null">
+        send_sms,
+      </if>
+      <if test="sendEmail != null">
+        send_email,
+      </if>
+      <if test="enable != null">
+        enable,
+      </if>
+      <if test="note != null">
+        note,
+      </if>
+      <if test="createBy != null">
+        create_by,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateBy != null">
+        update_by,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="modelKey != null">
+        #{modelKey,jdbcType=VARCHAR},
+      </if>
+      <if test="titleModel != null">
+        #{titleModel,jdbcType=VARCHAR},
+      </if>
+      <if test="titleModelDesc != null">
+        #{titleModelDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="contentModel != null">
+        #{contentModel,jdbcType=VARCHAR},
+      </if>
+      <if test="contentModelDesc != null">
+        #{contentModelDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="sendSystemMessage != null">
+        #{sendSystemMessage,jdbcType=TINYINT},
+      </if>
+      <if test="sendSms != null">
+        #{sendSms,jdbcType=TINYINT},
+      </if>
+      <if test="sendEmail != null">
+        #{sendEmail,jdbcType=TINYINT},
+      </if>
+      <if test="enable != null">
+        #{enable,jdbcType=TINYINT},
+      </if>
+      <if test="note != null">
+        #{note,jdbcType=VARCHAR},
+      </if>
+      <if test="createBy != null">
+        #{createBy,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateBy != null">
+        #{updateBy,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.rbac.system.domain.SysMessageModelExample" resultType="java.lang.Long">
+    select count(*) from sys_message_model
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update sys_message_model
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=BIGINT},
+      </if>
+      <if test="record.modelKey != null">
+        model_key = #{record.modelKey,jdbcType=VARCHAR},
+      </if>
+      <if test="record.titleModel != null">
+        title_model = #{record.titleModel,jdbcType=VARCHAR},
+      </if>
+      <if test="record.titleModelDesc != null">
+        title_model_desc = #{record.titleModelDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="record.contentModel != null">
+        content_model = #{record.contentModel,jdbcType=VARCHAR},
+      </if>
+      <if test="record.contentModelDesc != null">
+        content_model_desc = #{record.contentModelDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="record.sendSystemMessage != null">
+        send_system_message = #{record.sendSystemMessage,jdbcType=TINYINT},
+      </if>
+      <if test="record.sendSms != null">
+        send_sms = #{record.sendSms,jdbcType=TINYINT},
+      </if>
+      <if test="record.sendEmail != null">
+        send_email = #{record.sendEmail,jdbcType=TINYINT},
+      </if>
+      <if test="record.enable != null">
+        enable = #{record.enable,jdbcType=TINYINT},
+      </if>
+      <if test="record.note != null">
+        note = #{record.note,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createBy != null">
+        create_by = #{record.createBy,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createTime != null">
+        create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updateBy != null">
+        update_by = #{record.updateBy,jdbcType=VARCHAR},
+      </if>
+      <if test="record.updateTime != null">
+        update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update sys_message_model
+    set id = #{record.id,jdbcType=BIGINT},
+      model_key = #{record.modelKey,jdbcType=VARCHAR},
+      title_model = #{record.titleModel,jdbcType=VARCHAR},
+      title_model_desc = #{record.titleModelDesc,jdbcType=VARCHAR},
+      content_model = #{record.contentModel,jdbcType=VARCHAR},
+      content_model_desc = #{record.contentModelDesc,jdbcType=VARCHAR},
+      send_system_message = #{record.sendSystemMessage,jdbcType=TINYINT},
+      send_sms = #{record.sendSms,jdbcType=TINYINT},
+      send_email = #{record.sendEmail,jdbcType=TINYINT},
+      enable = #{record.enable,jdbcType=TINYINT},
+      note = #{record.note,jdbcType=VARCHAR},
+      create_by = #{record.createBy,jdbcType=VARCHAR},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      update_by = #{record.updateBy,jdbcType=VARCHAR},
+      update_time = #{record.updateTime,jdbcType=TIMESTAMP}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.rbac.system.domain.SysMessageModel">
+    update sys_message_model
+    <set>
+      <if test="modelKey != null">
+        model_key = #{modelKey,jdbcType=VARCHAR},
+      </if>
+      <if test="titleModel != null">
+        title_model = #{titleModel,jdbcType=VARCHAR},
+      </if>
+      <if test="titleModelDesc != null">
+        title_model_desc = #{titleModelDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="contentModel != null">
+        content_model = #{contentModel,jdbcType=VARCHAR},
+      </if>
+      <if test="contentModelDesc != null">
+        content_model_desc = #{contentModelDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="sendSystemMessage != null">
+        send_system_message = #{sendSystemMessage,jdbcType=TINYINT},
+      </if>
+      <if test="sendSms != null">
+        send_sms = #{sendSms,jdbcType=TINYINT},
+      </if>
+      <if test="sendEmail != null">
+        send_email = #{sendEmail,jdbcType=TINYINT},
+      </if>
+      <if test="enable != null">
+        enable = #{enable,jdbcType=TINYINT},
+      </if>
+      <if test="note != null">
+        note = #{note,jdbcType=VARCHAR},
+      </if>
+      <if test="createBy != null">
+        create_by = #{createBy,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateBy != null">
+        update_by = #{updateBy,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.rbac.system.domain.SysMessageModel">
+    update sys_message_model
+    set model_key = #{modelKey,jdbcType=VARCHAR},
+      title_model = #{titleModel,jdbcType=VARCHAR},
+      title_model_desc = #{titleModelDesc,jdbcType=VARCHAR},
+      content_model = #{contentModel,jdbcType=VARCHAR},
+      content_model_desc = #{contentModelDesc,jdbcType=VARCHAR},
+      send_system_message = #{sendSystemMessage,jdbcType=TINYINT},
+      send_sms = #{sendSms,jdbcType=TINYINT},
+      send_email = #{sendEmail,jdbcType=TINYINT},
+      enable = #{enable,jdbcType=TINYINT},
+      note = #{note,jdbcType=VARCHAR},
+      create_by = #{createBy,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_by = #{updateBy,jdbcType=VARCHAR},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

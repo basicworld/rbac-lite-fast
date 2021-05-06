@@ -41,8 +41,25 @@
 		</javaClientGenerator>
 
 		<!--生成对应表及类名 -->
-
-
+		<table tableName="sys_message_model" domainObjectName="SysMessageModel" enableCountByExample="true" enableUpdateByExample="true"
+			enableDeleteByExample="true" enableSelectByExample="true" selectByExampleQueryId="false">
+			<property name="my.isgen.usekeys" value="true" />
+			<property name="useActualColumnNames" value="false" />
+			<generatedKey column="id" sqlStatement="JDBC" />
+		</table>
+		<!-- <table tableName="sys_message" domainObjectName="SysMessage" enableCountByExample="true" enableUpdateByExample="true"
+			enableDeleteByExample="true" enableSelectByExample="true" selectByExampleQueryId="false">
+			<property name="my.isgen.usekeys" value="true" />
+			<property name="useActualColumnNames" value="false" />
+			<generatedKey column="id" sqlStatement="JDBC" />
+		</table> -->
+		<!-- <table tableName="sys_message_model" domainObjectName="SysMessageModel" enableCountByExample="false" enableUpdateByExample="true"
+			enableDeleteByExample="true" enableSelectByExample="true" selectByExampleQueryId="false">
+			<property name="my.isgen.usekeys" value="true" />
+			<property name="useActualColumnNames" value="false" />
+			<generatedKey column="id" sqlStatement="JDBC" />
+		</table> -->
+		<!-- 
 		<table tableName="sys_user" domainObjectName="SysUser" enableCountByExample="false" enableUpdateByExample="true"
 			enableDeleteByExample="true" enableSelectByExample="true" selectByExampleQueryId="false">
 			<property name="my.isgen.usekeys" value="true" />
@@ -60,7 +77,7 @@
 			<property name="my.isgen.usekeys" value="true" />
 			<property name="useActualColumnNames" value="false" />
 			<generatedKey column="id" sqlStatement="JDBC" />
-		</table>
+		</table> -->
 		<!-- <table tableName="sys_user_role" domainObjectName="SysUserRole" enableCountByExample="false" enableUpdateByExample="true"
 			enableDeleteByExample="true" enableSelectByExample="true" selectByExampleQueryId="false">
 			<property name="my.isgen.usekeys" value="true" />

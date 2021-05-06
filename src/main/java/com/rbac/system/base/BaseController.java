@@ -56,6 +56,23 @@ public class BaseController {
 	}
 
 	/**
+	 * 设置请求分页数据<br>
+	 * 
+	 * customizeOrderBy example: "column1 desc, column 2 asc"
+	 * 
+	 * 
+	 * @param customizeOrderBy 自定义的orderby 字段
+	 */
+	protected void startPage(String customizeOrderBy) {
+		PageDomain pageDomain = TableSupport.buildPageRequest();
+		Integer pageNum = pageDomain.getPageNum();
+		Integer pageSize = pageDomain.getPageSize();
+		if ((null != pageNum) && (null != pageSize)) {
+			PageHelper.startPage(pageNum, pageSize, customizeOrderBy);
+		}
+	}
+
+	/**
 	 * 响应请求分页数据
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
