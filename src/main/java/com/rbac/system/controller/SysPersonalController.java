@@ -185,7 +185,7 @@ public class SysPersonalController {
 		updateUser.setEmail(StringUtils.defaultString(user.getEmail(), ""));
 		updateUser.setPhone(StringUtils.defaultString(user.getPhone(), ""));
 
-		userService.updateSelective(updateUser);
+		userService.updatePersonalInfoSelective(updateUser);
 
 		// 站内信通知
 		msgService.insertPersonalChangeInfoMessage(updateUser.getNickName(), updateUser.getId());

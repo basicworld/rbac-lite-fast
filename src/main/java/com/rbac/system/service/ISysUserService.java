@@ -82,4 +82,11 @@ public interface ISysUserService extends BaseService<SysUser> {
 	 */
 	Integer deleteByPrimaryKey(List<Long> userIds);
 
+	/**
+	 * 更新用户个人信息
+	 * 
+	 * @param user
+	 */
+	Integer updatePersonalInfoSelective(SysUser user);
+
 }

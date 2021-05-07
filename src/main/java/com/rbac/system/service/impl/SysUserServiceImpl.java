@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.rbac.common.util.sql.SqlUtil;
 import com.rbac.system.constant.RoleConstants;
+import com.rbac.system.domain.SysRole;
 import com.rbac.system.domain.SysUser;
 import com.rbac.system.domain.SysUserExample;
 import com.rbac.system.domain.SysUserRole;
@@ -82,6 +83,13 @@ public class SysUserServiceImpl implements ISysUserService {
 	}
 
 	@Override
+	public Integer updatePersonalInfoSelective(SysUser user) {
+		user.setUpdateTime(new Date());
+
+		return userMapper.updateByPrimaryKeySelective(user);
+	}
+
+	@Override
 	public Integer updatePasswordByPrimaryKey(SysUser user) {
 		user.setUpdateTime(new Date());
 		Integer updateResult = userMapper.updateByPrimaryKeySelective(user);
@@ -130,9 +138,12 @@ public class SysUserServiceImpl implements ISysUserService {
 	public Boolean isAdmin(Long userId) {
 		List<Long> roleIds = userRoleService.listByUserId(userId).stream().map(v -> v.getRoleId())
 				.collect(Collectors.toList());
-		return roleService.listByRoleId(roleIds).stream()
-				.filter(v -> RoleConstants.ADMIN_ROLE_KEY.equals(v.getRoleKey())).collect(Collectors.toList())
-				.size() > 0;
+		for (SysRole roleOfUser : roleService.listByRoleId(roleIds)) {
+			if (RoleConstants.ADMIN_ROLE_KEY.equals(roleOfUser.getRoleKey())) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@Override
