@@ -18,6 +18,7 @@ import com.rbac.system.domain.SysUser;
 import com.rbac.system.mapper.SysMessageMapper;
 import com.rbac.system.service.ISysMessageModelService;
 import com.rbac.system.service.ISysMessageService;
+import com.rbac.system.service.ISysUserService;
 
 /**
  * 消息服务 实现类
@@ -27,11 +28,16 @@ import com.rbac.system.service.ISysMessageService;
  */
 @Service
 public class SysMessageServiceImpl implements ISysMessageService {
+	private static final String SYSTEM_NAME = "系统提醒";
+	private static final Long SYSTEM_ID = 0L;
 	@Autowired
 	SysMessageMapper messageMapper;
 
 	@Autowired
 	ISysMessageModelService msgModelService;
+
+	@Autowired
+	ISysUserService userService;
 
 	/**
 	 * 获取用户的消息列表
@@ -128,18 +134,6 @@ public class SysMessageServiceImpl implements ISysMessageService {
 	}
 
 	@Override
-	public Integer insertAdminUpdatePasswordMessage(String senderName, Long senderID, String receiverName,
-			Long receiverID) {
-		SysMessageModel msgModel = msgModelService.selectByModelKey(MessageConstants.MODEL_KEY_ADMIN_CHANGE_PASSWORD);
-		if (null == msgModel) {
-			return null;
-		}
-		String content = MessageFormat.format(msgModel.getContentModel(), senderName);
-
-		return insertMessage(msgModel.getTitleModel(), content, senderName, senderID, receiverName, receiverID);
-	}
-
-	@Override
 	public Integer markMessageAsRead(List<Long> messageIds, SysUser user) {
 
 		// 如果消息ID中包含【全部消息】主键标记，则把这个用户的所有消息标记为已读
@@ -159,6 +153,92 @@ public class SysMessageServiceImpl implements ISysMessageService {
 
 		return messageMapper.updateByExampleSelective(updateParam, example);
 
+	}
+
+	@Override
+	public Integer insertAdminUpdatePasswordMessage(String senderName, Long senderID, String receiverName,
+			Long receiverID) {
+		SysMessageModel msgModel = msgModelService.selectByModelKey(MessageConstants.MODEL_KEY_ADMIN_CHANGE_PASSWORD);
+		if (null == msgModel) {
+			return null;
+		}
+		String content = MessageFormat.format(msgModel.getContentModel(), senderName);
+
+		return insertMessage(msgModel.getTitleModel(), content, senderName, senderID, receiverName, receiverID);
+	}
+
+	@Override
+	public Integer insertAdminDisableUserMessage(String senderName, Long senderID, String receiverName,
+			Long receiverID) {
+		SysMessageModel msgModel = msgModelService.selectByModelKey(MessageConstants.MODEL_KEY_ADMIN_DISABLE_USER);
+		if (null == msgModel) {
+			return null;
+		}
+		String content = MessageFormat.format(msgModel.getContentModel(), senderName);
+
+		return insertMessage(msgModel.getTitleModel(), content, senderName, senderID, receiverName, receiverID);
+	}
+
+	@Override
+	public Integer insertAdminEnableUserMessage(String senderName, Long senderID, String receiverName,
+			Long receiverID) {
+		SysMessageModel msgModel = msgModelService.selectByModelKey(MessageConstants.MODEL_KEY_ADMIN_ENABLE_USER);
+		if (null == msgModel) {
+			return null;
+		}
+		String content = MessageFormat.format(msgModel.getContentModel(), senderName);
+
+		return insertMessage(msgModel.getTitleModel(), content, senderName, senderID, receiverName, receiverID);
+	}
+
+	@Override
+	public Integer insertAdminChangeUserPermissionMessage(String senderName, Long senderID, String receiverName,
+			Long receiverID) {
+		SysMessageModel msgModel = msgModelService
+				.selectByModelKey(MessageConstants.MODEL_KEY_ADMIN_CHANGE_USER_PERMISSION);
+		if (null == msgModel) {
+			return null;
+		}
+		String content = MessageFormat.format(msgModel.getContentModel(), senderName);
+
+		return insertMessage(msgModel.getTitleModel(), content, senderName, senderID, receiverName, receiverID);
+	}
+
+	@Override
+	public Integer insertPersonalPasswordExpireMessage(String personName, Long personID, Integer expireDays) {
+		SysMessageModel msgModel = msgModelService
+				.selectByModelKey(MessageConstants.MODEL_KEY_PERSONAL_PASSWORD_EXPIRE_WARN);
+		if (null == msgModel) {
+			return null;
+		}
+		String content = MessageFormat.format(msgModel.getContentModel(), expireDays);
+
+		return insertMessage(msgModel.getTitleModel(), content, SYSTEM_NAME, SYSTEM_ID, personName, personID);
+	}
+
+	@Override
+	public Integer insertPersonalChangeInfoMessage(String personName, Long personID) {
+		SysUser userInDB = userService.selectByPrimaryKey(personID);
+		SysMessageModel msgModel = msgModelService.selectByModelKey(MessageConstants.MODEL_KEY_PERSONAL_UPDATE_INFO);
+		if (null == msgModel) {
+			return null;
+		}
+		String content = MessageFormat.format(msgModel.getContentModel(), userInDB.getNickName(), userInDB.getEmail(),
+				userInDB.getPhone());
+
+		return insertMessage(msgModel.getTitleModel(), content, SYSTEM_NAME, SYSTEM_ID, personName, personID);
+	}
+
+	@Override
+	public Integer insertPersonalChangePasswordMessage(String personName, Long personID) {
+		SysMessageModel msgModel = msgModelService
+				.selectByModelKey(MessageConstants.MODEL_KEY_PERSONAL_UPDATE_PASSWORD);
+		if (null == msgModel) {
+			return null;
+		}
+		String content = msgModel.getContentModel();
+
+		return insertMessage(msgModel.getTitleModel(), content, SYSTEM_NAME, SYSTEM_ID, personName, personID);
 	}
 
 }

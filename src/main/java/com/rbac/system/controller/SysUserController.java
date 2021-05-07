@@ -1,5 +1,6 @@
 package com.rbac.system.controller;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -30,8 +31,10 @@ import com.rbac.framework.web.domain.AjaxResult;
 import com.rbac.framework.web.page.TableDataInfo;
 import com.rbac.system.base.BaseController;
 import com.rbac.system.constant.RoleConstants;
+import com.rbac.system.constant.UserConstants;
 import com.rbac.system.domain.SysRole;
 import com.rbac.system.domain.SysUser;
+import com.rbac.system.service.ISysMessageService;
 import com.rbac.system.service.ISysRoleService;
 import com.rbac.system.service.ISysUserRoleService;
 import com.rbac.system.service.ISysUserService;
@@ -62,6 +65,9 @@ public class SysUserController extends BaseController {
 
 	@Value("${rsa.privateKey}")
 	private String rsaPrivateKey;
+
+	@Autowired
+	ISysMessageService msgService;
 
 	/**
 	 * 获取用户列表
@@ -142,9 +148,13 @@ public class SysUserController extends BaseController {
 		// 设置删除标记：未删除
 		user.setDeleted(BaseConstants.NOT_DELETED);
 
+		// 设置密码删除时间，以使密码过期检测功能生效
+		user.setPwdUpdateTime(new Date());
+
 		userService.insertSelective(user);
 
-		return AjaxResult.success("用户{}创建成功", user.getUserName());
+		String msg = MessageFormat.format("用户{}创建成功", user.getUserName());
+		return AjaxResult.success(msg);
 	}
 
 	/**
@@ -210,7 +220,8 @@ public class SysUserController extends BaseController {
 		// 执行删除
 		int deleteCount = userService.deleteByPrimaryKey(userIds);
 
-		return AjaxResult.success("成功删除{}个账号", deleteCount);
+		String msg = MessageFormat.format("成功删除{0}个账号", deleteCount);
+		return AjaxResult.success(msg);
 	}
 
 	/**
@@ -256,6 +267,22 @@ public class SysUserController extends BaseController {
 
 		userService.updateSelective(updateUser);
 
+		// 站内信
+		boolean is_updateUser_disabled = UserConstants.STATUS_DISABLE == user.getStatus();
+		boolean is_dbUser_enable = UserConstants.STATUS_ENABLE == existUser.getStatus();
+		boolean is_dbUser_disabled = !is_dbUser_enable;
+		boolean is_updateUser_enable = !is_updateUser_disabled;
+		// 用户停用站内信
+		if (is_dbUser_enable && is_updateUser_disabled) {
+			msgService.insertAdminDisableUserMessage(loginUser.getUser().getNickName(), loginUser.getUser().getId(),
+					existUser.getNickName(), existUser.getId());
+		}
+		// 用户启用站内信
+		if (is_dbUser_disabled && is_updateUser_enable) {
+			msgService.insertAdminEnableUserMessage(loginUser.getUser().getNickName(), loginUser.getUser().getId(),
+					existUser.getNickName(), existUser.getId());
+		}
+
 		return AjaxResult.success();
 	}
 
@@ -297,6 +324,9 @@ public class SysUserController extends BaseController {
 		updateUser.setPwdUpdateTime(new Date());
 
 		userService.updatePasswordByPrimaryKey(updateUser);
+
+		msgService.insertAdminUpdatePasswordMessage(loginUser.getUser().getNickName(), loginUser.getUser().getId(),
+				existUser.getNickName(), existUser.getId());
 
 		return AjaxResult.success();
 	}

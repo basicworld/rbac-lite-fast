@@ -7,7 +7,7 @@
 #
 # 主机: 127.0.0.1 (MySQL 5.7.29)
 # 数据库: rbac-lite
-# 生成时间: 2021-05-06 17:03:42 +0000
+# 生成时间: 2021-05-07 08:23:37 +0000
 # ************************************************************
 
 
@@ -89,7 +89,7 @@ LOCK TABLES `sys_message` WRITE;
 
 INSERT INTO `sys_message` (`id`, `sender`, `sender_id`, `receiver`, `receiver_id`, `title`, `content`, `visible`, `has_read`, `deleted`, `create_by`, `create_time`, `update_by`, `update_time`)
 VALUES
-	(1,'admin',NULL,'user',1,'title1','content1',1,1,0,NULL,'2021-01-01 11:00:00','超级管理员','2021-05-07 01:01:22');
+	(1,'admin',NULL,'admin',1,'演示通知标题','演示通知内容。',1,1,0,NULL,'2021-01-01 11:00:00','超级管理员','2021-05-07 13:57:20');
 
 /*!40000 ALTER TABLE `sys_message` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -125,7 +125,13 @@ LOCK TABLES `sys_message_model` WRITE;
 
 INSERT INTO `sys_message_model` (`id`, `model_key`, `title_model`, `title_model_desc`, `content_model`, `content_model_desc`, `send_system_message`, `send_sms`, `send_email`, `enable`, `note`, `create_by`, `create_time`, `update_by`, `update_time`)
 VALUES
-	(1,'system:admin:changePassword','修改密码通知','','管理员 {0} 为你重置了密码。','{0}-管理员名称',1,0,0,1,NULL,'admin','2021-01-01 12:30:00',NULL,NULL);
+	(1,'system:admin:changePassword','修改密码通知','','管理员 {0} 为你重置了密码。','{0}-管理员名称',1,0,0,1,NULL,'admin','2021-01-01 12:30:00',NULL,NULL),
+	(2,'system:admin:disableUser','账号停用通知','','管理员 {0} 将你的账号设置为停用。','{0}-管理员名称',1,0,0,0,NULL,NULL,'2021-01-01 12:30:00',NULL,NULL),
+	(3,'system:admin:enableUser','账号启用通知','','管理员 {0} 将你的账号设置为启用。','{0}-管理员名称',1,0,0,1,NULL,'admin','2021-01-01 12:30:00',NULL,NULL),
+	(4,'system:admin:changeUserPermission','权限变更通知','','管理员 {0} 为你调整了账号权限。','{0}-管理员名称',1,0,0,1,NULL,'admin','2021-01-01 12:30:00',NULL,NULL),
+	(5,'system:personal:passwordExpireWarning','密码过期预警','','你已经超过 {0} 天未修改密码，为了账号安全请及时修改密码。','{0}-密码过期天数',1,0,0,1,NULL,'admin','2021-01-01 12:30:00',NULL,NULL),
+	(6,'system:personal:updateMyInfo','个人信息修改结果','','用户信息修改成功，当前昵称：{0}，当前邮箱：{1}，当前手机号：{2}。','{0}-昵称 {1}-邮箱 {2}-手机号',1,0,0,1,NULL,'admin','2021-01-01 12:30:00',NULL,NULL),
+	(7,'system:personal:updatePassword','密码修改结果','','密码已修改成功。','',1,0,0,0,NULL,NULL,NULL,NULL,NULL);
 
 /*!40000 ALTER TABLE `sys_message_model` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -221,7 +227,7 @@ LOCK TABLES `sys_user` WRITE;
 
 INSERT INTO `sys_user` (`id`, `user_name`, `password`, `status`, `nick_name`, `phone`, `email`, `pwd_update_time`, `dept_name`, `create_by`, `create_time`, `update_by`, `update_time`, `deleted`, `note`)
 VALUES
-	(1,'admin','$2a$10$ceAT6b6zXRlpjCx8WAfdteI/.krXzeh15E0kQJubQ7CwuJHsSkAke',0,'超级管理员','','','2021-03-29 17:05:02',NULL,NULL,'2021-03-27 18:34:41',NULL,'2021-03-29 17:05:02',0,NULL);
+	(1,'admin','$2a$10$TT0JVZkVlCnrEP1rt5nnye6YRleNihqx0r1dbR1J2Up/j77Ikxyua',0,'超级管理员','','','2021-05-07 16:09:10',NULL,NULL,'2021-03-27 18:34:41',NULL,'2021-05-07 16:09:10',0,NULL);
 
 /*!40000 ALTER TABLE `sys_user` ENABLE KEYS */;
 UNLOCK TABLES;

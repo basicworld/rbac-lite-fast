@@ -34,6 +34,7 @@ import com.rbac.system.domain.Captcha;
 import com.rbac.system.domain.SysUser;
 import com.rbac.system.domain.dto.UserPwdDTO;
 import com.rbac.system.service.ICaptchaService;
+import com.rbac.system.service.ISysMessageService;
 import com.rbac.system.service.ISysRoleService;
 import com.rbac.system.service.ISysUserRoleService;
 import com.rbac.system.service.ISysUserService;
@@ -71,6 +72,9 @@ public class SysPersonalController {
 
 	@Autowired
 	ICaptchaService captchaService;
+
+	@Autowired
+	ISysMessageService msgService;
 
 	/**
 	 * 用户登录
@@ -115,6 +119,10 @@ public class SysPersonalController {
 			return AjaxResult.error(ResultConstants.CODE_USER_ERROR, "服务器错误(errorcode=0115)，请联系管理员!");
 		}
 
+		// 判断密码过期情况，并发送站内信提醒
+		LoginUser loginUser = tokenService.getLoginUser(token);
+		userService.checkIfPasswordExpired(loginUser.getUser(), true);
+
 		return AjaxResult.success(ResultConstants.MESSAGE_SUCCESS, token);
 	}
 
@@ -153,6 +161,9 @@ public class SysPersonalController {
 		user.setPwdUpdateTime(new Date());
 		userService.updatePasswordByPrimaryKey(user);
 
+		// 站内信通知
+		msgService.insertPersonalChangePasswordMessage(userInDB.getNickName(), userInDB.getId());
+
 		return AjaxResult.success();
 	}
 
@@ -175,6 +186,9 @@ public class SysPersonalController {
 		updateUser.setPhone(StringUtils.defaultString(user.getPhone(), ""));
 
 		userService.updateSelective(updateUser);
+
+		// 站内信通知
+		msgService.insertPersonalChangeInfoMessage(updateUser.getNickName(), updateUser.getId());
 
 		return AjaxResult.success();
 	}

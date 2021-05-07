@@ -11,6 +11,27 @@ import com.rbac.system.domain.SysUser;
  * @date 2021-04-14
  */
 public interface ISysUserService extends BaseService<SysUser> {
+
+	/**
+	 * 判断用户密码过期情况<br>
+	 * true-过期 false-不过期
+	 * 
+	 * 
+	 * @param userId
+	 * @param sendMessage true-过期发送站内信 false-不发送
+	 * @return
+	 */
+	Boolean checkIfPasswordExpired(Long userId, boolean sendMessage);
+
+	/**
+	 * 判断用户密码过期情况<br>
+	 * true-过期 false-不过期
+	 * 
+	 * @param user
+	 * @param sendMessage
+	 */
+	Boolean checkIfPasswordExpired(SysUser user, boolean sendMessage);
+
 	/**
 	 * 按条件筛选用户列表<br>
 	 * 

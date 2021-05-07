@@ -6,7 +6,9 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +33,12 @@ public class SysUserServiceImpl implements ISysUserService {
 	ISysRoleService roleService;
 	@Autowired
 	ISysMessageService messageService;
+
+	/**
+	 * 密码过期时间（天），超过这个时间则给用户发站内信提醒
+	 */
+	@Value("${my.user.password.expire_time}")
+	private int passwordExpireDaysMax;
 
 	@Override
 	public Integer insertSelective(SysUser user) {
@@ -77,10 +85,6 @@ public class SysUserServiceImpl implements ISysUserService {
 	public Integer updatePasswordByPrimaryKey(SysUser user) {
 		user.setUpdateTime(new Date());
 		Integer updateResult = userMapper.updateByPrimaryKeySelective(user);
-
-		// 系统通知
-		SysUser userInDB = selectByPrimaryKey(user.getId());
-		messageService.insertAdminUpdatePasswordMessage("系统管理员", null, userInDB.getNickName(), user.getId());
 
 		return updateResult;
 	}
@@ -160,6 +164,30 @@ public class SysUserServiceImpl implements ISysUserService {
 			}
 		}
 		return count;
+	}
+
+	@Override
+	public Boolean checkIfPasswordExpired(Long userId, boolean sendMessage) {
+		// 从数据库获取用户信息反馈
+		SysUser userInDB = selectByPrimaryKey(userId);
+		return checkIfPasswordExpired(userInDB, sendMessage);
+	}
+
+	@Override
+	public Boolean checkIfPasswordExpired(SysUser user, boolean sendMessage) {
+		// 判断密码是否过期
+		if (null != user.getPwdUpdateTime()) {
+			Date now = new Date();
+			Date targetExpiredDate = DateUtils.addDays(user.getPwdUpdateTime(), this.passwordExpireDaysMax);
+			boolean is_expired = now.compareTo(targetExpiredDate) > 0;
+			if (is_expired && sendMessage) {
+				// 站内信通知
+				messageService.insertPersonalPasswordExpireMessage(user.getNickName(), user.getId(),
+						this.passwordExpireDaysMax);
+			}
+			return is_expired;
+		}
+		return false;
 	}
 
 }

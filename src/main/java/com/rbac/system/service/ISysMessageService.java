@@ -47,6 +47,74 @@ public interface ISysMessageService extends BaseService<SysMessage> {
 	Integer insertAdminUpdatePasswordMessage(String senderName, Long senderID, String receiverName, Long receiverID);
 
 	/**
+	 * 创建 管理员停用用户通知
+	 * 
+	 * 
+	 * @param senderName
+	 * @param senderID
+	 * @param receiverName
+	 * @param receiverID
+	 * @return
+	 */
+	Integer insertAdminDisableUserMessage(String senderName, Long senderID, String receiverName, Long receiverID);
+
+	/**
+	 * 创建 管理员启用用户通知
+	 * 
+	 * 
+	 * @param senderName
+	 * @param senderID
+	 * @param receiverName
+	 * @param receiverID
+	 * @return
+	 */
+	Integer insertAdminEnableUserMessage(String senderName, Long senderID, String receiverName, Long receiverID);
+
+	/**
+	 * 创建 管理员修改用户权限通知
+	 * 
+	 * 
+	 * @param senderName
+	 * @param senderID
+	 * @param receiverName
+	 * @param receiverID
+	 * @return
+	 */
+	Integer insertAdminChangeUserPermissionMessage(String senderName, Long senderID, String receiverName,
+			Long receiverID);
+
+	/**
+	 * 创建 用户密码过期通知
+	 * 
+	 * 
+	 * @param personName  用户昵称
+	 * @param personID    用户id
+	 * @param expiredDays 过期时间，单位：天
+	 * @return
+	 */
+	Integer insertPersonalPasswordExpireMessage(String personName, Long personID, Integer expiredDays);
+
+	/**
+	 * 创建 用户修改个人信息通知
+	 * 
+	 * 
+	 * @param personName 用户昵称
+	 * @param personID   用户id
+	 * @return
+	 */
+	Integer insertPersonalChangeInfoMessage(String personName, Long personID);
+
+	/**
+	 * 创建 用户修改密码通知
+	 * 
+	 * 
+	 * @param personName 用户昵称
+	 * @param personID   用户id
+	 * @return
+	 */
+	Integer insertPersonalChangePasswordMessage(String personName, Long personID);
+
+	/**
 	 * 查询所属用户的未读、且未删除消息数量
 	 * 
 	 * 
