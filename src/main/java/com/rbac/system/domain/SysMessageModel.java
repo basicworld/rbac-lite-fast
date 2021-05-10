@@ -21,8 +21,6 @@ public class SysMessageModel {
 
     private Byte sendEmail;
 
-    private Byte enable;
-
     private String note;
 
     private String createBy;
@@ -103,14 +101,6 @@ public class SysMessageModel {
 
     public void setSendEmail(Byte sendEmail) {
         this.sendEmail = sendEmail;
-    }
-
-    public Byte getEnable() {
-        return enable;
-    }
-
-    public void setEnable(Byte enable) {
-        this.enable = enable;
     }
 
     public String getNote() {

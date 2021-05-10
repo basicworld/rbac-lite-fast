@@ -27,146 +27,147 @@ import com.rbac.system.service.ISysConfigService;
  */
 @Service
 public class SysConfigServiceImpl implements ISysConfigService {
-	private static final String DEFAULT_VALUE = "__default_value__";
+    private static final String DEFAULT_VALUE = "__default_value__";
 
-	@Autowired
-	SysConfigMapper configMapper;
+    @Autowired
+    SysConfigMapper configMapper;
 
-	@Autowired
-	RedisCache redisCache;
+    @Autowired
+    RedisCache redisCache;
 
-	@Override
-	public Integer insertSelective(SysConfig item) {
-		if (null == item.getCreateTime()) {
-			item.setUpdateTime(new Date());
-		}
-		return configMapper.insertSelective(item);
-	}
+    @Override
+    public Integer insertSelective(SysConfig item) {
+        if (null == item.getCreateTime()) {
+            item.setUpdateTime(new Date());
+        }
+        return configMapper.insertSelective(item);
+    }
 
-	@Override
-	public Integer deleteByPrimaryKey(Long id) {
+    @Override
+    public Integer deleteByPrimaryKey(Long id) {
 
-		return configMapper.deleteByPrimaryKey(id);
-	}
+        return configMapper.deleteByPrimaryKey(id);
+    }
 
-	@Override
-	@Transactional
-	public Integer updateSelective(List<SysConfig> configList) {
-		int updateCount = 0;
-		for (SysConfig config : configList) {
-			updateCount += updateSelective(config);
-		}
-		return updateCount;
-	}
+    @Override
+    @Transactional
+    public Integer updateSelective(List<SysConfig> configList) {
+        int updateCount = 0;
+        for (SysConfig config : configList) {
+            updateCount += updateSelective(config);
+        }
+        return updateCount;
+    }
 
-	@Override
-	public Integer updateSelective(SysConfig item) {
-		if (null == item.getUpdateTime()) {
-			item.setUpdateTime(new Date());
-		}
-		return configMapper.updateByPrimaryKeySelective(item);
-	}
+    @Override
+    public Integer updateSelective(SysConfig item) {
+        if (null == item.getUpdateTime()) {
+            item.setUpdateTime(new Date());
+        }
+        return configMapper.updateByPrimaryKeySelective(item);
+    }
 
-	@Override
-	public SysConfig selectByPrimaryKey(Long id) {
+    @Override
+    public SysConfig selectByPrimaryKey(Long id) {
 
-		SysConfig conf = configMapper.selectByPrimaryKey(id);
+        SysConfig conf = configMapper.selectByPrimaryKey(id);
 
-		conf.setMultiple(isMultiple(conf));
-		return conf;
-	}
+        conf.setMultiple(isMultiple(conf));
+        return conf;
+    }
 
-	@Override
-	public SysConfig selectByConfigKey(String configKey) {
-		SysConfigExample example = new SysConfigExample();
-		example.createCriteria().andConfigKeyEqualTo(configKey);
-		List<SysConfig> list = configMapper.selectByExample(example);
-		SysConfig conf = BaseUtils.firstItemOfList(list);
+    @Override
+    public SysConfig selectByConfigKey(String configKey) {
+        SysConfigExample example = new SysConfigExample();
+        example.createCriteria().andConfigKeyEqualTo(configKey);
+        List<SysConfig> list = configMapper.selectByExample(example);
+        SysConfig conf = BaseUtils.firstItemOfList(list);
 
-		conf.setMultiple(isMultiple(conf));
-		return conf;
-	}
+        conf.setMultiple(isMultiple(conf));
+        return conf;
+    }
 
-	/**
-	 * 判断是否为多选项
-	 * 
-	 * @param conf
-	 * @return ConfigConstants.MULTIPLE_YES 是<br>
-	 *         ConfigConstants.MULTIPLE_NO 否
-	 */
-	private Byte isMultiple(SysConfig conf) {
-		if (null == conf) {
-			return null;
-		}
-		if (ConfigConstants.FORM_TYPE_CHECKBOX.equalsIgnoreCase(conf.getConfigValueType())) {
-			return ConfigConstants.MULTIPLE_YES;
-		}
-		return ConfigConstants.MULTIPLE_NO;
-	}
+    /**
+     * 判断是否为多选项
+     * 
+     * @param conf
+     * @return ConfigConstants.MULTIPLE_YES 是<br>
+     *         ConfigConstants.MULTIPLE_NO 否
+     */
+    private Byte isMultiple(SysConfig conf) {
+        if (null == conf) {
+            return null;
+        }
+        if (ConfigConstants.FORM_TYPE_CHECKBOX.equalsIgnoreCase(conf.getConfigValueType())) {
+            return ConfigConstants.MULTIPLE_YES;
+        }
+        return ConfigConstants.MULTIPLE_NO;
+    }
 
-	@Override
-	public List<SysConfig> listVisibleConfig(SysConfig queryParam) {
-		SysConfigExample example = new SysConfigExample();
-		example.createCriteria().andVisibleEqualTo(ConfigConstants.VISIBLE_YES);
-		return configMapper.selectByExample(example);
-	}
+    @Override
+    public List<SysConfig> listVisibleConfig(SysConfig queryParam) {
+        SysConfigExample example = new SysConfigExample();
+        example.createCriteria().andVisibleEqualTo(ConfigConstants.VISIBLE_YES);
+        return configMapper.selectByExample(example);
+    }
 
-	@Override
-	public List<SysConfig> listAllConfig() {
-		return configMapper.selectByExample(new SysConfigExample());
-	}
+    @Override
+    public List<SysConfig> listAllConfig() {
+        return configMapper.selectByExample(new SysConfigExample());
+    }
 
-	@Override
-	public String valueOfConfig(String configKey, String defaultConfigValue) {
-		// 从缓存获取
-		String cacheKey = getCacheConfigKey(configKey);
-		String cacheValue = redisCache.getCacheObject(cacheKey);
-		if (StringUtils.isBlank(cacheValue)) {
-			return cacheValue;
-		}
-		// 从数据库获取
-		SysConfig conf = selectByConfigKey(configKey);
-		if (null == conf || StringUtils.isBlank(conf.getConfigValue())) {
-			return defaultConfigValue;
-		}
-		return conf.getConfigValue();
-	}
+    @Override
+    public String valueOfConfig(String configKey, String defaultConfigValue) {
+        // 从缓存获取
+        String cacheKey = getCacheConfigKey(configKey);
+        String cacheValue = redisCache.getCacheObject(cacheKey);
+        if (StringUtils.isNotBlank(cacheValue)) {
+            return cacheValue;
+        }
+        // 从数据库获取
+        SysConfig conf = selectByConfigKey(configKey);
+        if (null == conf || StringUtils.isBlank(conf.getConfigValue())) {
+            return defaultConfigValue;
+        }
+        return conf.getConfigValue();
+    }
 
-	@Override
-	public Integer valueOfConfig(String configKey, Integer defaultConfigValue) {
-		String value = valueOfConfig(configKey, DEFAULT_VALUE);
-		if (DEFAULT_VALUE.contentEquals(value)) {
-			return defaultConfigValue;
-		}
-		return Integer.parseInt(value);
-	}
+    @Override
+    public Integer valueOfConfig(String configKey, Integer defaultConfigValue) {
+        String value = valueOfConfig(configKey, DEFAULT_VALUE);
+        if (DEFAULT_VALUE.contentEquals(value)) {
+            return defaultConfigValue;
+        }
+        return Integer.parseInt(value);
+    }
 
-	@Override
-	public Byte valueOfConfig(String configKey, Byte defaultConfigValue) {
-		String value = valueOfConfig(configKey, DEFAULT_VALUE);
-		if (DEFAULT_VALUE.contentEquals(value)) {
-			return defaultConfigValue;
-		}
-		return Byte.parseByte(value);
-	}
+    @Override
+    public Byte valueOfConfig(String configKey, Byte defaultConfigValue) {
+        String value = valueOfConfig(configKey, DEFAULT_VALUE);
+        if (DEFAULT_VALUE.contentEquals(value)) {
+            return defaultConfigValue;
+        }
+        return Byte.parseByte(value);
+    }
 
-	@Override
-	public Integer flushCache() {
-		List<SysConfig> allConfigList = listAllConfig();
-		if (null == allConfigList || allConfigList.isEmpty()) {
-			return 0;
-		}
-		for (SysConfig config : allConfigList) {
-			String cacheKey = getCacheConfigKey(config.getConfigKey());
-			String cacheValue = config.getConfigValue();
-			redisCache.setCacheObject(cacheKey, cacheValue);
-		}
-		int total = allConfigList.size();
-		return total;
-	}
+    @Override
+    public Integer flushCache() {
+        List<SysConfig> allConfigList = listAllConfig();
+        if (null == allConfigList || allConfigList.isEmpty()) {
+            return 0;
+        }
+        for (SysConfig config : allConfigList) {
+            String cacheKey = getCacheConfigKey(config.getConfigKey());
+            String cacheValue = config.getConfigValue();
+            redisCache.setCacheObject(cacheKey, cacheValue);
+        }
 
-	private String getCacheConfigKey(String configKey) {
-		return ConfigConstants.CONFIG_CACHE_PREFIX + configKey;
-	}
+        int total = allConfigList.size();
+        return total;
+    }
+
+    private String getCacheConfigKey(String configKey) {
+        return ConfigConstants.CONFIG_CACHE_PREFIX + configKey;
+    }
 
 }

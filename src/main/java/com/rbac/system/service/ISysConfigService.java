@@ -20,108 +20,108 @@ import com.rbac.system.domain.dto.SysConfigDTO;
  * @date 2021-05-08
  */
 public interface ISysConfigService extends BaseService<SysConfig> {
-	public Integer updateSelective(List<SysConfig> configList);
+    public Integer updateSelective(List<SysConfig> configList);
 
-	/**
-	 * 通过configKey精确查询配置项<br>
-	 * 
-	 * @param configKey
-	 * @return SysConfig()--查找到时<br>
-	 *         null--未找到时
-	 */
-	SysConfig selectByConfigKey(String configKey);
+    /**
+     * 通过configKey精确查询配置项<br>
+     * 
+     * @param configKey
+     * @return SysConfig()--查找到时<br>
+     *         null--未找到时
+     */
+    SysConfig selectByConfigKey(String configKey);
 
-	/**
-	 * 获取可见的配置项
-	 * 
-	 * 
-	 * @param queryParam
-	 * @return
-	 */
-	List<SysConfig> listVisibleConfig(SysConfig queryParam);
+    /**
+     * 获取可见的配置项
+     * 
+     * 
+     * @param queryParam
+     * @return
+     */
+    List<SysConfig> listVisibleConfig(SysConfig queryParam);
 
-	/**
-	 * 获取所有的配置项
-	 * 
-	 * 
-	 * @return
-	 */
-	List<SysConfig> listAllConfig();
+    /**
+     * 获取所有的配置项
+     * 
+     * 
+     * @return
+     */
+    List<SysConfig> listAllConfig();
 
-	/**
-	 * 获取指定configKey的configValue<br>
-	 * 先从缓存获取，缓存没有的话再从数据库获取
-	 * 
-	 * 
-	 * @param configKey
-	 * @param defaultConfigValue 默认值
-	 * @return configValue非空时，返回configValue<br>
-	 *         configValue为空(null、空字符、全空格字符判定为空)时，返回defaultConfigValue
-	 */
-	String valueOfConfig(String configKey, String defaultConfigValue);
+    /**
+     * 获取指定configKey的configValue<br>
+     * 先从缓存获取，缓存没有的话再从数据库获取
+     * 
+     * 
+     * @param configKey
+     * @param defaultConfigValue 默认值
+     * @return configValue非空时，返回configValue<br>
+     *         configValue为空(null、空字符、全空格字符判定为空)时，返回defaultConfigValue
+     */
+    String valueOfConfig(String configKey, String defaultConfigValue);
 
-	/**
-	 * 获取指定configKey的configValue<br>
-	 * 先从缓存获取，缓存没有的话再从数据库获取
-	 * 
-	 * 
-	 * @param configKey
-	 * @param defaultConfigValue 默认值
-	 * @return configValue非空时，返回configValue<br>
-	 *         configValue为空时，返回defaultConfigValue
-	 */
-	Integer valueOfConfig(String configKey, Integer defaultConfigValue);
+    /**
+     * 获取指定configKey的configValue<br>
+     * 先从缓存获取，缓存没有的话再从数据库获取
+     * 
+     * 
+     * @param configKey
+     * @param defaultConfigValue 默认值
+     * @return configValue非空时，返回configValue<br>
+     *         configValue为空时，返回defaultConfigValue
+     */
+    Integer valueOfConfig(String configKey, Integer defaultConfigValue);
 
-	/**
-	 * 获取指定configKey的configValue<br>
-	 * 先从缓存获取，缓存没有的话再从数据库获取
-	 * 
-	 * 
-	 * @param configKey
-	 * @param defaultConfigValue 默认值
-	 * @return configValue非空时，返回configValue<br>
-	 *         configValue为空时，返回defaultConfigValue
-	 */
-	Byte valueOfConfig(String configKey, Byte defaultConfigValue);
+    /**
+     * 获取指定configKey的configValue<br>
+     * 先从缓存获取，缓存没有的话再从数据库获取
+     * 
+     * 
+     * @param configKey
+     * @param defaultConfigValue 默认值
+     * @return configValue非空时，返回configValue<br>
+     *         configValue为空时，返回defaultConfigValue
+     */
+    Byte valueOfConfig(String configKey, Byte defaultConfigValue);
 
-	/**
-	 * 将SysConfig对象转换为SysConfigDTO对象
-	 * 
-	 * 
-	 * @param configList
-	 * @return
-	 */
-	default List<SysConfigDTO> do2dto(List<SysConfig> configList) {
-		return configList.stream().map(e -> do2dto(e)).collect(Collectors.toList());
-	}
+    /**
+     * 将SysConfig对象转换为SysConfigDTO对象
+     * 
+     * 
+     * @param configList
+     * @return
+     */
+    default List<SysConfigDTO> do2dto(List<SysConfig> configList) {
+        return configList.stream().map(e -> do2dto(e)).collect(Collectors.toList());
+    }
 
-	/**
-	 * 将SysConfig对象转换为SysConfigDTO对象
-	 * 
-	 * 
-	 * @param conf
-	 * @return
-	 */
-	default SysConfigDTO do2dto(SysConfig conf) {
-		SysConfigDTO dto = new SysConfigDTO();
-		dto.setId(conf.getId());
-		dto.setConfigKey(conf.getConfigKey());
-		dto.setConfigName(conf.getConfigName());
-		dto.setConfigValue(conf.getConfigValue());
-		dto.setFormType(conf.getFormType());
-		dto.setMultiple(conf.getMultiple());
-		dto.setNote(conf.getNote());
-		dto.setOptionalValues(conf.getOptionalValues());
-		dto.setSort(conf.getSort());
+    /**
+     * 将SysConfig对象转换为SysConfigDTO对象
+     * 
+     * 
+     * @param conf
+     * @return
+     */
+    default SysConfigDTO do2dto(SysConfig conf) {
+        SysConfigDTO dto = new SysConfigDTO();
+        dto.setId(conf.getId());
+        dto.setConfigKey(conf.getConfigKey());
+        dto.setConfigName(conf.getConfigName());
+        dto.setConfigValue(conf.getConfigValue());
+        dto.setFormType(conf.getFormType());
+        dto.setMultiple(conf.getMultiple());
+        dto.setNote(conf.getNote());
+        dto.setOptionalValues(conf.getOptionalValues());
+        dto.setSort(conf.getSort());
 
-		return dto;
-	}
+        return dto;
+    }
 
-	/**
-	 * 刷新缓存的配置信息<br>
-	 * 把数据库的新配置写入缓存
-	 * 
-	 */
-	Integer flushCache();
+    /**
+     * 刷新缓存的配置信息<br>
+     * 把数据库的新配置写入缓存
+     * 
+     */
+    Integer flushCache();
 
 }

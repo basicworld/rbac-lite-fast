@@ -11,7 +11,6 @@
     <result column="send_system_message" jdbcType="TINYINT" property="sendSystemMessage" />
     <result column="send_sms" jdbcType="TINYINT" property="sendSms" />
     <result column="send_email" jdbcType="TINYINT" property="sendEmail" />
-    <result column="enable" jdbcType="TINYINT" property="enable" />
     <result column="note" jdbcType="VARCHAR" property="note" />
     <result column="create_by" jdbcType="VARCHAR" property="createBy" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
@@ -78,8 +77,8 @@
   </sql>
   <sql id="Base_Column_List">
     id, model_key, title_model, title_model_desc, content_model, content_model_desc, 
-    send_system_message, send_sms, send_email, enable, note, create_by, create_time, 
-    update_by, update_time
+    send_system_message, send_sms, send_email, note, create_by, create_time, update_by, 
+    update_time
   </sql>
   <select id="selectByExample" parameterType="com.rbac.system.domain.SysMessageModelExample" resultMap="BaseResultMap">
     select
@@ -115,14 +114,14 @@
   <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.rbac.system.domain.SysMessageModel" useGeneratedKeys="true">
     insert into sys_message_model (model_key, title_model, title_model_desc, 
       content_model, content_model_desc, send_system_message, 
-      send_sms, send_email, enable, 
-      note, create_by, create_time, 
-      update_by, update_time)
+      send_sms, send_email, note, 
+      create_by, create_time, update_by, 
+      update_time)
     values (#{modelKey,jdbcType=VARCHAR}, #{titleModel,jdbcType=VARCHAR}, #{titleModelDesc,jdbcType=VARCHAR}, 
       #{contentModel,jdbcType=VARCHAR}, #{contentModelDesc,jdbcType=VARCHAR}, #{sendSystemMessage,jdbcType=TINYINT}, 
-      #{sendSms,jdbcType=TINYINT}, #{sendEmail,jdbcType=TINYINT}, #{enable,jdbcType=TINYINT}, 
-      #{note,jdbcType=VARCHAR}, #{createBy,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
-      #{updateBy,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP})
+      #{sendSms,jdbcType=TINYINT}, #{sendEmail,jdbcType=TINYINT}, #{note,jdbcType=VARCHAR}, 
+      #{createBy,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{updateBy,jdbcType=VARCHAR}, 
+      #{updateTime,jdbcType=TIMESTAMP})
   </insert>
   <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.rbac.system.domain.SysMessageModel" useGeneratedKeys="true">
     insert into sys_message_model
@@ -150,9 +149,6 @@
       </if>
       <if test="sendEmail != null">
         send_email,
-      </if>
-      <if test="enable != null">
-        enable,
       </if>
       <if test="note != null">
         note,
@@ -195,9 +191,6 @@
       <if test="sendEmail != null">
         #{sendEmail,jdbcType=TINYINT},
       </if>
-      <if test="enable != null">
-        #{enable,jdbcType=TINYINT},
-      </if>
       <if test="note != null">
         #{note,jdbcType=VARCHAR},
       </if>
@@ -215,12 +208,6 @@
       </if>
     </trim>
   </insert>
-  <select id="countByExample" parameterType="com.rbac.system.domain.SysMessageModelExample" resultType="java.lang.Long">
-    select count(*) from sys_message_model
-    <if test="_parameter != null">
-      <include refid="Example_Where_Clause" />
-    </if>
-  </select>
   <update id="updateByExampleSelective" parameterType="map">
     update sys_message_model
     <set>
@@ -250,9 +237,6 @@
       </if>
       <if test="record.sendEmail != null">
         send_email = #{record.sendEmail,jdbcType=TINYINT},
-      </if>
-      <if test="record.enable != null">
-        enable = #{record.enable,jdbcType=TINYINT},
       </if>
       <if test="record.note != null">
         note = #{record.note,jdbcType=VARCHAR},
@@ -285,7 +269,6 @@
       send_system_message = #{record.sendSystemMessage,jdbcType=TINYINT},
       send_sms = #{record.sendSms,jdbcType=TINYINT},
       send_email = #{record.sendEmail,jdbcType=TINYINT},
-      enable = #{record.enable,jdbcType=TINYINT},
       note = #{record.note,jdbcType=VARCHAR},
       create_by = #{record.createBy,jdbcType=VARCHAR},
       create_time = #{record.createTime,jdbcType=TIMESTAMP},
@@ -322,9 +305,6 @@
       <if test="sendEmail != null">
         send_email = #{sendEmail,jdbcType=TINYINT},
       </if>
-      <if test="enable != null">
-        enable = #{enable,jdbcType=TINYINT},
-      </if>
       <if test="note != null">
         note = #{note,jdbcType=VARCHAR},
       </if>
@@ -353,7 +333,6 @@
       send_system_message = #{sendSystemMessage,jdbcType=TINYINT},
       send_sms = #{sendSms,jdbcType=TINYINT},
       send_email = #{sendEmail,jdbcType=TINYINT},
-      enable = #{enable,jdbcType=TINYINT},
       note = #{note,jdbcType=VARCHAR},
       create_by = #{createBy,jdbcType=VARCHAR},
       create_time = #{createTime,jdbcType=TIMESTAMP},

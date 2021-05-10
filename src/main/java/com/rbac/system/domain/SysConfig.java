@@ -21,8 +21,6 @@ public class SysConfig {
 
     private Byte visible;
 
-    private Byte enable;
-
     private Integer sort;
 
     private String defaultValue;
@@ -37,7 +35,6 @@ public class SysConfig {
 
     private String note;
 
-    /** 是否为多选项 */
     private Byte multiple;
 
     public Byte getMultiple() {
@@ -118,14 +115,6 @@ public class SysConfig {
 
     public void setVisible(Byte visible) {
         this.visible = visible;
-    }
-
-    public Byte getEnable() {
-        return enable;
-    }
-
-    public void setEnable(Byte enable) {
-        this.enable = enable;
     }
 
     public Integer getSort() {

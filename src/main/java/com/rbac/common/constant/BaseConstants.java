@@ -58,4 +58,10 @@ public class BaseConstants {
      */
     public static final String RESOURCE_PREFIX = "/profile";
 
+    /** 字符串 true */
+    public static final String STRING_TRUE = "true";
+
+    /** 字符串 false */
+    public static final String STRING_FALSE = "false";
+
 }

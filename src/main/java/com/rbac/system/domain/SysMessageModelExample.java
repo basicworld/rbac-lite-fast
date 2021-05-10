@@ -695,66 +695,6 @@ public class SysMessageModelExample {
             return (Criteria) this;
         }
 
-        public Criteria andEnableIsNull() {
-            addCriterion("enable is null");
-            return (Criteria) this;
-        }
-
-        public Criteria andEnableIsNotNull() {
-            addCriterion("enable is not null");
-            return (Criteria) this;
-        }
-
-        public Criteria andEnableEqualTo(Byte value) {
-            addCriterion("enable =", value, "enable");
-            return (Criteria) this;
-        }
-
-        public Criteria andEnableNotEqualTo(Byte value) {
-            addCriterion("enable <>", value, "enable");
-            return (Criteria) this;
-        }
-
-        public Criteria andEnableGreaterThan(Byte value) {
-            addCriterion("enable >", value, "enable");
-            return (Criteria) this;
-        }
-
-        public Criteria andEnableGreaterThanOrEqualTo(Byte value) {
-            addCriterion("enable >=", value, "enable");
-            return (Criteria) this;
-        }
-
-        public Criteria andEnableLessThan(Byte value) {
-            addCriterion("enable <", value, "enable");
-            return (Criteria) this;
-        }
-
-        public Criteria andEnableLessThanOrEqualTo(Byte value) {
-            addCriterion("enable <=", value, "enable");
-            return (Criteria) this;
-        }
-
-        public Criteria andEnableIn(List<Byte> values) {
-            addCriterion("enable in", values, "enable");
-            return (Criteria) this;
-        }
-
-        public Criteria andEnableNotIn(List<Byte> values) {
-            addCriterion("enable not in", values, "enable");
-            return (Criteria) this;
-        }
-
-        public Criteria andEnableBetween(Byte value1, Byte value2) {
-            addCriterion("enable between", value1, value2, "enable");
-            return (Criteria) this;
-        }
-
-        public Criteria andEnableNotBetween(Byte value1, Byte value2) {
-            addCriterion("enable not between", value1, value2, "enable");
-            return (Criteria) this;
-        }
-
         public Criteria andNoteIsNull() {
             addCriterion("note is null");
             return (Criteria) this;

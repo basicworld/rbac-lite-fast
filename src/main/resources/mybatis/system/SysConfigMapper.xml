@@ -11,7 +11,6 @@
     <result column="form_type" jdbcType="VARCHAR" property="formType" />
     <result column="optional_values" jdbcType="VARCHAR" property="optionalValues" />
     <result column="visible" jdbcType="TINYINT" property="visible" />
-    <result column="enable" jdbcType="TINYINT" property="enable" />
     <result column="sort" jdbcType="INTEGER" property="sort" />
     <result column="default_value" jdbcType="VARCHAR" property="defaultValue" />
     <result column="create_by" jdbcType="VARCHAR" property="createBy" />
@@ -80,7 +79,7 @@
   </sql>
   <sql id="Base_Column_List">
     id, config_name, config_key, config_value, config_value_type, system_built, form_type, 
-    optional_values, visible, enable, sort, default_value, create_by, create_time, update_by, 
+    optional_values, visible, sort, default_value, create_by, create_time, update_by, 
     update_time, note
   </sql>
   <select id="selectByExample" parameterType="com.rbac.system.domain.SysConfigExample" resultMap="BaseResultMap">
@@ -117,16 +116,16 @@
   <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.rbac.system.domain.SysConfig" useGeneratedKeys="true">
     insert into sys_configuration (config_name, config_key, config_value, 
       config_value_type, system_built, form_type, 
-      optional_values, visible, enable, 
-      sort, default_value, create_by, 
-      create_time, update_by, update_time, 
-      note)
+      optional_values, visible, sort, 
+      default_value, create_by, create_time, 
+      update_by, update_time, note
+      )
     values (#{configName,jdbcType=VARCHAR}, #{configKey,jdbcType=VARCHAR}, #{configValue,jdbcType=VARCHAR}, 
       #{configValueType,jdbcType=VARCHAR}, #{systemBuilt,jdbcType=TINYINT}, #{formType,jdbcType=VARCHAR}, 
-      #{optionalValues,jdbcType=VARCHAR}, #{visible,jdbcType=TINYINT}, #{enable,jdbcType=TINYINT}, 
-      #{sort,jdbcType=INTEGER}, #{defaultValue,jdbcType=VARCHAR}, #{createBy,jdbcType=VARCHAR}, 
-      #{createTime,jdbcType=TIMESTAMP}, #{updateBy,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP}, 
-      #{note,jdbcType=VARCHAR})
+      #{optionalValues,jdbcType=VARCHAR}, #{visible,jdbcType=TINYINT}, #{sort,jdbcType=INTEGER}, 
+      #{defaultValue,jdbcType=VARCHAR}, #{createBy,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{updateBy,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP}, #{note,jdbcType=VARCHAR}
+      )
   </insert>
   <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.rbac.system.domain.SysConfig" useGeneratedKeys="true">
     insert into sys_configuration
@@ -154,9 +153,6 @@
       </if>
       <if test="visible != null">
         visible,
-      </if>
-      <if test="enable != null">
-        enable,
       </if>
       <if test="sort != null">
         sort,
@@ -204,9 +200,6 @@
       </if>
       <if test="visible != null">
         #{visible,jdbcType=TINYINT},
-      </if>
-      <if test="enable != null">
-        #{enable,jdbcType=TINYINT},
       </if>
       <if test="sort != null">
         #{sort,jdbcType=INTEGER},
@@ -261,9 +254,6 @@
       <if test="record.visible != null">
         visible = #{record.visible,jdbcType=TINYINT},
       </if>
-      <if test="record.enable != null">
-        enable = #{record.enable,jdbcType=TINYINT},
-      </if>
       <if test="record.sort != null">
         sort = #{record.sort,jdbcType=INTEGER},
       </if>
@@ -301,7 +291,6 @@
       form_type = #{record.formType,jdbcType=VARCHAR},
       optional_values = #{record.optionalValues,jdbcType=VARCHAR},
       visible = #{record.visible,jdbcType=TINYINT},
-      enable = #{record.enable,jdbcType=TINYINT},
       sort = #{record.sort,jdbcType=INTEGER},
       default_value = #{record.defaultValue,jdbcType=VARCHAR},
       create_by = #{record.createBy,jdbcType=VARCHAR},
@@ -340,9 +329,6 @@
       <if test="visible != null">
         visible = #{visible,jdbcType=TINYINT},
       </if>
-      <if test="enable != null">
-        enable = #{enable,jdbcType=TINYINT},
-      </if>
       <if test="sort != null">
         sort = #{sort,jdbcType=INTEGER},
       </if>
@@ -377,7 +363,6 @@
       form_type = #{formType,jdbcType=VARCHAR},
       optional_values = #{optionalValues,jdbcType=VARCHAR},
       visible = #{visible,jdbcType=TINYINT},
-      enable = #{enable,jdbcType=TINYINT},
       sort = #{sort,jdbcType=INTEGER},
       default_value = #{defaultValue,jdbcType=VARCHAR},
       create_by = #{createBy,jdbcType=VARCHAR},

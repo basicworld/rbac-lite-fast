@@ -6,8 +6,6 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
 public interface SysMessageModelMapper {
-    long countByExample(SysMessageModelExample example);
-
     int deleteByExample(SysMessageModelExample example);
 
     int deleteByPrimaryKey(Long id);

@@ -23,7 +23,7 @@ public class MybatisGenerator {
 
 	public static void main(String[] args) throws Exception {
 		// 运行时间需要改成当天才能运行
-		String today = "2021-05-08";
+		String today = "2021-05-10";
 
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		Date now = sdf.parse(today);

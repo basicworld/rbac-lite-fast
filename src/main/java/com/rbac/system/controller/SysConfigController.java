@@ -3,6 +3,7 @@
  */
 package com.rbac.system.controller;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,6 +18,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.rbac.common.util.ServletUtils;
+import com.rbac.common.util.valid.ValidUtils;
+import com.rbac.framework.manager.AsyncManager;
+import com.rbac.framework.manager.factory.AsyncFactory;
 import com.rbac.framework.security.domain.LoginUser;
 import com.rbac.framework.security.service.TokenService;
 import com.rbac.framework.web.domain.AjaxResult;
@@ -24,7 +28,9 @@ import com.rbac.framework.web.page.TableDataInfo;
 import com.rbac.system.base.BaseController;
 import com.rbac.system.constant.ConfigConstants;
 import com.rbac.system.domain.SysConfig;
+import com.rbac.system.domain.dto.MailDTO;
 import com.rbac.system.domain.dto.SysConfigDTO;
+import com.rbac.system.service.IMailService;
 import com.rbac.system.service.ISysConfigService;
 
 /**
@@ -42,12 +48,22 @@ public class SysConfigController extends BaseController {
     @Autowired
     TokenService tokenService;
 
+    @Autowired
+    IMailService mailService;
+
     @GetMapping("/list")
     public TableDataInfo listAll() {
         PageHelper.startPage(ConfigConstants.PAGE_START, ConfigConstants.PAGE_SIZE, ConfigConstants.SORT_KEY);
         List<SysConfig> configList = configService.listVisibleConfig(new SysConfig());
         long total = new PageInfo<SysConfig>(configList).getTotal();
         List<SysConfigDTO> dtoList = configService.do2dto(configList);
+
+        for (SysConfigDTO dto : dtoList) {
+            if (ConfigConstants.FORM_TYPE_PASSWORD.equalsIgnoreCase(dto.getFormType())) {
+                dto.setConfigValue("********");
+            }
+        }
+
         return getDataTable(dtoList, total);
 
     }
@@ -56,7 +72,29 @@ public class SysConfigController extends BaseController {
     @PostMapping("/cache/flush")
     public AjaxResult flushCache() {
         configService.flushCache();
+        // 从缓存载入邮箱配置到spring
+        mailService.reloadMailConfigFromCache();
         return AjaxResult.success();
+    }
+
+    @PreAuthorize("@ss.hasPermi('system:config')")
+    @PostMapping("/test/mailSend")
+    public AjaxResult mailSendTest(@RequestBody MailDTO mailDTO) {
+        String mailTo = mailDTO.getMailTo();
+        if (logger.isDebugEnabled()) {
+            logger.debug("测试收件箱：" + mailTo);
+        }
+        boolean mailValid = ValidUtils.isValidEmail(mailTo);
+        if (false == mailValid) {
+            return AjaxResult.error("收件箱格式错误：" + mailTo);
+        }
+        if (!mailService.canSendMail()) {
+            return AjaxResult.error("邮箱功能未启用，无法发送邮件！");
+        }
+        AsyncManager.me()
+                .execute(AsyncFactory.sendSimpleMail(mailTo.trim(), "来自RBAC系统的邮件", "收到本邮件表明邮箱参数配置正确，且网络处于联通状态。"));
+        String msg = MessageFormat.format("测试邮件已发送给 {0}，请注意查收", mailTo);
+        return AjaxResult.success(msg);
     }
 
     @PreAuthorize("@ss.hasPermi('system:config')")
