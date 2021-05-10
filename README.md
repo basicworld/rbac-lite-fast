@@ -280,4 +280,87 @@
 权限控制: 登录后访问，需具有system:user权限
 ```
 
+### 系统配置类API
+
+SysConfig.java 中：
+
+configKey 配置项的标识符，字符串类型。是唯一性的标识符，系统内建的配置项不能修改这个值。
+
+configValue 配置项的值，字符串类型。存储文本、密码、byte、多选值（逗号分隔）等原始数据值。用户配置时，所有的值通过字符串格式编辑。应用的时候转换为对应的值类型。
+
+
+- 获取配置列表
+
+```
+接口: /system/config/list
+方法: get
+参数: 无
+返回: {code, msg, total--总结果数量, rows: [SysConfigDTO{}, ...]}
+权限控制: 登录后访问
+```
+
+- 批量更新配置
+
+```
+接口: /system/config/update
+方法: get
+参数: [SysConfigDTO{id, configValue}, ...]
+返回: {code, msg}
+权限控制: 登录后访问，需具有system:config权限
+```
+
+- 刷新缓存
+
+使保存的配置立即生效
+
+```
+接口: /system/config/update
+方法: post
+参数: 无
+返回: {code, msg}
+权限控制: 登录后访问，需具有system:config权限
+```
+
+### 消息中心类API
+
+- 获取用户未读消息数量
+
+```
+接口: /system/message/unread/count
+方法: get
+参数: 无
+返回: {code, msg, data--用户未读消息数量}
+权限控制: 登录后访问
+```
+
+- 获取用户消息列表
+
+```
+接口: /system/message/markRead
+方法: get
+参数: SysMessageQuery{unreadTop=true/false}
+返回: {code, msg, rows=[SysMessageDTO(), ...], total}
+权限控制: 登录后访问
+```
+
+- 获取单个消息详情
+
+```
+接口: /system/message/detail/{messageId}
+方法: get
+参数: message id
+返回: {code, msg, data=SysMessageDTO()}
+权限控制: 登录后访问
+```
+
+- 批量将消息标记为已读
+
+```
+接口: /system/message/markRead
+方法: post
+参数: [id1, id2, ...]
+返回: {code, msg}
+权限控制: 登录后访问
+```
+
 致谢：ruoyi(ruoyi-vue) panjiachen(vue-admin-element)

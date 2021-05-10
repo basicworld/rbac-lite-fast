@@ -15,5 +15,7 @@ public class SomeTest {
 	public static void main(String[] args) {
 		String msg = MessageFormat.format("{0}_{1}", "1", "2");
 		System.out.println(msg);
+		System.out.println("" + new Integer(0));
+		System.out.println(new Integer(0).toString());
 	}
 }
