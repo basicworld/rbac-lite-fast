@@ -21,6 +21,8 @@ target/
 .idea/
 out/
 log/
+build/
+bin/
 
 # Package Files #
 *.jar

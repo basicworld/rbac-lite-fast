@@ -23,86 +23,87 @@ import com.rbac.system.domain.Captcha;
 import com.rbac.system.service.ICaptchaService;
 
 /**
- * TODO
- * 
+ * 验证码service实现类
+ *
  * @author wlfei
  * @date 2021-04-14
  */
 @Service
 public class CaptchaServiceImpl implements ICaptchaService {
-	public static Log logger = LogFactory.getLog(CaptchaServiceImpl.class);
-	@Resource(name = "captchaProducer")
-	private Producer captchaProducer;
+    public static Log logger = LogFactory.getLog(CaptchaServiceImpl.class);
+    @Resource(name = "captchaProducer")
+    private Producer captchaProducer;
 
-	@Resource(name = "captchaProducerMath")
-	private Producer captchaProducerMath;
-	@Autowired
-	RedisCache redisCache;
+    @Resource(name = "captchaProducerMath")
+    private Producer captchaProducerMath;
 
-	@Override
-	public Captcha create() throws IOException {
-		// 生成验证码唯一ID
-		String uuid = UUID.randomUUID().toString().replace("-", "");
+    @Autowired
+    RedisCache redisCache;
 
-		String capStr = null, code = null;
-		BufferedImage image = null;
-		// 生成数学验证码
-		String capText = captchaProducerMath.createText();
-		capStr = capText.substring(0, capText.lastIndexOf("@"));
-		code = capText.substring(capText.lastIndexOf("@") + 1);
-		image = captchaProducerMath.createImage(capStr);
+    @Override
+    public Captcha create() throws IOException {
+        // 生成验证码唯一ID
+        String uuid = UUID.randomUUID().toString().replace("-", "");
 
-		// 转换流信息写出
-		FastByteArrayOutputStream os = new FastByteArrayOutputStream();
-		try {
-			ImageIO.write(image, "jpg", os);
-		} catch (IOException e) {
-			throw e;
-		}
+        String capStr = null, code = null;
+        BufferedImage image = null;
+        // 生成数学验证码
+        String capText = captchaProducerMath.createText();
+        capStr = capText.substring(0, capText.lastIndexOf("@"));
+        code = capText.substring(capText.lastIndexOf("@") + 1);
+        image = captchaProducerMath.createImage(capStr);
 
-		String base64 = Base64.encodeBase64String(os.toByteArray());
-		Captcha cap = new Captcha();
-		cap.setBase64(base64);
-		cap.setCode(code);
-		cap.setUuid(uuid);
+        // 转换流信息写出
+        FastByteArrayOutputStream os = new FastByteArrayOutputStream();
+        try {
+            ImageIO.write(image, "jpg", os);
+        } catch (IOException e) {
+            throw e;
+        }
 
-		// 验证码写入redis缓存
-		String redisKey = genCaptchaRedisKey(uuid);
-		redisCache.setCacheObject(redisKey, code, BaseConstants.CAPTCHA_EXPIRATION, TimeUnit.MINUTES);
+        String base64 = Base64.encodeBase64String(os.toByteArray());
+        Captcha cap = new Captcha();
+        cap.setBase64(base64);
+        cap.setCode(code);
+        cap.setUuid(uuid);
 
-		return cap;
-	}
+        // 验证码写入redis缓存
+        String redisKey = genCaptchaRedisKey(uuid);
+        redisCache.setCacheObject(redisKey, code, BaseConstants.CAPTCHA_EXPIRATION, TimeUnit.MINUTES);
 
-	@Override
-	public Boolean validate(Captcha item) {
-		if (null == item || StringUtils.isEmpty(item.getCode()) || StringUtils.isEmpty(item.getUuid())) {
-			return false;
-		}
-		String redisKey = genCaptchaRedisKey(item);
-		String code = redisCache.getCacheObject(redisKey);
+        return cap;
+    }
 
-		boolean isSame = StringUtils.isNotEmpty(code) && code.equals(item.getCode());
-		return isSame;
-	}
+    @Override
+    public Boolean validate(Captcha item) {
+        if (null == item || StringUtils.isEmpty(item.getCode()) || StringUtils.isEmpty(item.getUuid())) {
+            return false;
+        }
+        String redisKey = genCaptchaRedisKey(item);
+        String code = redisCache.getCacheObject(redisKey);
 
-	/**
-	 * 生成验证码的redis key
-	 * 
-	 * @param uuid
-	 * @return
-	 */
-	private String genCaptchaRedisKey(String uuid) {
-		return "cap-" + uuid;
-	}
+        boolean isSame = StringUtils.isNotEmpty(code) && code.equals(item.getCode());
+        return isSame;
+    }
 
-	/**
-	 * 生成验证码的redis key
-	 * 
-	 * @param captcha
-	 * @return
-	 */
-	private String genCaptchaRedisKey(Captcha captcha) {
-		return genCaptchaRedisKey(captcha.getUuid());
-	}
+    /**
+     * 生成验证码的redis key
+     *
+     * @param uuid
+     * @return
+     */
+    private String genCaptchaRedisKey(String uuid) {
+        return "cap-" + uuid;
+    }
+
+    /**
+     * 生成验证码的redis key
+     *
+     * @param captcha
+     * @return
+     */
+    private String genCaptchaRedisKey(Captcha captcha) {
+        return genCaptchaRedisKey(captcha.getUuid());
+    }
 
 }

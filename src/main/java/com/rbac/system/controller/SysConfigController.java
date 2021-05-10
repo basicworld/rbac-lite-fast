@@ -93,7 +93,7 @@ public class SysConfigController extends BaseController {
         }
         AsyncManager.me()
                 .execute(AsyncFactory.sendSimpleMail(mailTo.trim(), "来自RBAC系统的邮件", "收到本邮件表明邮箱参数配置正确，且网络处于联通状态。"));
-        String msg = MessageFormat.format("测试邮件已发送给 {0}，请注意查收", mailTo);
+        String msg = MessageFormat.format("已尝试发送测试邮件给 {0}，请查收验证", mailTo);
         return AjaxResult.success(msg);
     }
 
