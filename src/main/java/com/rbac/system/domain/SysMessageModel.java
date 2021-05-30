@@ -2,33 +2,54 @@ package com.rbac.system.domain;
 
 import java.util.Date;
 
+/**
+ *
+ * 系统消息模版
+ *
+ * @author wlfei
+ * @date 2021-05-30
+ */
 public class SysMessageModel {
+    /** 主键 */
     private Long id;
 
+    /** 模版标识符，程序内定，不能修改数据库的这个字段 */
     private String modelKey;
 
+    /** 标题模版 */
     private String titleModel;
 
+    /** 标题模版描述 */
     private String titleModelDesc;
 
+    /** 内容模版 */
     private String contentModel;
 
+    /** 内容模版描述 */
     private String contentModelDesc;
 
+    /** 是否发送站内信 */
     private Byte sendSystemMessage;
 
+    /** 是否发送短信 */
     private Byte sendSms;
 
+    /** 是否发送邮件 */
     private Byte sendEmail;
 
+    /** 备注 */
     private String note;
 
+    /** 创建人 */
     private String createBy;
 
+    /** 创建时间 */
     private Date createTime;
 
+    /** 更新人 */
     private String updateBy;
 
+    /** 更新时间 */
     private Date updateTime;
 
     public Long getId() {

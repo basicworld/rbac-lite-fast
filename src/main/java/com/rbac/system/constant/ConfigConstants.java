@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package com.rbac.system.constant;
 
@@ -7,14 +7,14 @@ import com.rbac.common.constant.BaseConstants;
 
 /**
  * 系统配置常量
- * 
+ *
  * @author wlfei
  * @date 2021-05-08
  */
 public class ConfigConstants {
     /** sql 分页从首页开始 */
     public static final int PAGE_START = 1;
-    /** sql 分页中最大项目数量 */
+    /** sql 分页中单页面最大项目数量 */
     public static final int PAGE_SIZE = 9999;
     /** sql 排序关键字 */
     public static final String SORT_KEY = "sort";

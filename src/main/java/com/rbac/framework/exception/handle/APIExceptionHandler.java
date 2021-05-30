@@ -31,7 +31,7 @@ public class APIExceptionHandler {
     public AjaxResult allExceptionToAjaxResult(Exception e) {
         logger.error("Controller异常：{}", e.getMessage());
         e.printStackTrace();
-        return AjaxResult.error(ResultConstants.CODE_SERVER_ERROR, "系统控制器异常，请联系管理员处理！");
+        return AjaxResult.error(ResultConstants.CODE_SERVER_ERROR, "服务器运行异常，请联系管理员！");
     }
 
 }

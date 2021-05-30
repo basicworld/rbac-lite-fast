@@ -21,8 +21,9 @@ import com.rbac.framework.security.domain.LoginUser;
 import com.rbac.framework.security.service.TokenService;
 
 /**
- * token过滤器 验证token有效性 并延长有效token的有效期
- * 
+ * token过滤器 验证token有效性<br>
+ * 对于有效的token，延长token的有效期
+ *
  * @author wlfei
  */
 @Component
@@ -32,20 +33,24 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
     @Autowired
     private TokenService tokenService;
 
+    /**
+     * 过滤器<br>
+     *
+     */
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
         if (logger.isDebugEnabled()) {
             logger.debug("JWT doFilterInternal...");
         }
-        // 从缓存获取用户信息
+        // 使用请求header中的token，从缓存获取用户信息
         LoginUser loginUser = tokenService.getLoginUser(request);
-
+        // 如果存在缓存信息，则进行验证
         if (null != loginUser && null == SecurityUtils.getAuthentication()) {
             if (logger.isDebugEnabled()) {
                 logger.debug("JWT doFilterInternal verifyToken...");
             }
-
+            // 验证token 刷新有效期
             tokenService.verifyToken(loginUser);
 
             /// https://www.cnblogs.com/softidea/p/6716807.html

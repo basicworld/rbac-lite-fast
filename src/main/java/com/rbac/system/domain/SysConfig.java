@@ -2,39 +2,62 @@ package com.rbac.system.domain;
 
 import java.util.Date;
 
+/**
+ * 系统配置项
+ *
+ * @author wlfei
+ * @date 2021-05-30
+ */
 public class SysConfig {
+    /** 主键 */
     private Long id;
 
+    /** 配置项名称 */
     private String configName;
 
+    /** 配置项关键字 唯一标识符 */
     private String configKey;
 
+    /** 配置值 */
     private String configValue;
 
+    /** 配置值的类型 */
     private String configValueType;
 
+    /** 系统配置项标志 */
     private Byte systemBuilt;
 
+    /** 前端展示的表单类型 */
     private String formType;
 
+    /** 配置值的可选域 多选或单选类的配置项用 */
     private String optionalValues;
 
+    /** 前端可见性 */
     private Byte visible;
 
+    /** 前端排序 */
     private Integer sort;
 
+    /** 默认值 */
     private String defaultValue;
 
+    /** 创建人 */
     private String createBy;
 
+    /** 创建时间 */
     private Date createTime;
 
+    /** 更新人 */
     private String updateBy;
 
+    /** 更新时间 */
     private Date updateTime;
 
+    /** 描述 */
     private String note;
 
+    /** 是否为多值型配置项 */
     private Byte multiple;
 
     public Byte getMultiple() {

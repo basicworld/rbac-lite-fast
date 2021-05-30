@@ -15,23 +15,29 @@ import com.rbac.system.constant.RoleConstants;
 
 /**
  * RuoYi首创 自定义权限实现，ss取自SpringSecurity首字母<br>
- * 
+ *
  * 使用方法：<br>
  * 在指定的controller上添加注解<br>
  * @PreAuthorize("@ss.hasPermi('system:user')")<br>
  * @PreAuthorize("@ss.hasAnyPermi('system:user,system:dept')")<br>
  * @PreAuthorize("@ss.hasRole('admin')")<br>
  * @PreAuthorize("@ss.hasAnyRoles('role1,role2')")<br>
- * 
+ *
  * @author ruoyi create， wlfei update
  */
 @Service("ss")
 public class PermissionService {
     public static Log logger = LogFactory.getLog(PermissionService.class);
-    /** 所有权限标识 */
+    /**
+     * 所有权限标识<br>
+     * 如果用户拥有这个权限，则用户具有所有的权限（超级管理员）
+     */
     private static final String ALL_PERMISSION = "*:*";
 
-    /** 管理员角色权限标识 */
+    /**
+     * 管理员角色权限标识<br>
+     * 如果用户拥有这个角色，则用户是超级管理员
+     */
     private static final String SUPER_ADMIN = RoleConstants.ADMIN_ROLE_KEY;
 
     /** 角色字符串分隔符 */
@@ -45,13 +51,14 @@ public class PermissionService {
 
     /**
      * 验证用户是否具备某权限<br>
-     * 
+     *
      * 超级管理员具备所有权限<br>
      * 用户权限列表为空则不具备任何权限<br>
      * 用户权限列表不为空则检验是否具有给定的权限
-     * 
-     * @param permission 权限字符串 即menu.perms
-     * @return true, false
+     *
+     * @param permission 权限字符串 即一个menu.perms
+     * @return true--用户具备该权限，情形包括：用户是超级管理员、或用户具有所有权限、或用户权限列表包含此权限<br>
+     *         false--用户不具备该权限，情形包括：入参为空、或用户未登录、或用户权限为空、或用户权限列表不包含此权限
      */
     public boolean hasPermi(String permission) {
         if (StringUtils.isEmpty(permission)) {
@@ -73,10 +80,11 @@ public class PermissionService {
     }
 
     /**
-     * 验证用户是否不具备某权限，与 hasPermi逻辑相反
+     * 验证用户是否不具备某权限，与 hasPermi()逻辑相反
      *
      * @param permission 权限字符串
-     * @return 用户是否不具备某权限
+     * @return true--用户不具备某权限<br>
+     *         false--用户具备某权限
      */
     public boolean lacksPermi(String permission) {
         return hasPermi(permission) != true;
@@ -84,13 +92,14 @@ public class PermissionService {
 
     /**
      * 验证用户是否具有以下任意一个权限<br>
-     * 
+     *
      * 超级管理员具备所有权限<br>
      * 用户权限列表为空则不具备任何权限<br>
      * 用户权限列表不为空则检验是否具有给定权限列表中的任意一个权限
-     * 
+     *
      * @param permissions 以 PERMISSION_NAMES_DELIMETER 为分隔符的权限列表
-     * @return 用户是否具有以下任意一个权限
+     * @return true--用户至少具有入参列表中的一个权限<br>
+     *         false--用户不具有入参列表中的任何权限
      */
     public boolean hasAnyPermi(String permissions) {
         if (StringUtils.isEmpty(permissions)) {
@@ -119,13 +128,14 @@ public class PermissionService {
 
     /**
      * 判断用户是否拥有某个角色<br>
-     * 
+     *
      * 超级管理员具备所有角色<br>
      * 用户角色列表为空则不具备任何角色<br>
      * 用户角色列表不为空则检验是否具有给定的角色
-     * 
+     *
      * @param role 角色字符串 即roleKey
-     * @return 用户是否具备某角色
+     * @return true--用户具备某角色，情形包括：用户是超级管理员、用户角色列表包含入参角色<br>
+     *         false--用户不具备某角色，情形包括：入参角色为空、用户未登录、用户角色列表为空、用户角色列表不包含该角色
      */
     public boolean hasRole(String role) {
         if (StringUtils.isEmpty(role)) {
@@ -153,8 +163,9 @@ public class PermissionService {
     /**
      * 验证用户是否不具备某角色，与 hassRole逻辑相反。
      *
-     * @param role 角色名称
-     * @return 用户是否不具备某角色
+     * @param role 角色名称 即roleKey
+     * @return true--用户不具备某角色<br>
+     *         false--用户具备某角色
      */
     public boolean lacksRole(String role) {
         return hasRole(role) != true;
@@ -162,13 +173,14 @@ public class PermissionService {
 
     /**
      * 验证用户是否具有以下任意一个角色<br>
-     * 
+     *
      * 超级管理员具备所有角色<br>
      * 用户角色列表为空则不具备任何角色<br>
      * 用户角色列表不为空则检验是否具有给定角色列表中的任意一个角色
      *
      * @param roles 以 ROLE_NAMES_DELIMETER 为分隔符的角色列表
-     * @return 用户是否具有以下任意一个角色
+     * @return true--用户至少具有入参角色列表的一个角色<br>
+     *         false--用户不具有入参角色列表的任何角色
      */
     public boolean hasAnyRoles(String roles) {
         if (StringUtils.isEmpty(roles)) {
@@ -196,7 +208,7 @@ public class PermissionService {
     /**
      * 判断是否包含权限<br>
      * 包含所有权限标识符，或包含给定权限，视为true
-     * 
+     *
      * @param permissions 所有权限列表
      * @param permission  给定权限
      * @return true--给定权限在权限列表中，或权限列表中包含<所有权限>标识符<br>
@@ -207,9 +219,9 @@ public class PermissionService {
     }
 
     /**
-     * 
+     *
      * 判断用户是否为超级管理员<br>
-     * 
+     *
      * @param loginUser
      * @return true--给定用户的角色中包含<超级管理员角色代码标识><br>
      *         false-其他

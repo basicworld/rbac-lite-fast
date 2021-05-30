@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package com.rbac.system.service;
 
@@ -15,7 +15,7 @@ import com.rbac.system.domain.dto.SysConfigDTO;
  * 缓存机制：<br>
  * 启动springboot时，从数据库读取配置信息，写入缓存<br>
  * 用户可以手动触发刷新缓存，执行步骤同上
- * 
+ *
  * @author wlfei
  * @date 2021-05-08
  */
@@ -24,7 +24,7 @@ public interface ISysConfigService extends BaseService<SysConfig> {
 
     /**
      * 通过configKey精确查询配置项<br>
-     * 
+     *
      * @param configKey
      * @return SysConfig()--查找到时<br>
      *         null--未找到时
@@ -32,27 +32,27 @@ public interface ISysConfigService extends BaseService<SysConfig> {
     SysConfig selectByConfigKey(String configKey);
 
     /**
-     * 获取可见的配置项
-     * 
-     * 
+     * 获取可见的配置项<br>
+     *
+     *
      * @param queryParam
      * @return
      */
     List<SysConfig> listVisibleConfig(SysConfig queryParam);
 
     /**
-     * 获取所有的配置项
-     * 
-     * 
+     * 获取所有的配置项<br>
+     *
+     *
      * @return
      */
     List<SysConfig> listAllConfig();
 
     /**
      * 获取指定configKey的configValue<br>
-     * 先从缓存获取，缓存没有的话再从数据库获取
-     * 
-     * 
+     * 原理：先从redis缓存获取，缓存没有的话再从数据库获取<br>
+     *
+     *
      * @param configKey
      * @param defaultConfigValue 默认值
      * @return configValue非空时，返回configValue<br>
@@ -62,9 +62,9 @@ public interface ISysConfigService extends BaseService<SysConfig> {
 
     /**
      * 获取指定configKey的configValue<br>
-     * 先从缓存获取，缓存没有的话再从数据库获取
-     * 
-     * 
+     * 原理：先从redis缓存获取，缓存没有的话再从数据库获取<br>
+     *
+     *
      * @param configKey
      * @param defaultConfigValue 默认值
      * @return configValue非空时，返回configValue<br>
@@ -74,9 +74,9 @@ public interface ISysConfigService extends BaseService<SysConfig> {
 
     /**
      * 获取指定configKey的configValue<br>
-     * 先从缓存获取，缓存没有的话再从数据库获取
-     * 
-     * 
+     * 原理：先从redis缓存获取，缓存没有的话再从数据库获取<br>
+     *
+     *
      * @param configKey
      * @param defaultConfigValue 默认值
      * @return configValue非空时，返回configValue<br>
@@ -85,9 +85,10 @@ public interface ISysConfigService extends BaseService<SysConfig> {
     Byte valueOfConfig(String configKey, Byte defaultConfigValue);
 
     /**
-     * 将SysConfig对象转换为SysConfigDTO对象
-     * 
-     * 
+     * 将SysConfig对象转换为SysConfigDTO对象<br>
+     * configList不能为null
+     *
+     *
      * @param configList
      * @return
      */
@@ -96,9 +97,10 @@ public interface ISysConfigService extends BaseService<SysConfig> {
     }
 
     /**
-     * 将SysConfig对象转换为SysConfigDTO对象
-     * 
-     * 
+     * 将SysConfig对象转换为SysConfigDTO对象<br>
+     * conf不能为null
+     *
+     *
      * @param conf
      * @return
      */
@@ -120,7 +122,8 @@ public interface ISysConfigService extends BaseService<SysConfig> {
     /**
      * 刷新缓存的配置信息<br>
      * 把数据库的新配置写入缓存
-     * 
+     *
+     * @return 刷新的配置项个数
      */
     Integer flushCache();
 

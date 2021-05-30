@@ -40,7 +40,7 @@ import com.rbac.system.service.ISysUserRoleService;
 import com.rbac.system.service.ISysUserService;
 
 /**
- * 用户API<br>
+ * 用户controller<br>
  *
  * 开放给具有超级管理员权限的用户<br>
  *
@@ -70,9 +70,10 @@ public class SysUserController extends BaseController {
     ISysMessageService msgService;
 
     /**
-     * 获取用户列表
+     * 分页获取用户列表<br>
+     * 鉴权：拥有system:user权限的用户可以访问
      *
-     * @param userDTO
+     * @param sysUser
      * @return
      */
     @PreAuthorize("@ss.hasPermi('system:user')")
@@ -83,10 +84,10 @@ public class SysUserController extends BaseController {
         }
         startPage();
         List<SysUser> userList = userService.listByUser(user);
+        // 隐藏密码，不对前端展示真实的密码
         if (CollectionUtils.isNotEmpty(userList)) {
-            for (SysUser u : userList) {
-                // 隐藏密码
-                u.setPassword("******");
+            for (SysUser userItem : userList) {
+                userItem.setPassword("******");
             }
         }
         return getDataTable(userList);
@@ -94,7 +95,20 @@ public class SysUserController extends BaseController {
     }
 
     /**
-     * 新增用户
+     * 新增用户<br>
+     * 鉴权：拥有system:user权限的用户可以访问<br>
+     * <br>
+     * 校验：<br>
+     * 用户名或密码不能为空<br>
+     * 用户名不能重复<br>
+     * 用户关联角色不能为空<br>
+     * 不能关联非法角色：不存在的角色<br>
+     * 非管理员不能创建管理员用户<br>
+     * <br>
+     * 配置：<br>
+     * 密码使用BCrypt加密<br>
+     * 设置密码更新时间为当前时间--密码过期校验功能依赖这个时间<br>
+     * 设置删除标记为：未删除
      *
      * @param userDTO
      * @return
@@ -158,7 +172,10 @@ public class SysUserController extends BaseController {
     }
 
     /**
-     * 获取用户信息详情
+     * 获取用户信息详情<br>
+     * 鉴权：拥有system:user权限的用户可以访问<br>
+     *
+     * 处理：对前端隐藏密码
      *
      * @param userId 用户主键
      * @return
@@ -183,7 +200,14 @@ public class SysUserController extends BaseController {
     }
 
     /**
-     * 删除用户
+     * 删除用户<br>
+     * 鉴权：拥有system:user权限的用户可以访问<br>
+     * <br>
+     * 校验：<br>
+     * - 用户主键不能为空<br>
+     * - 不能删除自己<br>
+     * - 非管理员不能删除管理员用户<br>
+     *
      *
      * @param userIds 角色ID列表[userId1, userId2...]
      * @return
@@ -225,7 +249,18 @@ public class SysUserController extends BaseController {
     }
 
     /**
-     * 更新用户
+     * 更新用户<br>
+     * 鉴权：拥有system:user权限的用户可以访问<br>
+     * <br>
+     * 校验：<br>
+     * - 用户主键不能为空<br>
+     * - 用户ID必须存在<br>
+     * - 不能更新自己的用户信息<br>
+     * - 非管理员不能更新管理员信息<br>
+     * <br>
+     * 更新后的操作：<br>
+     * - 如果停用了账号，则发送站内信<br>
+     * - 如果启用了账号，则发送站内信<br>
      *
      * @param user
      * @return
@@ -287,7 +322,8 @@ public class SysUserController extends BaseController {
     }
 
     /**
-     * 修改用户密码
+     * 修改用户密码<br>
+     * 鉴权：拥有system:user权限的用户可以访问
      *
      * @param user 用户信息{id, password}
      * @return

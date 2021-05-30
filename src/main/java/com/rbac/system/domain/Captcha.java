@@ -2,13 +2,13 @@ package com.rbac.system.domain;
 
 /**
  * 验证码bean
- * 
+ *
  * @author wlfei
  *
  */
 public class Captcha {
     /**
-     * 原始信息
+     * 原始信息 验证码答案
      */
     private String code;
     /**
@@ -16,14 +16,13 @@ public class Captcha {
      */
     private String base64;
     /**
-     * 唯一ID
+     * 验证码唯一ID
      */
     private String uuid;
 
     /**
      * 原始信息 验证码结果
-     * 
-     * @return
+     *
      */
     public String getCode() {
         return code;
@@ -35,8 +34,7 @@ public class Captcha {
 
     /**
      * 图片base64编码
-     * 
-     * @return
+     *
      */
     public String getBase64() {
         return base64;
@@ -44,8 +42,7 @@ public class Captcha {
 
     /**
      * 唯一ID
-     * 
-     * @return
+     *
      */
     public String getUuid() {
         return uuid;

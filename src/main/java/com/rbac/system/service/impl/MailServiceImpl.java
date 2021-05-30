@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package com.rbac.system.service.impl;
 
@@ -21,7 +21,7 @@ import com.rbac.system.service.ISysConfigService;
 
 /**
  * IMailService实现类
- * 
+ *
  * @author wlfei
  * @date 2021-05-10
  */

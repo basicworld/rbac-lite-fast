@@ -30,62 +30,65 @@ import com.rbac.system.service.ISysUserService;
 /**
  * 实现spring security 的UserDetailsService接口<br>
  * 根据用户名获取用户对象
- * 
+ *
  * @author wlfei
  *
  */
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
-	public static final Logger logger = LoggerFactory.getLogger(UserDetailsServiceImpl.class);
-	@Autowired
-	ISysUserService userService;
-	@Autowired
-	ISysRoleService roleService;
-	@Autowired
-	ISysUserRoleService userRoleService;
-	@Autowired
-	ISysRoleMenuService roleMenuService;
-	@Autowired
-	ISysMenuService menuService;
+    public static final Logger logger = LoggerFactory.getLogger(UserDetailsServiceImpl.class);
+    @Autowired
+    ISysUserService userService;
+    @Autowired
+    ISysRoleService roleService;
+    @Autowired
+    ISysUserRoleService userRoleService;
+    @Autowired
+    ISysRoleMenuService roleMenuService;
+    @Autowired
+    ISysMenuService menuService;
 
-	/**
-	 * 成功获取用户后，返回LoginUser对象
-	 */
-	@Override
-	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    /**
+     * 使用用户名，从数据库获取用户信息<br>
+     * 成功获取用户后，返回LoginUser对象
+     */
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        // 根据用户名，从数据库获取SysUser()用户对象
+        SysUser user = BaseUtils.firstItemOfList(userService.listbyUserNameEqualsTo(username));
+        if (null == user) {
+            throw new UsernameNotFoundException("用户不存在");
+        }
 
-		SysUser user = BaseUtils.firstItemOfList(userService.listbyUserNameEqualsTo(username));
-		if (null == user) {
-			throw new UsernameNotFoundException("用户不存在");
-		}
-		// 所有角色id
-		List<Long> roleIds = new ArrayList<Long>();
-		List<SysUserRole> userRoles = userRoleService.listByUserId(user.getId());
-		if (CollectionUtils.isNotEmpty(userRoles)) {
-			roleIds = userRoles.stream().map(v -> v.getRoleId()).collect(Collectors.toList());
-		}
-		user.setRoleIds(roleIds);
+        // 获取该用户所有的角色id
+        List<Long> roleIds = new ArrayList<Long>();
+        List<SysUserRole> userRoles = userRoleService.listByUserId(user.getId());
+        if (CollectionUtils.isNotEmpty(userRoles)) {
+            roleIds = userRoles.stream().map(v -> v.getRoleId()).collect(Collectors.toList());
+        }
+        user.setRoleIds(roleIds);
 
-		// 所有角色代码
-		Set<String> roleKeys = roleService.listByRoleId(roleIds).stream().map(v -> v.getRoleKey())
-				.collect(Collectors.toSet());
-		// 所有权限代码
-		Set<String> menuPerms = new HashSet<String>();
-		for (SysRoleMenu rm : roleMenuService.listByRoleId(roleIds)) {
-			SysMenu menu = menuService.selectByPrimaryKey(rm.getMenuId());
-			if (null != menu) {
-				menuPerms.add(menu.getPerms());
-			}
-		}
+        // 获取该用户所有的角色代码 即SysRole().roleKey
+        Set<String> roleKeys = roleService.listByRoleId(roleIds).stream().map(v -> v.getRoleKey())
+                .collect(Collectors.toSet());
 
-		LoginUser loginUser = new LoginUser();
-		loginUser.setUser(user);
-		loginUser.setRoles(roleKeys);
-		loginUser.setPermissions(menuPerms);
-		if (logger.isDebugEnabled()) {
-			logger.debug("用户 {} 的所有角色: {}", user.getUserName(), roleKeys);
-		}
-		return loginUser;
-	}
+        // 获取该用户所有的权限代码 即SysMenu().perms
+        Set<String> menuPerms = new HashSet<String>();
+        for (SysRoleMenu roleMenu : roleMenuService.listByRoleId(roleIds)) {
+            SysMenu menu = menuService.selectByPrimaryKey(roleMenu.getMenuId());
+            if (null != menu) {
+                menuPerms.add(menu.getPerms());
+            }
+        }
+        // 构造登录用户信息
+        LoginUser loginUser = new LoginUser();
+        loginUser.setUser(user); // 登录用户对象
+        loginUser.setRoles(roleKeys); // 登录用户的角色关键字集合
+        loginUser.setPermissions(menuPerms); // 登录用户的权限关键字集合
+        if (logger.isDebugEnabled()) {
+            logger.debug("用户 {} 的所有角色: {}", user.getUserName(), roleKeys);
+        }
+        return loginUser;
+    }
 
 }

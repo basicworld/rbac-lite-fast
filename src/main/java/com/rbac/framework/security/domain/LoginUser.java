@@ -20,16 +20,13 @@ import com.rbac.system.domain.SysUser;
 /**
  * 登录用户身份权限<br>
  * 登录成功后将作为用户的缓存
- * 
+ *
  * @author wlfei
  *
  */
 public class LoginUser implements UserDetails {
     public static final Logger logger = LoggerFactory.getLogger(LoginUser.class);
 
-    /**
-     * 
-     */
     private static final long serialVersionUID = 1L;
     /**
      * 用户唯一标识
@@ -47,11 +44,11 @@ public class LoginUser implements UserDetails {
     private Long expireTime;
 
     /**
-     * 权限标识集合，即 menu.perms的集合
+     * 权限标识集合，即SysMenu().perms的集合
      */
     private Set<String> permissions;
     /**
-     * 角色标识集合，即roleKey的集合
+     * 角色标识集合，即SysRole().roleKey的集合
      */
     private Set<String> roles;
     /**
@@ -61,8 +58,8 @@ public class LoginUser implements UserDetails {
 
     /**
      * 获取角色标识的集合
-     * 
-     * @return Set
+     *
+     * @return SysRole().roleKey的集合
      */
     public Set<String> getRoles() {
         return roles;
@@ -70,8 +67,8 @@ public class LoginUser implements UserDetails {
 
     /**
      * 设置角色标识
-     * 
-     * @param roles 角色标识的集合
+     *
+     * @param roles SysRole().roleKey的集合
      */
     public void setRoles(Set<String> roles) {
         this.roles = roles;
@@ -150,8 +147,9 @@ public class LoginUser implements UserDetails {
 
     /**
      * 判断账号是否停用。通过user.status判断。
-     * 
-     * @return true-账号启用 false-账号停用
+     *
+     * @return true-账号启用<br>
+     *         false-账号停用
      */
     @JsonIgnore
     @Override
@@ -161,7 +159,7 @@ public class LoginUser implements UserDetails {
 
     /**
      * 获取token
-     * 
+     *
      * @return
      */
     public String getToken() {
@@ -170,7 +168,7 @@ public class LoginUser implements UserDetails {
 
     /**
      * 获取登陆时间
-     * 
+     *
      * @return
      */
     public Long getLoginTime() {
@@ -179,7 +177,7 @@ public class LoginUser implements UserDetails {
 
     /**
      * 获取登录过期时间
-     * 
+     *
      * @return
      */
     public Long getExpireTime() {
@@ -188,7 +186,7 @@ public class LoginUser implements UserDetails {
 
     /**
      * 获取用户对象
-     * 
+     *
      * @return
      */
     public SysUser getUser() {
@@ -197,7 +195,7 @@ public class LoginUser implements UserDetails {
 
     /**
      * 设置token
-     * 
+     *
      * @param token
      */
     public void setToken(String token) {
@@ -206,7 +204,7 @@ public class LoginUser implements UserDetails {
 
     /**
      * 设置登录时间
-     * 
+     *
      * @param loginTime
      */
     public void setLoginTime(Long loginTime) {
@@ -215,7 +213,7 @@ public class LoginUser implements UserDetails {
 
     /**
      * 设置过期时间
-     * 
+     *
      * @param expireTime
      */
     public void setExpireTime(Long expireTime) {
@@ -224,7 +222,7 @@ public class LoginUser implements UserDetails {
 
     /**
      * 设置用户对象
-     * 
+     *
      * @param user
      */
     public void setUser(SysUser user) {
@@ -233,8 +231,8 @@ public class LoginUser implements UserDetails {
 
     /**
      * 获取权限标识集合
-     * 
-     * @return set of menu.perms()
+     *
+     * @return SysMenu().perms的集合
      */
     public Set<String> getPermissions() {
         return permissions;
@@ -242,8 +240,8 @@ public class LoginUser implements UserDetails {
 
     /**
      * 设置权限标识集合，即 menu.perms的集合
-     * 
-     * @param permissions
+     *
+     * @param permissions SysMenu().perms的集合
      */
     public void setPermissions(Set<String> permissions) {
         this.permissions = permissions;
