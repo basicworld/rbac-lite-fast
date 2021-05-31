@@ -53,11 +53,6 @@ public class BaseConstants {
      */
     public static final int CAPTCHA_EXPIRATION = 5;
 
-    /**
-     * 资源映射路径 前缀
-     */
-    public static final String RESOURCE_PREFIX = "/profile";
-
     /** 字符串 true */
     public static final String STRING_TRUE = "true";
 

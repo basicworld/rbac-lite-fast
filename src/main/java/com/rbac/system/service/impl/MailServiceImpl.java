@@ -75,7 +75,7 @@ public class MailServiceImpl implements IMailService {
     @Override
     public Boolean sendSimpleMail(String to, String subject, String content) {
         if (!canSendMail()) {
-            logger.warn("邮箱功能未启用，不能发送邮件：{}", subject);
+            logger.warn("邮箱功能未启用，不能发送邮件 {} 给 {}", subject, to);
             return false;
         }
 

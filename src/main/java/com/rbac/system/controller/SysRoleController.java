@@ -1,5 +1,6 @@
 package com.rbac.system.controller;
 
+import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -90,7 +91,8 @@ public class SysRoleController extends BaseController {
         // 角色代码重复检查
         List<SysRole> roleListWithSameKey = roleService.listByRoleKeyEqualsTo(role.getRoleKey());
         if (CollectionUtils.isNotEmpty(roleListWithSameKey)) {
-            return AjaxResult.error("角色代码重复：{}!", role.getRoleKey());
+            String msg = MessageFormat.format("角色代码重复：{0}!", role.getRoleKey());
+            return AjaxResult.error(msg);
         }
 
         // 设置删除标记：未删除
@@ -130,7 +132,8 @@ public class SysRoleController extends BaseController {
         // 删除计数
         int deleteCount = roleService.deleteByPrimaryKey(roleIds);
 
-        return AjaxResult.success("成功删除{}个角色!", deleteCount);
+        String msg = MessageFormat.format("成功删除{0}个角色!", deleteCount);
+        return AjaxResult.success(msg);
     }
 
     /**
@@ -150,7 +153,8 @@ public class SysRoleController extends BaseController {
         // 检查：角色不存在
         SysRole role = roleService.selectByPrimaryKey(roleId);
         if (null == role) {
-            return AjaxResult.error("角色(id={})不存在!", roleId);
+            String msg = MessageFormat.format("角色(id={0})不存在!", roleId);
+            return AjaxResult.error(msg);
         }
         // 获取角色的关联菜单列表
         Long[] menuIds = roleMenuService.listByRoleId(roleId).stream().map(v -> v.getMenuId()).toArray(Long[]::new);

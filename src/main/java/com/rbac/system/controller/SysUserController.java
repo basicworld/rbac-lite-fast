@@ -127,7 +127,8 @@ public class SysUserController extends BaseController {
         // 用户名重复检查
         List<SysUser> usersWithSameUserName = userService.listbyUserNameEqualsTo(user.getUserName());
         if (CollectionUtils.isNotEmpty(usersWithSameUserName)) {
-            return AjaxResult.error("用户名重复：{}!", user.getUserName());
+            String msg = MessageFormat.format("用户名重复：{0}!", user.getUserName());
+            return AjaxResult.error(msg);
         }
         // 关联角色ID不能为空
         if (CollectionUtils.isEmpty(user.getRoleIds())) {
@@ -167,7 +168,7 @@ public class SysUserController extends BaseController {
 
         userService.insertSelective(user);
 
-        String msg = MessageFormat.format("用户{}创建成功", user.getUserName());
+        String msg = MessageFormat.format("用户{0}创建成功", user.getUserName());
         return AjaxResult.success(msg);
     }
 
@@ -278,7 +279,8 @@ public class SysUserController extends BaseController {
         // 检查：用户不存在
         SysUser existUser = userService.selectByPrimaryKey(user.getId());
         if (null == existUser) {
-            return AjaxResult.error("待更新用户(id={})不存在!", user.getId());
+            String msg = MessageFormat.format("待更新用户(id={0})不存在!", user.getId());
+            return AjaxResult.error(msg);
         }
         // 检查：不能更新用户自己的账号
         LoginUser loginUser = tokenService.getLoginUser(ServletUtils.getRequest());

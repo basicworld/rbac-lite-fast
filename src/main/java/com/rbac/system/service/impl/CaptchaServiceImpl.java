@@ -93,7 +93,7 @@ public class CaptchaServiceImpl implements ICaptchaService {
      * @return
      */
     private String genCaptchaRedisKey(String uuid) {
-        return "cap-" + uuid;
+        return "captcha:" + uuid;
     }
 
     /**
