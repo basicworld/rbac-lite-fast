@@ -118,9 +118,12 @@ public class SysConfigController extends BaseController {
         }
         // 执行邮件发送线程
         AsyncManager.me()
-                .execute(AsyncFactory.sendSimpleMail(mailTo.trim(), "来自RBAC系统的邮件", "收到本邮件表明邮箱参数配置正确，且网络处于联通状态。"));
+                .execute(AsyncFactory.sendSimpleMail(mailTo.trim(), "来自RBAC系统的邮件", "收到本邮件表明邮箱参数配置正确，且互联网处于连通状态。"));
         // 构造返回数据
         String msg = MessageFormat.format("已尝试发送测试邮件给 {0}，请查收验证", mailTo);
+        if (logger.isDebugEnabled()) {
+            logger.debug(msg);
+        }
         return AjaxResult.success(msg);
     }
 
