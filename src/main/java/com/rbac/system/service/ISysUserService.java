@@ -37,11 +37,16 @@ public interface ISysUserService extends BaseService<SysUser> {
     Boolean checkIfPasswordExpired(SysUser user, boolean sendMessage);
 
     /**
-     * 按条件筛选用户列表<br>
-     *
+     * 按条筛选用户列表<br>
+     * 支持的筛选条件：<br>
+     * - userName 用户名，全模糊查询<br>
+     * - nickName 昵称，全模糊查询<br>
+     * - email 邮箱，全模糊查询<br>
+     * - phone 手机号，全模糊查询<br>
+     * <br>
      * 如果条件为空，则返回所有用户
      *
-     * @param user
+     * @param user{userName, nickName, email, phone}
      * @return
      */
     List<SysUser> listByUser(SysUser user);

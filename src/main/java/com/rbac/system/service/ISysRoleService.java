@@ -33,16 +33,19 @@ public interface ISysRoleService extends BaseService<SysRole> {
 
     /**
      * 根据条件查询角色列表<br>
+     * 支持的查询条件：<br>
+     * - roleKey--角色标识符，全模糊查询 <br>
+     * - roleName--角色名称，全模糊查询<br>
+     * 如果条件为空，则反馈所有角色<br>
      *
-     * 如果条件为空，则反馈所有角色
-     *
-     * @param role
+     * @param role{roleKey, roleName} 可选参数
      * @return
      */
     List<SysRole> listByRole(SysRole role);
 
     /**
-     * 根据角色ID列表，批量查询角色
+     * 根据角色ID列表，批量查询角色<br>
+     * 并对入参id做去重
      *
      * @param roleIds
      * @return 角色列表
