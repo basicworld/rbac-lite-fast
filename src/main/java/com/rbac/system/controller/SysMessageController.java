@@ -95,7 +95,7 @@ public class SysMessageController extends BaseController {
         }
         LoginUser loginUser = tokenService.getLoginUser(ServletUtils.getRequest());
         if (loginUser.getUser().getId().compareTo(msg.getReceiverId()) != 0) {
-            logger.warn("{} 非法获取其他用户消息", loginUser.getUsername());
+            logger.warn("警告：{}非法获取其他用户消息", loginUser.getUsername());
             return AjaxResult.error("非法操作！");
         }
         return AjaxResult.success(msgService.do2dto(msg));

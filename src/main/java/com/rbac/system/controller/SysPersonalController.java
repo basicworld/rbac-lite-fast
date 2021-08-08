@@ -1,5 +1,6 @@
 package com.rbac.system.controller;
 
+import java.text.MessageFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -31,6 +32,7 @@ import com.rbac.framework.security.domain.LoginUser;
 import com.rbac.framework.security.service.SysLoginService;
 import com.rbac.framework.security.service.TokenService;
 import com.rbac.framework.web.domain.AjaxResult;
+import com.rbac.system.constant.UserConstants;
 import com.rbac.system.domain.Captcha;
 import com.rbac.system.domain.SysUser;
 import com.rbac.system.domain.dto.UserPwdDTO;
@@ -79,6 +81,7 @@ public class SysPersonalController {
 
     /**
      * 用户登录<br>
+     *
      * 先验证验证码，验证码错误则返回错误<br>
      * 然后通过用户名+密码进行认证<br>
      * 其中入参密码是RSA加密的，需要先RSA解密<br>
@@ -87,8 +90,8 @@ public class SysPersonalController {
      * <br>
      * 另外登录成功的还会判断密码过期情况，如果密码已过期，则给用户发站内信提醒（不强制修改密码，只是提醒）
      *
-     * @param loginBody 登录信息
-     * @return
+     * @param LoginBody [username=xxx, password=xxx, code=xxx, uuid=xxx] 登录信息
+     * @return {code, msg, data=[token]}
      */
     @PostMapping("/login")
     public AjaxResult login(@RequestBody LoginBody loginBody) {
@@ -110,6 +113,7 @@ public class SysPersonalController {
         }
 
         // 验证用户名和密码，并生成token
+        // 验证失败时，捕获异常，打印日志
         String token = null;
         try {
             token = loginService.login(loginBody.getUsername(), loginBody.getPassword());
@@ -129,6 +133,9 @@ public class SysPersonalController {
         }
 
         // 判断密码过期情况，并在密码过期时发送站内信提醒
+        if (logger.isDebugEnabled()) {
+            logger.debug("判断用户{}密码过期情况", loginBody.getUsername());
+        }
         LoginUser loginUser = tokenService.getLoginUser(token);
         userService.checkIfPasswordExpired(loginUser.getUser(), true);
 
@@ -145,7 +152,7 @@ public class SysPersonalController {
     @PostMapping("/password/update")
     public AjaxResult updatePassword(@RequestBody UserPwdDTO userDTO) {
         if (logger.isDebugEnabled()) {
-            logger.debug("用户重置密码...");
+            logger.debug("用户修改密码...");
         }
         // 原始密码、新密码不能为空
         if (StringUtils.isEmpty(userDTO.getNewPassword()) || StringUtils.isEmpty(userDTO.getPassword())) {
@@ -176,12 +183,16 @@ public class SysPersonalController {
 
         // 站内信通知
         msgService.insertPersonalChangePasswordMessage(userInDB.getNickName(), userInDB.getId());
+        if (logger.isWarnEnabled()) {
+            logger.info("用户{}修改密码成功", userInDB.getUserName());
+        }
 
         return AjaxResult.success();
     }
 
     /**
-     * 用户更新个人信息 更新成功后发送站内信通知<br>
+     * 用户更新个人信息<br>
+     * 更新成功后发送站内信通知<br>
      * 通过token识别用户身份
      *
      * @param user{nickname, email, phone} 允许更新昵称、邮箱、手机号字段
@@ -199,16 +210,18 @@ public class SysPersonalController {
         updateUser.setEmail(StringUtils.defaultString(user.getEmail(), ""));
         updateUser.setPhone(StringUtils.defaultString(user.getPhone(), ""));
         // 昵称格式校验
-        boolean validNickName = ValidUtils.isLengthBetween(updateUser.getNickName(), 2, 11);
+        boolean validNickName = ValidUtils.isLengthBetween(updateUser.getNickName(), UserConstants.NICKNAME_MIN_LEN,
+                UserConstants.NICKNAME_MAX_LEN);
         if (true != validNickName) {
-            logger.warn("昵称长度限制为2-10个字符:", updateUser.getNickName());
-            return AjaxResult.error("昵称长度限制为2-10个字符！");
+            String msg = MessageFormat.format("昵称长度限制为{0}-{1}个字符", UserConstants.NICKNAME_MIN_LEN,
+                    UserConstants.NICKNAME_MAX_LEN - 1);
+            return AjaxResult.error(msg);
         }
         // 邮箱格式校验
         if (StringUtils.isNotBlank(updateUser.getEmail())) {
             boolean emailValid = ValidUtils.isValidEmail(updateUser.getEmail());
             if (true != emailValid) {
-                logger.warn("邮箱格式错误:", updateUser.getEmail());
+                logger.warn("邮箱格式错误:{}", updateUser.getEmail());
                 return AjaxResult.error("邮箱格式错误！");
             }
         }
@@ -216,7 +229,7 @@ public class SysPersonalController {
         if (StringUtils.isNotBlank(updateUser.getPhone())) {
             boolean phoneValid = ValidUtils.isValidPhone(updateUser.getPhone());
             if (true != phoneValid) {
-                logger.warn("手机号格式错误:", updateUser.getPhone());
+                logger.warn("手机号格式错误:{}", updateUser.getPhone());
                 return AjaxResult.error("手机号格式错误！");
             }
         }

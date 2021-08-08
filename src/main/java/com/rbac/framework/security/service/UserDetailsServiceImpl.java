@@ -86,7 +86,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         loginUser.setRoles(roleKeys); // 登录用户的角色关键字集合
         loginUser.setPermissions(menuPerms); // 登录用户的权限关键字集合
         if (logger.isDebugEnabled()) {
-            logger.debug("用户 {} 的所有角色: {}", user.getUserName(), roleKeys);
+            logger.debug("用户{}的所有角色: {}", user.getUserName(), roleKeys);
         }
         return loginUser;
     }

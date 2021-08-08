@@ -61,9 +61,11 @@ public class PermissionService {
      *         false--用户不具备该权限，情形包括：入参为空、或用户未登录、或用户权限为空、或用户权限列表不包含此权限
      */
     public boolean hasPermi(String permission) {
+        // 入参为空时返回false
         if (StringUtils.isEmpty(permission)) {
             return false;
         }
+        // 获取登陆用户信息
         LoginUser loginUser = tokenService.getLoginUser(ServletUtils.getRequest());
         if (null == loginUser) {
             return false;
@@ -72,7 +74,7 @@ public class PermissionService {
         if (isUserAdmin(loginUser)) {
             return true;
         }
-        // 用户权限列表为空，视为无次权限
+        // 用户权限列表为空，视为无此权限
         if (CollectionUtils.isEmpty(loginUser.getPermissions())) {
             return false;
         }
@@ -102,9 +104,11 @@ public class PermissionService {
      *         false--用户不具有入参列表中的任何权限
      */
     public boolean hasAnyPermi(String permissions) {
+        // 入参为空时返回false
         if (StringUtils.isEmpty(permissions)) {
             return false;
         }
+        // 获取登陆用户信息
         LoginUser loginUser = tokenService.getLoginUser(ServletUtils.getRequest());
         if (null == loginUser) {
             return false;
@@ -113,6 +117,7 @@ public class PermissionService {
         if (isUserAdmin(loginUser)) {
             return true;
         }
+        // 用户权限列表为空时返回false
         if (CollectionUtils.isEmpty(loginUser.getPermissions())) {
             return false;
         }
@@ -138,9 +143,11 @@ public class PermissionService {
      *         false--用户不具备某角色，情形包括：入参角色为空、用户未登录、用户角色列表为空、用户角色列表不包含该角色
      */
     public boolean hasRole(String role) {
+        // 入参为空时返回false
         if (StringUtils.isEmpty(role)) {
             return false;
         }
+        // 获取登陆用户信息
         LoginUser loginUser = tokenService.getLoginUser(ServletUtils.getRequest());
         if (null == loginUser) {
             return false;
@@ -149,9 +156,11 @@ public class PermissionService {
         if (isUserAdmin(loginUser)) {
             return true;
         }
+        // 用户角色为空时返回false
         if (CollectionUtils.isEmpty(loginUser.getRoles())) {
             return false;
         }
+        // 用户角色列表中某一个角色与入参角色相同时，返回true
         for (String roleKey : loginUser.getRoles()) {
             if (roleKey.equals(StringUtils.trim(role))) {
                 return true;
@@ -183,9 +192,11 @@ public class PermissionService {
      *         false--用户不具有入参角色列表的任何角色
      */
     public boolean hasAnyRoles(String roles) {
+        // 入参为空时返回false
         if (StringUtils.isEmpty(roles)) {
             return false;
         }
+        // 获取用户信息
         LoginUser loginUser = tokenService.getLoginUser(ServletUtils.getRequest());
         if (null == loginUser) {
             return false;
@@ -194,9 +205,11 @@ public class PermissionService {
         if (isUserAdmin(loginUser)) {
             return true;
         }
+        // 用户角色列表为空时返回false
         if (CollectionUtils.isEmpty(loginUser.getRoles())) {
             return false;
         }
+        // 如果用户角色列表中 含有入参的任意一个角色 返回true
         for (String role : roles.split(ROLE_DELIMETER)) {
             if (hasRole(role)) {
                 return true;
@@ -227,11 +240,13 @@ public class PermissionService {
      *         false-其他
      */
     private boolean isUserAdmin(LoginUser loginUser) {
+        // 如果用户的角色列表为空，则返回false
         if (CollectionUtils.isEmpty(loginUser.getRoles())) {
             return false;
         }
+        // 如果用户角色列表中包含 超级管理员代码标识，则返回true
         for (String roleKey : loginUser.getRoles()) {
-            if (SUPER_ADMIN.contains(roleKey)) {
+            if (SUPER_ADMIN.contentEquals(roleKey)) {
                 return true;
             }
         }

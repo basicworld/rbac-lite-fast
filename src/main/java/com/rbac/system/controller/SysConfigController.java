@@ -53,7 +53,7 @@ public class SysConfigController extends BaseController {
 
     /**
      * 获取系统所有的配置项<br>
-     * 限制最多返回9999个配置项，实际一个系统中也用不了这么多配置项
+     * 限制最多返回9999个配置项
      *
      * @return TableDataInfo{code, msg, total, rows:[]}
      */
@@ -105,12 +105,12 @@ public class SysConfigController extends BaseController {
     public AjaxResult mailSendTest(@RequestBody MailDTO mailDTO) {
         String mailTo = mailDTO.getMailTo();
         if (logger.isDebugEnabled()) {
-            logger.debug("测试收件箱：" + mailTo);
+            logger.debug("测试收件箱：{}", mailTo);
         }
         // 教育收件箱格式
         boolean mailValid = ValidUtils.isValidEmail(mailTo);
         if (false == mailValid) {
-            return AjaxResult.error("收件箱格式错误：" + mailTo);
+            return AjaxResult.error("收件箱格式错误：{}", mailTo);
         }
         // 确认是否可以发送邮件
         if (!mailService.canSendMail()) {
@@ -120,7 +120,7 @@ public class SysConfigController extends BaseController {
         AsyncManager.me()
                 .execute(AsyncFactory.sendSimpleMail(mailTo.trim(), "来自RBAC系统的邮件", "收到本邮件表明邮箱参数配置正确，且互联网处于连通状态。"));
         // 构造返回数据
-        String msg = MessageFormat.format("已尝试发送测试邮件给 {0}，请查收验证", mailTo);
+        String msg = MessageFormat.format("已尝试发送测试邮件给{0}，请查收验证", mailTo);
         if (logger.isDebugEnabled()) {
             logger.debug(msg);
         }

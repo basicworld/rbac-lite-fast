@@ -52,7 +52,9 @@ public class SysLoginService {
         // 用户验证
         Authentication authentication = null;
         try {
-            // 该方法会去调用UserDetailsServiceImpl.loadUserByUsername
+            // 该方法会去调用UserDetailsServiceImpl.loadUserByUsername()
+            // loadUserByUsername()通过用户名获取数据库的用户信息（包括密码、角色、权限），这个步骤不会验证密码
+            // 然后交给authenticationManager去验证密码
             authentication = authenticationManager
                     .authenticate(new UsernamePasswordAuthenticationToken(username, password));
         } catch (Exception e) {

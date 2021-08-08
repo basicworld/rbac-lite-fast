@@ -7,6 +7,8 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +29,8 @@ import com.rbac.system.service.ISysUserService;
 
 @Service
 public class SysUserServiceImpl implements ISysUserService {
+    private static final Logger logger = LoggerFactory.getLogger(SysUserServiceImpl.class);
+
     @Autowired
     SysUserMapper userMapper;
     @Autowired
@@ -151,7 +155,7 @@ public class SysUserServiceImpl implements ISysUserService {
 
     /**
      * 删除旧的 用户--角色关系，创建新的 用户--角色关系
-     * 
+     *
      * @param user
      * @return
      */
@@ -184,7 +188,9 @@ public class SysUserServiceImpl implements ISysUserService {
 
     @Override
     public Boolean checkIfPasswordExpired(SysUser user, boolean sendMessage) {
-        int maxExpireDays = configService.valueOfConfig(ConfigConstants.KEY_USER_PASSWORD_EXPIRE_TIME, 30);
+        final int DEFAULT_EXPIRE_TIME = 30;
+        int maxExpireDays = configService.valueOfConfig(ConfigConstants.KEY_USER_PASSWORD_EXPIRE_TIME,
+                DEFAULT_EXPIRE_TIME);
         // 判断密码是否过期
         if (null != user.getPwdUpdateTime()) {
             Date now = new Date();
@@ -193,6 +199,9 @@ public class SysUserServiceImpl implements ISysUserService {
             if (is_expired && sendMessage) {
                 // 站内信通知
                 messageService.insertPersonalPasswordExpireMessage(user.getNickName(), user.getId(), maxExpireDays);
+                if (logger.isWarnEnabled()) {
+                    logger.warn("用户{}密码已过期{}天以上，已发送站内信", user.getUserName(), maxExpireDays);
+                }
             }
             return is_expired;
         }

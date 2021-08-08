@@ -73,7 +73,7 @@ public class BaseController {
     }
 
     /**
-     * 响应请求分页数据
+     * 响应请求分页数据，自动装载 总数据量 字段
      *
      * @return TableDataInfo() 即{code, msg, total, rows: []}
      */
@@ -88,7 +88,7 @@ public class BaseController {
     }
 
     /**
-     * 响应请求分页数据
+     * 响应请求分页数据，手动指定 总数据量 字段
      *
      * @return TableDataInfo() 即{code, msg, total, rows: []}
      */

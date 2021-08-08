@@ -88,11 +88,14 @@ public class SysRoleController extends BaseController {
         if (StringUtils.isEmpty(role.getRoleName()) || StringUtils.isEmpty(role.getRoleKey())) {
             return AjaxResult.error("角色名称、角色代码不能为空!");
         }
+        // 角色代码不能与超级管理员冲突
+        if (RoleConstants.ADMIN_ROLE_KEY.contentEquals(role.getRoleKey())) {
+            return AjaxResult.error("角色代码不能与超级管理员冲突!");
+        }
         // 角色代码重复检查
         List<SysRole> roleListWithSameKey = roleService.listByRoleKeyEqualsTo(role.getRoleKey());
         if (CollectionUtils.isNotEmpty(roleListWithSameKey)) {
-            String msg = MessageFormat.format("角色代码重复：{0}!", role.getRoleKey());
-            return AjaxResult.error(msg);
+            return AjaxResult.error("角色代码重复：{}!", role.getRoleKey());
         }
 
         // 设置删除标记：未删除
@@ -196,6 +199,12 @@ public class SysRoleController extends BaseController {
         if (null != existRole && existRole.getRoleKey().contentEquals(RoleConstants.ADMIN_ROLE_KEY)) {
             return AjaxResult.error("不能更新超级管理员角色!");
         }
+
+        // 角色代码不能与超级管理员冲突
+        if (RoleConstants.ADMIN_ROLE_KEY.contentEquals(role.getRoleKey())) {
+            return AjaxResult.error("角色代码不能与超级管理员冲突!");
+        }
+
         // 准备角色更新信息
         SysRole updateRole = new SysRole();
         updateRole.setId(role.getId());

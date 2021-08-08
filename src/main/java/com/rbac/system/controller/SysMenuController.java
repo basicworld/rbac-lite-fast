@@ -41,7 +41,7 @@ public class SysMenuController {
         if (logger.isDebugEnabled()) {
             logger.debug("获取菜单列表...");
         }
-        List<SysMenu> menuList = menuService.listByMenu(menu);
+        List<SysMenu> menuList = getMenuList(menu);
         return AjaxResult.success(menuList);
     }
 
@@ -57,7 +57,7 @@ public class SysMenuController {
             logger.debug("获取菜单树...");
         }
         // menu list
-        List<SysMenu> menuList = menuService.listByMenu(menu);
+        List<SysMenu> menuList = getMenuList(menu);
         // menu list to menu tree
         List<SysMenu> treeList = menuService.buildMenuTree(menuList);
         return AjaxResult.success(treeList);
@@ -76,10 +76,14 @@ public class SysMenuController {
             logger.debug("获取菜单下拉选择树...");
         }
         // menu list
-        List<SysMenu> menuList = menuService.listByMenu(menu);
+        List<SysMenu> menuList = getMenuList(menu);
         // menu select tree
         List<TreeSelect> treeSelect = menuService.buildMenuTreeSelect(menuList);
         return AjaxResult.success(treeSelect);
+    }
+
+    private List<SysMenu> getMenuList(SysMenu menu) {
+        return menuService.listByMenu(menu);
     }
 
 }

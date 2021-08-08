@@ -324,7 +324,7 @@ public class SysUserController extends BaseController {
     }
 
     /**
-     * 修改用户密码<br>
+     * 重置用户密码<br>
      * 鉴权：拥有system:user权限的用户可以访问
      *
      * @param user 用户信息{id, password}
@@ -334,7 +334,7 @@ public class SysUserController extends BaseController {
     @PostMapping("/password/reset")
     public AjaxResult resetPassword(@RequestBody SysUser user) {
         if (logger.isDebugEnabled()) {
-            logger.debug("修改用户密码:{}", user);
+            logger.debug("重置用户密码:{}", user);
         }
         // 非空检查
         if (null == user.getId() || StringUtils.isEmpty(user.getPassword())) {
