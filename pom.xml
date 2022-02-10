@@ -26,7 +26,7 @@
 		<bitwalker.version>1.19</bitwalker.version>
 		<jwt.version>0.9.0</jwt.version>
 		<kaptcha.version>2.3.2</kaptcha.version>
-		<poi.version>3.17</poi.version>
+		<poi.version>4.1.0</poi.version>
 		<oshi.version>3.9.1</oshi.version>
 		<velocity.version>1.7</velocity.version>
 	</properties>
