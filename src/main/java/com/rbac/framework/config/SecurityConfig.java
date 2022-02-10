@@ -24,7 +24,7 @@ import com.rbac.framework.security.handle.LogoutSuccessHandlerImpl;
 /**
  * spring security配置<br>
  * 添加本配置后会启动spring security功能
- * 
+ *
  * @author wlfei
  *
  */
@@ -104,6 +104,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers("/common/download/resource**").anonymous().antMatchers("/swagger-ui.html").anonymous()
 				.antMatchers("/swagger-resources/**").anonymous().antMatchers("/webjars/**").anonymous()
 				.antMatchers("/*/api-docs").anonymous().antMatchers("/druid/**").anonymous()
+				// 演示接口无需验证权限
+				.antMatchers("/example/**").permitAll()
+
 				// 除上面外的所有请求全部需要鉴权认证
 				.anyRequest().authenticated().and().headers().frameOptions().disable();
 		httpSecurity.logout().logoutUrl("/personal/logout").logoutSuccessHandler(logoutSuccessHandler);
