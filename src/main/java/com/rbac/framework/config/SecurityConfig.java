@@ -97,8 +97,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
 				// 过滤请求
 				.authorizeRequests()
-				// 对于登录login 验证码captcha 注册register 允许匿名访问
-				.antMatchers("/personal/login", "/captcha").anonymous()
+				// 对于登录login 允许匿名访问
+				.antMatchers("/personal/login").anonymous()
+				// 对于验证码captcha 允许所有访问
+				.antMatchers("/captcha").permitAll()
+				// 静态资源允许所有访问
 				.antMatchers(HttpMethod.GET, "/*.html", "/**/*.html", "/**/*.css", "/**/*.js", "/ping").permitAll()
 				.antMatchers("/profile/**").anonymous().antMatchers("/common/download**").anonymous()
 				.antMatchers("/common/download/resource**").anonymous().antMatchers("/swagger-ui.html").anonymous()
@@ -106,7 +109,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers("/*/api-docs").anonymous().antMatchers("/druid/**").anonymous()
 				// 演示接口无需验证权限
 				.antMatchers("/example/**").permitAll()
-
 				// 除上面外的所有请求全部需要鉴权认证
 				.anyRequest().authenticated().and().headers().frameOptions().disable();
 		httpSecurity.logout().logoutUrl("/personal/logout").logoutSuccessHandler(logoutSuccessHandler);
