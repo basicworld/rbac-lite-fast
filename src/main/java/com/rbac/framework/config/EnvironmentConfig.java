@@ -107,12 +107,6 @@ public class EnvironmentConfig {
 		}
 
 		logger.warn(propertySourcesFromSystem.toString());
-		String emailUsername = (String) propertySourcesFromSystem.get(ConfigConstants.NAME_OF_DB_PROPERTY_SOURCE)
-				.getProperty(ConfigConstants.KEY_MAIL_HOST);
-		logger.warn("email host is " + emailUsername);
-		String emailHost = (String) propertySourcesFromSystem.get(ConfigConstants.NAME_OF_DB_PROPERTY_SOURCE)
-				.getProperty(ConfigConstants.KEY_MAIL_PORT);
-		logger.warn("email port is " + emailHost);
 
 		logger.warn("数据库中配置参数已成功加载到spring环境！");
 	}
