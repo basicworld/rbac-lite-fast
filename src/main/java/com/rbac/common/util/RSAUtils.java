@@ -177,7 +177,7 @@ public class RSAUtils {
     }
 
     /**
-     * 使用私钥对明文密文进行解密
+     * 使用私钥对密文进行解密
      *
      * @param privateKey
      * @param enStr

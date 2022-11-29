@@ -12,7 +12,7 @@ import org.mybatis.generator.config.xml.ConfigurationParser;
 import org.mybatis.generator.internal.DefaultShellCallback;
 
 /**
- * mybatis自动生成mapper和bean<br>
+ * mybatis自动生成mapper和bean。只在开发阶段使用，不用于生产。<br>
  * 
  * 注意安全：重新运行会覆盖原有的代码
  * 

@@ -54,16 +54,16 @@ public class ValidUtils {
      * 字符串长度校验
      *
      * @param testStr
-     * @param sizeFrom 长度最小值应 大于等于 sizeFrom
-     * @param sizeTo   长度最大值应 小于 sizeTo
+     * @param minSize 长度最小值应 大于等于 minSize
+     * @param maxSize 长度最大值应 小于 maxSize
      * @return true--符合要求<br>
      *         false--长度不符合要求或null
      */
-    public static boolean isLengthBetween(String testStr, int sizeFrom, int sizeTo) {
+    public static boolean isLengthBetween(String testStr, int minSize, int maxSize) {
         if (null == testStr) {
             return false;
         }
-        if (testStr.length() < sizeFrom || testStr.length() >= sizeTo) {
+        if (testStr.length() < minSize || testStr.length() >= maxSize) {
             return false;
         }
         return true;

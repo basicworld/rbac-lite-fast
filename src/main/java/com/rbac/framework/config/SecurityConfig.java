@@ -112,9 +112,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				// 除上面外的所有请求全部需要鉴权认证
 				.anyRequest().authenticated().and().headers().frameOptions().disable();
 		httpSecurity.logout().logoutUrl("/personal/logout").logoutSuccessHandler(logoutSuccessHandler);
-		// 添加JWT filter
+		// 添加JWT 过滤器
 		httpSecurity.addFilterBefore(authenticationTokenFilter, UsernamePasswordAuthenticationFilter.class);
-		// 添加CORS filter
+		// 添加CORS 过滤器
 		httpSecurity.addFilterBefore(corsFilter, JwtAuthenticationTokenFilter.class);
 		httpSecurity.addFilterBefore(corsFilter, LogoutFilter.class);
 	}

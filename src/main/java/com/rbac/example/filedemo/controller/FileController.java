@@ -27,7 +27,8 @@ import com.rbac.example.filedemo.domain.UploadFileResponse;
 import com.rbac.example.filedemo.service.FileStorageService;
 
 /**
- *
+ * controller例子：文件处理
+ * 
  * @author wlfei
  * @date 2022-02-09
  */
@@ -39,21 +40,41 @@ public class FileController {
     @Autowired
     private FileStorageService fileStorageService;
 
+    /**
+     * 上传单个文件到服务器
+     * 
+     * @param file
+     * @return 文件信息（文件名、下载url、文件类型、文件大小）
+     */
     @PostMapping("/uploadFile")
     public UploadFileResponse uploadFile(@RequestParam("file") MultipartFile file) {
         String fileName = fileStorageService.storeFile(file);
 
+        // 生成文件下载url
         String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath().path("/example/filedemo/")
                 .path("/downloadFile/").path(fileName).toUriString();
 
         return new UploadFileResponse(fileName, fileDownloadUri, file.getContentType(), file.getSize());
     }
 
+    /**
+     * 上传多个文件到服务器
+     * 
+     * @param files
+     * @return 文件信息列表，每个文件信息包括（文件名、下载url、文件类型、文件大小）
+     */
     @PostMapping("/uploadMultipleFiles")
     public List<UploadFileResponse> uploadMultipleFiles(@RequestParam("files") MultipartFile[] files) {
         return Arrays.asList(files).stream().map(file -> uploadFile(file)).collect(Collectors.toList());
     }
 
+    /**
+     * 从服务器下载单个文件
+     * 
+     * @param fileName 文件名
+     * @param request
+     * @return 浏览器调用文件保存对话框，提示保存文件
+     */
     @GetMapping("/downloadFile/{fileName:.+}")
     public ResponseEntity<Resource> downloadFile(@PathVariable String fileName, HttpServletRequest request) {
         // Load file as Resource

@@ -4,15 +4,19 @@
 package com.rbac.example.filedemo.domain;
 
 /**
- * TODO
+ * 上传文件的响应信息
  *
  * @author wlfei
  * @date 2022-02-09
  */
 public class UploadFileResponse {
+    /** 文件名 */
     private String fileName;
+    /** 文件下载url */
     private String fileDownloadUri;
+    /** 文件类型 */
     private String fileType;
+    /** 文件大小 */
     private long size;
 
     public UploadFileResponse(String fileName, String fileDownloadUri, String fileType, long size) {

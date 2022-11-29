@@ -50,7 +50,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     /**
      * 使用用户名，从数据库获取用户信息<br>
-     * 成功获取用户后，返回LoginUser对象
+     * 成功获取用户后，返回LoginUser对象。用户不存在的抛出UsernameNotFoundException
      */
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

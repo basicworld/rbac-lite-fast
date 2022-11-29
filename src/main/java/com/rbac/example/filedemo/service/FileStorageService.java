@@ -19,7 +19,8 @@ import com.rbac.example.filedemo.exception.MyFileNotFoundException;
 import com.rbac.example.filedemo.property.FileStorageProperties;
 
 /**
- *
+ * 文件处理service
+ * 
  * @author wlfei
  * @date 2022-02-09
  */
@@ -27,6 +28,11 @@ import com.rbac.example.filedemo.property.FileStorageProperties;
 public class FileStorageService {
     private final Path fileStorageLocation;
 
+    /**
+     * 生成保存文件用的目录
+     * 
+     * @param fileStorageProperties
+     */
     @Autowired
     public FileStorageService(FileStorageProperties fileStorageProperties) {
         this.fileStorageLocation = Paths.get(fileStorageProperties.getUploadDir()).toAbsolutePath().normalize();
@@ -39,6 +45,12 @@ public class FileStorageService {
         }
     }
 
+    /**
+     * 保存文件到服务器
+     * 
+     * @param file
+     * @return
+     */
     public String storeFile(MultipartFile file) {
         // Normalize file name
         String fileName = StringUtils.cleanPath(file.getOriginalFilename());
@@ -59,6 +71,12 @@ public class FileStorageService {
         }
     }
 
+    /**
+     * 从服务器读取文件，转换为resource
+     * 
+     * @param fileName
+     * @return
+     */
     public Resource loadFileAsResource(String fileName) {
         try {
             Path filePath = this.fileStorageLocation.resolve(fileName).normalize();

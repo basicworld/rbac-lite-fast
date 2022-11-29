@@ -4,7 +4,8 @@
 package com.rbac.example.filedemo.exception;
 
 /**
- *
+ * 存储文件报错
+ * 
  * @author wlfei
  * @date 2022-02-09
  */

@@ -4,7 +4,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
- * 安全工具
+ * Spring安全工具
  * 
  * @author wlfei
  *
