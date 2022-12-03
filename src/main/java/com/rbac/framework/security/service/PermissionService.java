@@ -219,7 +219,7 @@ public class PermissionService {
     }
 
     /**
-     * 判断是否包含权限<br>
+     * 判断permissions中是否包含给定permission权限<br>
      * 包含所有权限标识符，或包含给定权限，视为true
      *
      * @param permissions 所有权限列表

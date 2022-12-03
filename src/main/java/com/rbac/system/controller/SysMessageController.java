@@ -107,7 +107,7 @@ public class SysMessageController extends BaseController {
      * 如果指定了“未读消息置顶”，则按未读消息优先、且时间倒序排列返回结果
      *
      *
-     * @param queryParams
+     * @param queryParams{unreadTop,}
      * @return
      */
     @GetMapping("/list")

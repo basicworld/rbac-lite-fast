@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 import com.rbac.framework.security.domain.LoginUser;
 
 /**
- * 登录验证服务
+ * 登录验证服务，在用户登陆系统时使用
  *
  * @author wlfei
  *
@@ -36,8 +36,8 @@ public class SysLoginService {
      * 验证用户名和密码是否正确，正确则为用户生成token<br>
      * 不正确时抛出异常
      *
-     * @param username
-     * @param password
+     * @param username 用户名
+     * @param password 密码
      * @return 成功登录时，返回有效token
      * @exception DisabledException       用户已禁用<br>
      * @exception LockedException         用户已锁定<br>

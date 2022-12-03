@@ -20,6 +20,12 @@ import com.rbac.system.domain.dto.SysConfigDTO;
  * @date 2021-05-08
  */
 public interface ISysConfigService extends BaseService<SysConfig> {
+    /**
+     * 更新配置信息
+     * 
+     * @param configList
+     * @return
+     */
     public Integer updateSelective(List<SysConfig> configList);
 
     /**
